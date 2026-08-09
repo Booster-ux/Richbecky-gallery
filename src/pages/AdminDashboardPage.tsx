@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { LayoutDashboard, CheckCircle2, XCircle, Clock, Eye, Users, ShoppingBag, DollarSign, Settings, Palette, Award } from 'lucide-react';
+import { LayoutDashboard, CheckCircle2, XCircle, Clock, Eye, Users, DollarSign, Palette } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
   const { artworks, artists, orders, approveArtwork, rejectArtwork, navigateToArtwork } = useGallery();

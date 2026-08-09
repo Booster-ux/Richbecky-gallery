@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { Clock, PlusCircle, ArrowLeft, Image as ImageIcon, Award, AlertCircle } from 'lucide-react';
+import { Clock, PlusCircle, ArrowLeft } from 'lucide-react';
 
 export const AddArtworkPage: React.FC = () => {
   const { addNewArtwork, setActivePage, categories } = useGallery();

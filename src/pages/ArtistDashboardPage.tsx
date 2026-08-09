@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { PlusCircle, Palette, DollarSign, ShoppingBag, Clock, CheckCircle2, AlertCircle, Eye } from 'lucide-react';
+import { PlusCircle, Clock, CheckCircle2, AlertCircle, Eye } from 'lucide-react';
 
 export const ArtistDashboardPage: React.FC = () => {
-  const { artworks, setActivePage, navigateToArtwork, currentUser } = useGallery();
+  const { artworks, setActivePage, navigateToArtwork } = useGallery();
   const [activeTab, setActiveTab] = useState<'overview' | 'artworks' | 'sales' | 'profile'>('overview');
 
   // Filter artworks for this artist demo

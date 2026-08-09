@@ -4,12 +4,9 @@ import {
   Search,
   Heart,
   ShoppingBag,
-  User as UserIcon,
   Menu,
   X,
-  ChevronDown,
   Sparkles,
-  ShieldCheck,
   PlusCircle,
   LayoutDashboard
 } from 'lucide-react';

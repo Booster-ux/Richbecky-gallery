@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { Sparkles, Palette, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Palette, ArrowRight } from 'lucide-react';
 
 export const ArtistRegisterPage: React.FC = () => {
   const { setActivePage, showToast, setCurrentUserRole } = useGallery();

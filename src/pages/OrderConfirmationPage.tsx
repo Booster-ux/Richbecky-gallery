@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { CheckCircle2, ArrowRight, Award, ShieldCheck, Download } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 export const OrderConfirmationPage: React.FC = () => {
   const { lastPlacedOrder, setActivePage } = useGallery();

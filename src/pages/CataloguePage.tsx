@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
-import { Filter, SlidersHorizontal, Search, RotateCcw, X, ChevronDown } from 'lucide-react';
+import { Filter, SlidersHorizontal, Search, RotateCcw, X } from 'lucide-react';
 
 export const CataloguePage: React.FC = () => {
   const { artworks, artists, categories, filterState, setFilterState, resetFilters } = useGallery();

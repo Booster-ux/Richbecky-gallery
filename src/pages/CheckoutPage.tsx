@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { ShieldCheck, CreditCard, Landmark, Info, Lock, CheckCircle2 } from 'lucide-react';
+import { CreditCard, Landmark, Info } from 'lucide-react';
 
 export const CheckoutPage: React.FC = () => {
   const { cart, cartTotal, placeOrder, currentUser } = useGallery();

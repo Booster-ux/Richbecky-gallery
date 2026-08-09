@@ -7,11 +7,8 @@ import {
   ShoppingBag,
   Award,
   ShieldCheck,
-  Truck,
   ArrowRight,
   Maximize2,
-  CheckCircle2,
-  Info,
   Calendar,
   Layers,
   Ruler

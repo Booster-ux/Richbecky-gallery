@@ -1,10 +1,10 @@
 import React from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
-import { ArrowRight, Sparkles, Award, ShieldCheck, Palette, Compass } from 'lucide-react';
+import { ArrowRight, Sparkles, Award } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { artworks, artists, categories, setActivePage, navigateToArtwork, setFilterState } = useGallery();
+  const { artworks, artists, categories, setActivePage, navigateToArtwork, filterState, setFilterState } = useGallery();
 
   // Featured artwork for Hero section
   const featuredHeroArt = artworks.find(art => art.id === 'art-1') || artworks[0];

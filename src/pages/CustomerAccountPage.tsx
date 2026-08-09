@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { User, Package, Heart, MapPin, LogOut, Award, Clock } from 'lucide-react';
+import { User, Package, Heart, MapPin, LogOut } from 'lucide-react';
 
 export const CustomerAccountPage: React.FC = () => {
   const { currentUser, orders, wishlist, setActivePage, navigateToArtwork, setCurrentUserRole, showToast } = useGallery();

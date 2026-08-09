@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { Trash2, ArrowRight, ShoppingBag, ShieldCheck, Award, Lock } from 'lucide-react';
+import { Trash2, ArrowRight, ShoppingBag, ShieldCheck, Award } from 'lucide-react';
 
 export const CartPage: React.FC = () => {
   const { cart, removeFromCart, updateCartQuantity, cartTotal, setActivePage, navigateToArtwork } = useGallery();
