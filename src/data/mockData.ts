@@ -273,6 +273,7 @@ export const MOCK_ORDERS: Order[] = [
     subtotal: 4850,
     shippingFee: 150,
     total: 5000,
+    displayCurrency: 'USD',
     shippingInfo: {
       fullName: 'Lady Rebecca Sterling',
       email: 'rebecca.sterling@artcollector.com',
@@ -297,6 +298,7 @@ export const MOCK_ORDERS: Order[] = [
     subtotal: 1900,
     shippingFee: 80,
     total: 1980,
+    displayCurrency: 'USD',
     shippingInfo: {
       fullName: 'Lady Rebecca Sterling',
       email: 'rebecca.sterling@artcollector.com',

@@ -4,7 +4,16 @@ import { ArtworkCard } from '../components/ArtworkCard';
 import { Filter, SlidersHorizontal, Search, RotateCcw, X } from 'lucide-react';
 
 export const CataloguePage: React.FC = () => {
-  const { artworks, artists, categories, filterState, setFilterState, resetFilters, getConvertedPrice, formatPrice, selectedCurrency } = useGallery();
+  const {
+    artworks,
+    artists,
+    categories,
+    filterState,
+    setFilterState,
+    resetFilters,
+    getConvertedPrice,
+    formatPrice
+  } = useGallery();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Extract available mediums
@@ -176,6 +185,7 @@ export const CataloguePage: React.FC = () => {
           </div>
 
           {/* Price Range Slider */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between text-xs">
               <label className="font-semibold text-navy-900 uppercase tracking-wider">Price Ceiling</label>
               <span className="text-gold-700 font-medium">{formatPrice(filterState.maxPrice, 'USD')}</span>
@@ -335,7 +345,7 @@ export const CataloguePage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-navy-900 uppercase">Price Limit: ${filterState.maxPrice}</label>
+                <label className="text-xs font-semibold text-navy-900 uppercase">Price Limit: {formatPrice(filterState.maxPrice, 'USD')}</label>
                 <input
                   type="range"
                   min="0"

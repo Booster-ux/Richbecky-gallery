@@ -4,13 +4,29 @@ import { ArtworkCard } from '../components/ArtworkCard';
 import { ArrowRight, Sparkles, Award } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { artworks, artists, categories, setActivePage, navigateToArtwork, filterState, setFilterState, formatPrice } = useGallery();
+  const {
+    artworks,
+    artists,
+    categories,
+    setActivePage,
+    navigateToArtwork,
+    filterState,
+    setFilterState,
+    formatPrice
+  } = useGallery();
 
   // Featured artwork for Hero section
   const featuredHeroArt = artworks.find(art => art.id === 'art-1') || artworks[0];
   const featuredArtworks = artworks.filter(art => art.isFeatured && art.status === 'Approved');
-  const newArrivals = artworks.filter(art => art.isNewArrival && art.status === 'Approved');
   const approvedArtworks = artworks.filter(art => art.status === 'Approved');
+
+  // Filter catalogue preview according to active filterState.type tab
+  const displayArtworks = approvedArtworks.filter(art => {
+    if (filterState.type && filterState.type !== 'All') {
+      return art.type === filterState.type;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-16 pb-16 animate-fade-in">
@@ -44,8 +60,8 @@ export const HomePage: React.FC = () => {
 
                 <button
                   onClick={() => {
-                    setActivePage('catalogue');
                     setFilterState(prev => ({ ...prev, type: 'Original' }));
+                    setActivePage('catalogue');
                   }}
                   className="px-6 py-3.5 bg-navy-800/80 hover:bg-navy-800 text-ivory-200 border border-ivory-300/20 rounded font-medium text-xs uppercase tracking-wider transition"
                 >
@@ -70,7 +86,9 @@ export const HomePage: React.FC = () => {
                     Featured Masterpiece
                   </span>
                   <h3 className="font-serif text-xl text-white font-bold">{featuredHeroArt.title}</h3>
-                  <p className="text-xs text-neutral-300">{featuredHeroArt.artistName} • {formatPrice(featuredHeroArt.price, featuredHeroArt.currency)}</p>
+                  <p className="text-xs text-neutral-300">
+                    {featuredHeroArt.artistName} • {formatPrice(featuredHeroArt.price, featuredHeroArt.currency)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -187,7 +205,7 @@ export const HomePage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {approvedArtworks.map((art) => (
+          {displayArtworks.map((art) => (
             <ArtworkCard key={art.id} artwork={art} />
           ))}
         </div>
