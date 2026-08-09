@@ -13,6 +13,7 @@ import {
   Layers,
   Ruler
 } from 'lucide-react';
+import { handleImageError } from '../services/imageService';
 
 export const ArtworkDetailsPage: React.FC = () => {
   const {
@@ -89,6 +90,7 @@ export const ArtworkDetailsPage: React.FC = () => {
             <img
               src={galleryImages[activeImageIndex]}
               alt={selectedArtwork.title}
+              onError={(e) => handleImageError(e)}
               className="w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-102"
             />
             

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { Award, Globe, Instagram, ExternalLink, Heart, Sparkles } from 'lucide-react';
+import { handleImageError } from '../services/imageService';
 
 export const ArtistProfilePage: React.FC = () => {
   const { selectedArtist, artists, artworks, showToast } = useGallery();
@@ -43,6 +44,7 @@ export const ArtistProfilePage: React.FC = () => {
             <img
               src={artist.avatar}
               alt={artist.name}
+              onError={(e) => handleImageError(e)}
               className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-2xl bg-white"
             />
             

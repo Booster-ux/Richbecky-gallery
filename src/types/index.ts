@@ -131,5 +131,6 @@ export type ActivePage =
   | 'artist-register'
   | 'artist-dashboard'
   | 'add-artwork'
+  | 'admin-login'
   | 'admin-dashboard'
   | 'order-confirmation';

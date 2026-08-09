@@ -159,7 +159,9 @@ export const Footer: React.FC = () => {
           <div className="flex space-x-6 mt-4 sm:mt-0">
             <a href="#" className="hover:text-neutral-200 transition">Privacy Policy</a>
             <a href="#" className="hover:text-neutral-200 transition">Terms & Conditions</a>
-            <a href="#" className="hover:text-neutral-200 transition">Cookie Preferences</a>
+            <button onClick={() => setActivePage('admin-login')} className="hover:text-gold-400 transition text-neutral-500">
+              Admin Portal
+            </button>
           </div>
         </div>
 

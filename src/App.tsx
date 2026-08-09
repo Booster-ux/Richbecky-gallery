@@ -18,6 +18,7 @@ import { JournalPage } from './pages/JournalPage';
 import { ArtistRegisterPage } from './pages/ArtistRegisterPage';
 import { ArtistDashboardPage } from './pages/ArtistDashboardPage';
 import { AddArtworkPage } from './pages/AddArtworkPage';
+import { AdminLoginPage } from './pages/AdminLoginPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 
@@ -52,6 +53,8 @@ const AppContent: React.FC = () => {
         return <ArtistDashboardPage />;
       case 'add-artwork':
         return <AddArtworkPage />;
+      case 'admin-login':
+        return <AdminLoginPage />;
       case 'admin-dashboard':
         return <AdminDashboardPage />;
       case 'order-confirmation':
