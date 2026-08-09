@@ -9,7 +9,7 @@ interface ArtworkCardProps {
 }
 
 export const ArtworkCard: React.FC<ArtworkCardProps> = ({ artwork, showWishlist = true }) => {
-  const { navigateToArtwork, addToCart, toggleWishlist, isInWishlist } = useGallery();
+  const { navigateToArtwork, addToCart, toggleWishlist, isInWishlist, formatPrice } = useGallery();
   const inWishlist = isInWishlist(artwork.id);
 
   return (
@@ -94,7 +94,7 @@ export const ArtworkCard: React.FC<ArtworkCardProps> = ({ artwork, showWishlist 
         <div className="pt-3 border-t border-ivory-200 flex items-center justify-between mt-2">
           <div>
             <span className="text-sm font-semibold text-navy-900">
-              ${artwork.price.toLocaleString()}
+              {formatPrice(artwork.price, artwork.currency)}
             </span>
             <div className="text-[10px] text-neutral-400">
               {artwork.type === 'Original' ? '1-of-1 Unique' : `${artwork.stock} prints left`}

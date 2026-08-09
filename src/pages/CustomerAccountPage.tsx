@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { User, Package, Heart, MapPin, LogOut } from 'lucide-react';
 
 export const CustomerAccountPage: React.FC = () => {
-  const { currentUser, orders, wishlist, setActivePage, navigateToArtwork, setCurrentUserRole, showToast } = useGallery();
+  const { currentUser, orders, wishlist, setActivePage, navigateToArtwork, setCurrentUserRole, showToast, formatPrice } = useGallery();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'addresses'>('profile');
 
   const handleLogout = () => {
@@ -140,14 +140,14 @@ export const CustomerAccountPage: React.FC = () => {
                               <span className="text-neutral-500">{artwork.artistName} • Qty: {quantity}</span>
                             </div>
                           </div>
-                          <span className="font-bold text-navy-900">${(artwork.price * quantity).toLocaleString()}</span>
+                          <span className="font-bold text-navy-900">{formatPrice(artwork.price * quantity, artwork.currency)}</span>
                         </div>
                       ))}
                     </div>
 
                     <div className="pt-2 border-t border-ivory-200 flex justify-between items-center text-xs">
                       <span className="text-neutral-500">Payment: {order.paymentMethod}</span>
-                      <span className="font-bold text-navy-900">Total: ${order.total.toLocaleString()}</span>
+                      <span className="font-bold text-navy-900">Total: {formatPrice(order.total, order.displayCurrency || 'USD')}</span>
                     </div>
                   </div>
                 ))}
@@ -170,7 +170,7 @@ export const CustomerAccountPage: React.FC = () => {
                       <div>
                         <h4 className="font-serif text-sm font-semibold text-navy-900">{artwork.title}</h4>
                         <p className="text-xs text-neutral-500">{artwork.artistName}</p>
-                        <span className="text-xs font-bold text-navy-900 block mt-1">${artwork.price.toLocaleString()}</span>
+                        <span className="text-xs font-bold text-navy-900 block mt-1">{formatPrice(artwork.price, artwork.currency)}</span>
                         <button
                           onClick={() => navigateToArtwork(artwork)}
                           className="text-[11px] text-gold-700 underline font-semibold mt-1"

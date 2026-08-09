@@ -4,7 +4,7 @@ import { ArtworkCard } from '../components/ArtworkCard';
 import { ArrowRight, Sparkles, Award } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { artworks, artists, categories, setActivePage, navigateToArtwork, filterState, setFilterState } = useGallery();
+  const { artworks, artists, categories, setActivePage, navigateToArtwork, filterState, setFilterState, formatPrice } = useGallery();
 
   // Featured artwork for Hero section
   const featuredHeroArt = artworks.find(art => art.id === 'art-1') || artworks[0];
@@ -70,7 +70,7 @@ export const HomePage: React.FC = () => {
                     Featured Masterpiece
                   </span>
                   <h3 className="font-serif text-xl text-white font-bold">{featuredHeroArt.title}</h3>
-                  <p className="text-xs text-neutral-300">{featuredHeroArt.artistName} • ${featuredHeroArt.price.toLocaleString()}</p>
+                  <p className="text-xs text-neutral-300">{featuredHeroArt.artistName} • {formatPrice(featuredHeroArt.price, featuredHeroArt.currency)}</p>
                 </div>
               </div>
             </div>

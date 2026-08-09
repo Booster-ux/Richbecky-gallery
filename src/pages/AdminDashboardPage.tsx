@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { LayoutDashboard, CheckCircle2, XCircle, Clock, Eye, Users, DollarSign, Palette } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { artworks, artists, orders, approveArtwork, rejectArtwork, navigateToArtwork } = useGallery();
+  const { artworks, artists, orders, approveArtwork, rejectArtwork, navigateToArtwork, formatPrice, formatOriginalPrice, selectedCurrency } = useGallery();
   const [activeTab, setActiveTab] = useState<'approvals' | 'artworks' | 'artists' | 'sales'>('approvals');
 
   const pendingArtworks = artworks.filter(a => a.status === 'Pending Admin Approval');
@@ -54,7 +54,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         <div className="bg-white p-5 rounded-xl border border-ivory-300 shadow-subtle">
           <span className="text-xs text-neutral-500 font-medium block">Gross Marketplace Volume</span>
-          <span className="font-serif text-2xl font-bold text-gold-600 mt-1 block">${totalSales.toLocaleString()}</span>
+          <span className="font-serif text-2xl font-bold text-gold-600 mt-1 block">{formatPrice(totalSales, selectedCurrency)}</span>
         </div>
       </div>
 
@@ -119,7 +119,9 @@ export const AdminDashboardPage: React.FC = () => {
                       <h3 className="font-serif text-lg font-bold text-navy-900">{art.title}</h3>
                       <p className="text-xs text-neutral-600">Artist: <strong className="text-navy-900">{art.artistName}</strong></p>
                       <p className="text-xs text-neutral-500">{art.category} • {art.medium} • {art.dimensions}</p>
-                      <span className="text-xs font-bold text-navy-900 block pt-1">${art.price.toLocaleString()}</span>
+                      <span className="text-xs font-bold text-navy-900 block pt-1">
+                        Listed: {formatOriginalPrice(art.price, art.currency)} {art.currency} ({formatPrice(art.price, art.currency)})
+                      </span>
                     </div>
                   </div>
 
@@ -172,7 +174,7 @@ export const AdminDashboardPage: React.FC = () => {
                   <img src={art.imageUrl} alt="" className="w-10 h-12 object-cover rounded" />
                   <div>
                     <span className="font-semibold text-navy-900 block">{art.title}</span>
-                    <span className="text-neutral-500">{art.artistName} • ${art.price.toLocaleString()}</span>
+                    <span className="text-neutral-500">{art.artistName} • {formatOriginalPrice(art.price, art.currency)} {art.currency}</span>
                   </div>
                 </div>
                 <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase ${
@@ -210,8 +212,8 @@ export const AdminDashboardPage: React.FC = () => {
           <h2 className="font-serif text-lg font-semibold text-navy-900">Executive Marketplace Sales Ledger</h2>
           <div className="p-4 bg-navy-900 text-ivory-100 rounded-xl space-y-1">
             <span className="text-gold-400 font-semibold block text-xs">Total Marketplace Sales</span>
-            <span className="text-3xl font-bold font-serif">${totalSales.toLocaleString()}</span>
-            <p className="text-[11px] text-neutral-400">Net Gallery Commission (15%): ${(totalSales * 0.15).toLocaleString()}</p>
+            <span className="text-3xl font-bold font-serif">{formatPrice(totalSales, selectedCurrency)}</span>
+            <p className="text-[11px] text-neutral-400">Net Gallery Commission (15%): {formatPrice(totalSales * 0.15, selectedCurrency)}</p>
           </div>
         </div>
       )}

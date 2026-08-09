@@ -4,7 +4,7 @@ import { ArtworkCard } from '../components/ArtworkCard';
 import { Filter, SlidersHorizontal, Search, RotateCcw, X } from 'lucide-react';
 
 export const CataloguePage: React.FC = () => {
-  const { artworks, artists, categories, filterState, setFilterState, resetFilters } = useGallery();
+  const { artworks, artists, categories, filterState, setFilterState, resetFilters, getConvertedPrice, formatPrice, selectedCurrency } = useGallery();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Extract available mediums
@@ -44,9 +44,6 @@ export const CataloguePage: React.FC = () => {
     filtered = filtered.filter(art => art.type === filterState.type);
   }
 
-  // Price filter
-  filtered = filtered.filter(art => art.price >= filterState.minPrice && art.price <= filterState.maxPrice);
-
   // Featured toggle
   if (filterState.isFeatured) {
     filtered = filtered.filter(art => art.isFeatured);
@@ -57,10 +54,12 @@ export const CataloguePage: React.FC = () => {
     filtered = filtered.filter(art => art.isNewArrival);
   }
 
-  // Sorting
+  // Sorting based on converted customer display price
   filtered.sort((a, b) => {
-    if (filterState.sortBy === 'price-low') return a.price - b.price;
-    if (filterState.sortBy === 'price-high') return b.price - a.price;
+    const priceA = getConvertedPrice(a.price, a.currency);
+    const priceB = getConvertedPrice(b.price, b.currency);
+    if (filterState.sortBy === 'price-low') return priceA - priceB;
+    if (filterState.sortBy === 'price-high') return priceB - priceA;
     if (filterState.sortBy === 'title-asc') return a.title.localeCompare(b.title);
     if (filterState.sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
@@ -177,10 +176,9 @@ export const CataloguePage: React.FC = () => {
           </div>
 
           {/* Price Range Slider */}
-          <div className="space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <label className="font-semibold text-navy-900 uppercase tracking-wider">Price Range</label>
-              <span className="text-gold-700 font-medium">${filterState.minPrice} - ${filterState.maxPrice.toLocaleString()}</span>
+              <label className="font-semibold text-navy-900 uppercase tracking-wider">Price Ceiling</label>
+              <span className="text-gold-700 font-medium">{formatPrice(filterState.maxPrice, 'USD')}</span>
             </div>
             <input
               type="range"

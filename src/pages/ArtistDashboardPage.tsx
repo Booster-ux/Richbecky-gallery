@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { PlusCircle, Clock, CheckCircle2, AlertCircle, Eye } from 'lucide-react';
 
 export const ArtistDashboardPage: React.FC = () => {
-  const { artworks, setActivePage, navigateToArtwork } = useGallery();
+  const { artworks, setActivePage, navigateToArtwork, formatOriginalPrice } = useGallery();
   const [activeTab, setActiveTab] = useState<'overview' | 'artworks' | 'sales' | 'profile'>('overview');
 
   // Filter artworks for this artist demo
@@ -96,7 +96,7 @@ export const ArtistDashboardPage: React.FC = () => {
                   <img src={art.imageUrl} alt={art.title} className="w-16 h-16 object-cover rounded border" />
                   <div>
                     <h3 className="font-serif text-base font-semibold text-navy-900">{art.title}</h3>
-                    <p className="text-xs text-neutral-500">{art.category} • {art.type} • ${art.price.toLocaleString()}</p>
+                    <p className="text-xs text-neutral-500">{art.category} • {art.type} • {formatOriginalPrice(art.price, art.currency)} {art.currency}</p>
                     <span className="text-[10px] text-neutral-400">Created: {art.year}</span>
                   </div>
                 </div>

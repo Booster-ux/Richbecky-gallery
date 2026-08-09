@@ -8,9 +8,12 @@ import {
   X,
   Sparkles,
   PlusCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  Globe
 } from 'lucide-react';
 import { LOGO_URL } from '../data/mockData';
+import { SUPPORTED_CURRENCIES } from '../services/currencyService';
+import { CurrencyCode } from '../types';
 
 export const Header: React.FC = () => {
   const {
@@ -23,12 +26,14 @@ export const Header: React.FC = () => {
     artworks,
     navigateToArtwork,
     currentUser,
-    setCurrentUserRole
+    setCurrentUserRole,
+    selectedCurrency,
+    setSelectedCurrency,
+    formatPrice
   } = useGallery();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Live search predictions
@@ -60,42 +65,65 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full glass-header border-b border-ivory-300 transition-all duration-200">
-      {/* Top Announcement Bar */}
-      <div className="bg-navy-800 text-ivory-100 py-1.5 px-4 text-xs font-light text-center flex items-center justify-center gap-3">
-        <span className="flex items-center gap-1 text-gold-400">
-          <Sparkles className="w-3.5 h-3.5" /> Certificate of Authenticity Included
-        </span>
-        <span className="hidden md:inline text-navy-200">|</span>
-        <span className="hidden md:inline text-navy-100">Complimentary Insured Worldwide Shipping on Select Artworks</span>
+      {/* Top Announcement & Currency Bar */}
+      <div className="bg-navy-800 text-ivory-100 py-1.5 px-4 text-xs font-light flex items-center justify-between gap-3">
         
-        {/* Quick Role Switcher for Demo Evaluation */}
-        <div className="ml-auto hidden lg:flex items-center gap-2 text-xs">
-          <span className="text-gold-400 font-medium">Demo View:</span>
-          <button
-            onClick={() => setCurrentUserRole('customer')}
-            className={`px-2 py-0.5 rounded text-[11px] transition ${
-              currentUser.role === 'customer' ? 'bg-gold-500 text-navy-900 font-semibold' : 'text-ivory-200 hover:text-white'
-            }`}
-          >
-            Customer
-          </button>
-          <button
-            onClick={() => setCurrentUserRole('artist')}
-            className={`px-2 py-0.5 rounded text-[11px] transition ${
-              currentUser.role === 'artist' ? 'bg-gold-500 text-navy-900 font-semibold' : 'text-ivory-200 hover:text-white'
-            }`}
-          >
-            Artist Portal
-          </button>
-          <button
-            onClick={() => setCurrentUserRole('admin')}
-            className={`px-2 py-0.5 rounded text-[11px] transition ${
-              currentUser.role === 'admin' ? 'bg-gold-500 text-navy-900 font-semibold' : 'text-ivory-200 hover:text-white'
-            }`}
-          >
-            Admin Panel
-          </button>
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1 text-gold-400">
+            <Sparkles className="w-3.5 h-3.5" /> Certificate of Authenticity Included
+          </span>
+          <span className="hidden md:inline text-navy-200">|</span>
+          <span className="hidden lg:inline text-navy-100">Complimentary Insured Worldwide Shipping</span>
         </div>
+        
+        {/* Customer Currency Selector */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 bg-navy-900/80 px-2 py-0.5 rounded border border-gold-500/30">
+            <Globe className="w-3.5 h-3.5 text-gold-400" />
+            <span className="text-[11px] text-neutral-300 font-medium hidden sm:inline">Currency:</span>
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value as CurrencyCode)}
+              className="bg-transparent text-gold-400 text-xs font-semibold focus:outline-none cursor-pointer"
+            >
+              {SUPPORTED_CURRENCIES.map(curr => (
+                <option key={curr.code} value={curr.code} className="bg-navy-900 text-white">
+                  {curr.code} ({curr.symbol})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Quick Role Switcher for Demo Evaluation */}
+          <div className="hidden lg:flex items-center gap-2 text-xs border-l border-navy-700 pl-3">
+            <span className="text-gold-400 font-medium">Demo:</span>
+            <button
+              onClick={() => setCurrentUserRole('customer')}
+              className={`px-2 py-0.5 rounded text-[11px] transition ${
+                currentUser.role === 'customer' ? 'bg-gold-500 text-navy-900 font-semibold' : 'text-ivory-200 hover:text-white'
+              }`}
+            >
+              Customer
+            </button>
+            <button
+              onClick={() => setCurrentUserRole('artist')}
+              className={`px-2 py-0.5 rounded text-[11px] transition ${
+                currentUser.role === 'artist' ? 'bg-gold-500 text-navy-900 font-semibold' : 'text-ivory-200 hover:text-white'
+              }`}
+            >
+              Artist
+            </button>
+            <button
+              onClick={() => setCurrentUserRole('admin')}
+              className={`px-2 py-0.5 rounded text-[11px] transition ${
+                currentUser.role === 'admin' ? 'bg-gold-500 text-navy-900 font-semibold' : 'text-ivory-200 hover:text-white'
+              }`}
+            >
+              Admin
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,7 +192,7 @@ export const Header: React.FC = () => {
                     <img src={art.imageUrl} alt={art.title} className="w-10 h-10 object-cover rounded" />
                     <div>
                       <div className="text-sm font-medium text-navy-800 line-clamp-1">{art.title}</div>
-                      <div className="text-xs text-neutral-500">{art.artistName} • ${art.price.toLocaleString()}</div>
+                      <div className="text-xs text-neutral-500">{art.artistName} • {formatPrice(art.price, art.currency)}</div>
                     </div>
                   </button>
                 ))}

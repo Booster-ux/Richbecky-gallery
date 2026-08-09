@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { Trash2, ArrowRight, ShoppingBag, ShieldCheck, Award } from 'lucide-react';
 
 export const CartPage: React.FC = () => {
-  const { cart, removeFromCart, updateCartQuantity, cartTotal, setActivePage, navigateToArtwork } = useGallery();
+  const { cart, removeFromCart, updateCartQuantity, cartTotal, setActivePage, navigateToArtwork, formatPrice, selectedCurrency } = useGallery();
 
   const shippingFee = cartTotal > 3000 ? 0 : 150;
   const grandTotal = cartTotal + shippingFee;
@@ -102,7 +102,7 @@ export const CartPage: React.FC = () => {
                 {/* Subtotal & Delete */}
                 <div className="text-right">
                   <div className="text-base font-bold text-navy-900">
-                    ${(artwork.price * quantity).toLocaleString()}
+                    {formatPrice(artwork.price * quantity, artwork.currency)}
                   </div>
                   <button
                     onClick={() => removeFromCart(artwork.id)}
@@ -126,26 +126,20 @@ export const CartPage: React.FC = () => {
 
           <div className="space-y-3 text-xs">
             <div className="flex justify-between text-neutral-600">
-              <span>Artworks Subtotal</span>
-              <span className="font-semibold text-navy-900">${cartTotal.toLocaleString()}</span>
+              <span>Artworks Subtotal ({selectedCurrency})</span>
+              <span className="font-semibold text-navy-900">{formatPrice(cartTotal, selectedCurrency)}</span>
             </div>
 
             <div className="flex justify-between text-neutral-600">
               <span>White-Glove Insured Transit</span>
               <span className="font-semibold text-navy-900">
-                {shippingFee === 0 ? <span className="text-emerald-700">Complimentary</span> : `$${shippingFee}`}
+                {shippingFee === 0 ? <span className="text-emerald-700">Complimentary</span> : formatPrice(shippingFee, selectedCurrency)}
               </span>
             </div>
 
-            {shippingFee > 0 && (
-              <p className="text-[11px] text-gold-700 bg-gold-50 p-2 rounded">
-                Add ${(3000 - cartTotal).toLocaleString()} more to qualify for complimentary global transit.
-              </p>
-            )}
-
             <div className="border-t border-ivory-200 pt-3 flex justify-between text-sm font-bold text-navy-900">
               <span>Total Investment</span>
-              <span className="text-lg text-gold-600">${grandTotal.toLocaleString()}</span>
+              <span className="text-lg text-gold-600">{formatPrice(grandTotal, selectedCurrency)}</span>
             </div>
           </div>
 

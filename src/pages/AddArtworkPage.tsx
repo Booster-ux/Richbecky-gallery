@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { Clock, PlusCircle, ArrowLeft } from 'lucide-react';
+import { CurrencyCode } from '../types';
+import { SUPPORTED_CURRENCIES } from '../services/currencyService';
 
 export const AddArtworkPage: React.FC = () => {
   const { addNewArtwork, setActivePage, categories } = useGallery();
 
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Abstract');
-  const [medium, setMedium] = useState('Oil & Gold Leaf on Linen Canvas');
-  const [dimensions, setDimensions] = useState('100 x 120 cm (39.4 x 47.2 in)');
-  const [year, setYear] = useState(2024);
+  const [category, setCategory] = useState('Figurative');
+  const [medium, setMedium] = useState('Oil on Canvas');
+  const [dimensions, setDimensions] = useState('30 x 36 inches (76.2 x 91.4 cm)');
+  const [year, setYear] = useState(2026);
   const [type, setType] = useState<'Original' | 'Fine Art Print'>('Original');
-  const [price, setPrice] = useState(3200);
+  const [price, setPrice] = useState<number>(250000);
+  const [currency, setCurrency] = useState<CurrencyCode>('NGN');
   const [stock, setStock] = useState(1);
-  const [imageUrl, setImageUrl] = useState('file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/artwork_1_blue_gold_1786281890336.png');
+  const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
 
@@ -23,14 +26,15 @@ export const AddArtworkPage: React.FC = () => {
     addNewArtwork({
       title,
       artistId: 'artist-1',
-      artistName: 'Elena Rostova',
-      artistAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      artistName: 'Rebecca Esho',
+      artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
       type,
       category,
       medium,
       dimensions,
       year,
       price,
+      currency,
       stock: type === 'Original' ? 1 : stock,
       isSold: false,
       isFeatured,
@@ -147,15 +151,31 @@ export const AddArtworkPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-neutral-700 font-medium mb-1">Price (USD $) *</label>
+            <label className="block text-neutral-700 font-medium mb-1">Numerical Listing Price *</label>
             <input
               type="number"
               required
-              min="100"
+              min="1"
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
+              placeholder="e.g. 250000"
               className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500 font-semibold"
             />
+          </div>
+
+          <div>
+            <label className="block text-neutral-700 font-medium mb-1">Original Listing Currency *</label>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500 font-semibold"
+            >
+              {SUPPORTED_CURRENCIES.map(curr => (
+                <option key={curr.code} value={curr.code}>
+                  {curr.code} ({curr.symbol} - {curr.name})
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

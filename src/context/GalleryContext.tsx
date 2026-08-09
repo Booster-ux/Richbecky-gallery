@@ -8,7 +8,8 @@ import {
   User,
   Order,
   FilterState,
-  ActivePage
+  ActivePage,
+  CurrencyCode
 } from '../types';
 import {
   INITIAL_ARTWORKS,
@@ -17,6 +18,12 @@ import {
   MOCK_USER,
   MOCK_ORDERS
 } from '../data/mockData';
+import {
+  convertPrice,
+  formatPriceWithCurrency,
+  formatRawAmount,
+  detectCustomerCurrency
+} from '../services/currencyService';
 
 interface ToastState {
   message: string;
@@ -37,6 +44,13 @@ interface GalleryContextType {
   categories: Category[];
   selectedArtwork: Artwork | null;
   selectedArtist: Artist | null;
+
+  // Currency System
+  selectedCurrency: CurrencyCode;
+  setSelectedCurrency: (currency: CurrencyCode) => void;
+  formatPrice: (amount: number, fromCurrency?: CurrencyCode) => string;
+  getConvertedPrice: (amount: number, fromCurrency?: CurrencyCode) => number;
+  formatOriginalPrice: (amount: number, currency: CurrencyCode) => string;
   
   // Cart
   cart: CartItem[];
@@ -44,7 +58,7 @@ interface GalleryContextType {
   removeFromCart: (artworkId: string) => void;
   updateCartQuantity: (artworkId: string, quantity: number) => void;
   clearCart: () => void;
-  cartTotal: number;
+  cartTotal: number; // In selected display currency
   cartCount: number;
 
   // Wishlist
@@ -96,6 +110,18 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(INITIAL_ARTWORKS[0]);
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(ARTISTS[0]);
+
+  // Selected Customer Currency (persisted in LocalStorage)
+  const [selectedCurrency, setSelectedCurrencyState] = useState<CurrencyCode>(() => {
+    const savedCurrency = localStorage.getItem('richbecky_customer_currency') as CurrencyCode | null;
+    return savedCurrency || detectCustomerCurrency();
+  });
+
+  const setSelectedCurrency = (currency: CurrencyCode) => {
+    setSelectedCurrencyState(currency);
+    localStorage.setItem('richbecky_customer_currency', currency);
+    showToast(`Display currency changed to ${currency}`, 'info');
+  };
   
   // Load initial state from LocalStorage or fall back to default mock data
   const [artworks, setArtworks] = useState<Artwork[]>(() => {
@@ -153,6 +179,19 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setToast(prev => ({ ...prev, visible: false }));
   };
 
+  // Currency formatting & conversion helpers
+  const formatPrice = (amount: number, fromCurrency: CurrencyCode = 'USD'): string => {
+    return formatPriceWithCurrency(amount, fromCurrency, selectedCurrency);
+  };
+
+  const getConvertedPrice = (amount: number, fromCurrency: CurrencyCode = 'USD'): number => {
+    return convertPrice(amount, fromCurrency, selectedCurrency);
+  };
+
+  const formatOriginalPrice = (amount: number, currency: CurrencyCode): string => {
+    return formatRawAmount(amount, currency);
+  };
+
   // Navigation helpers
   const navigateToArtwork = (artwork: Artwork) => {
     setSelectedArtwork(artwork);
@@ -168,7 +207,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Cart operations with strict artwork type rules
   const addToCart = (artwork: Artwork, requestedQty: number = 1) => {
-    // Check if artwork is sold
     if (artwork.isSold) {
       showToast('This artwork has already been acquired.', 'warning');
       return;
@@ -180,13 +218,11 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (existingIndex > -1) {
         const existingItem = prevCart[existingIndex];
         
-        // RULE: Original Artwork is unique - quantity cannot exceed 1
         if (artwork.type === 'Original') {
           showToast('Original artworks are one-of-a-kind. Maximum quantity is 1.', 'info');
           return prevCart;
         }
 
-        // Fine Art Print stock check
         const newQty = Math.min(existingItem.quantity + requestedQty, artwork.stock);
         if (newQty === existingItem.quantity && newQty >= artwork.stock) {
           showToast(`Maximum available print stock reached (${artwork.stock}).`, 'warning');
@@ -235,7 +271,12 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCart([]);
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + item.artwork.price * item.quantity, 0);
+  // Calculate cart total in customer's selected display currency
+  const cartTotal = cart.reduce((sum, item) => {
+    const itemConvertedPrice = convertPrice(item.artwork.price, item.artwork.currency, selectedCurrency);
+    return sum + itemConvertedPrice * item.quantity;
+  }, 0);
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   // Wishlist operations
@@ -271,7 +312,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const newArt: Artwork = {
       ...data,
       id: `art-${Date.now()}`,
-      status: 'Pending Admin Approval', // Default status per specification
+      status: 'Pending Admin Approval',
       createdAt: new Date().toISOString()
     };
 
@@ -297,7 +338,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Checkout process
   const placeOrder = (shippingInfo: any, paymentMethod: 'Card' | 'Bank Transfer') => {
     const subtotal = cartTotal;
-    const shippingFee = subtotal > 3000 ? 0 : 150; // Complimentary shipping on orders > $3000
+    const shippingFee = subtotal > getConvertedPrice(3000, 'USD') ? 0 : getConvertedPrice(150, 'USD');
     const total = subtotal + shippingFee;
 
     const newOrder: Order = {
@@ -307,6 +348,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       subtotal,
       shippingFee,
       total,
+      displayCurrency: selectedCurrency,
       shippingInfo,
       paymentMethod,
       status: 'Processing'
@@ -332,6 +374,11 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         categories,
         selectedArtwork,
         selectedArtist,
+        selectedCurrency,
+        setSelectedCurrency,
+        formatPrice,
+        getConvertedPrice,
+        formatOriginalPrice,
         cart,
         addToCart,
         removeFromCart,

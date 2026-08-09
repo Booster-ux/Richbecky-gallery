@@ -2,6 +2,15 @@ export type ArtworkType = 'Original' | 'Fine Art Print';
 
 export type ArtworkStatus = 'Approved' | 'Pending Admin Approval' | 'Rejected';
 
+export type CurrencyCode = 'NGN' | 'USD' | 'GBP' | 'EUR' | 'CAD' | 'AUD';
+
+export interface CurrencyConfig {
+  code: CurrencyCode;
+  symbol: string;
+  name: string;
+  locale: string;
+}
+
 export interface Artwork {
   id: string;
   title: string;
@@ -13,7 +22,8 @@ export interface Artwork {
   medium: string;
   dimensions: string;
   year: number;
-  price: number;
+  price: number; // Stored numerical price (original artist input)
+  currency: CurrencyCode; // Stored original currency code
   stock: number; // 1 for Original, N for Fine Art Print
   isSold?: boolean;
   isFeatured?: boolean;
@@ -77,9 +87,10 @@ export interface Order {
   id: string;
   date: string;
   items: CartItem[];
-  subtotal: number;
+  subtotal: number; // Stored in selected display currency
   shippingFee: number;
   total: number;
+  displayCurrency: CurrencyCode;
   shippingInfo: ShippingInfo;
   paymentMethod: 'Card' | 'Bank Transfer';
   status: 'Processing' | 'Shipped' | 'Delivered';

@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { CreditCard, Landmark, Info } from 'lucide-react';
 
 export const CheckoutPage: React.FC = () => {
-  const { cart, cartTotal, placeOrder, currentUser } = useGallery();
+  const { cart, cartTotal, placeOrder, currentUser, formatPrice, formatOriginalPrice, selectedCurrency } = useGallery();
 
   const shippingFee = cartTotal > 3000 ? 0 : 150;
   const grandTotal = cartTotal + shippingFee;
@@ -41,12 +41,14 @@ export const CheckoutPage: React.FC = () => {
         <h1 className="font-serif text-3xl font-semibold text-navy-900 mt-1">Complete Artwork Acquisition</h1>
       </div>
 
-      {/* Backend Integration Disclaimer Notice per Specification */}
-      <div className="bg-amber-50 border-l-4 border-gold-500 p-4 rounded shadow-sm text-xs text-amber-900 flex items-start gap-3">
-        <Info className="w-5 h-5 text-gold-600 flex-shrink-0 mt-0.5" />
-        <div>
-          <span className="font-bold">Frontend Demonstration Mode:</span> Real payment gateway processing (Stripe / Bank Wire API) and database synchronization will be connected during the backend integration phase.
+      {/* Multi-Currency & Payment Gateway Notice */}
+      <div className="bg-amber-50 border-l-4 border-gold-500 p-4 rounded shadow-sm text-xs text-amber-950 space-y-1">
+        <div className="flex items-center gap-2 font-bold text-amber-900">
+          <Info className="w-4 h-4 text-gold-600 flex-shrink-0" /> Multi-Currency Settlement & Gateway Notice:
         </div>
+        <p className="text-[11px] leading-relaxed">
+          The converted price below ({selectedCurrency}) is for display and preview purposes based on current exchange rates. The original artwork listing prices ({cart.map(c => `${formatOriginalPrice(c.artwork.price, c.artwork.currency)} ${c.artwork.currency}`).join(', ')}) are permanently preserved. Final settlement currency will be processed by the payment gateway based on your payment card and gateway regional rules upon backend connection.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -188,7 +190,7 @@ export const CheckoutPage: React.FC = () => {
             type="submit"
             className="w-full py-4 bg-gold-500 hover:bg-gold-400 text-navy-950 rounded font-semibold text-xs uppercase tracking-widest transition shadow-gold-glow"
           >
-            Confirm & Place Artwork Order (${grandTotal.toLocaleString()})
+            Confirm & Place Order ({formatPrice(grandTotal, selectedCurrency)})
           </button>
 
         </div>
@@ -206,10 +208,12 @@ export const CheckoutPage: React.FC = () => {
                 <div className="flex-1">
                   <div className="font-semibold text-navy-900 line-clamp-1">{artwork.title}</div>
                   <div className="text-neutral-500">{artwork.artistName} • Qty: {quantity}</div>
-                  <span className="text-[10px] text-gold-700 font-medium">{artwork.type}</span>
+                  <div className="text-[11px] text-neutral-400 font-mono">
+                    Original Price: {formatOriginalPrice(artwork.price, artwork.currency)} {artwork.currency}
+                  </div>
                 </div>
-                <div className="font-bold text-navy-900">
-                  ${(artwork.price * quantity).toLocaleString()}
+                <div className="font-bold text-navy-900 text-right">
+                  {formatPrice(artwork.price * quantity, artwork.currency)}
                 </div>
               </div>
             ))}
@@ -217,16 +221,16 @@ export const CheckoutPage: React.FC = () => {
 
           <div className="border-t border-navy-900/10 pt-4 space-y-2 text-xs">
             <div className="flex justify-between text-neutral-600">
-              <span>Subtotal</span>
-              <span>${cartTotal.toLocaleString()}</span>
+              <span>Subtotal ({selectedCurrency})</span>
+              <span>{formatPrice(cartTotal, selectedCurrency)}</span>
             </div>
             <div className="flex justify-between text-neutral-600">
               <span>Insured Courier Delivery</span>
-              <span>{shippingFee === 0 ? 'Complimentary' : `$${shippingFee}`}</span>
+              <span>{shippingFee === 0 ? 'Complimentary' : formatPrice(shippingFee, selectedCurrency)}</span>
             </div>
             <div className="flex justify-between text-sm font-bold text-navy-950 pt-2 border-t border-ivory-200">
               <span>Total Payable</span>
-              <span className="text-gold-600">${grandTotal.toLocaleString()}</span>
+              <span className="text-gold-600">{formatPrice(grandTotal, selectedCurrency)}</span>
             </div>
           </div>
         </div>

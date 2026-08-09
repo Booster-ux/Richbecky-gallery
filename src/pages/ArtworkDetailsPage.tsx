@@ -23,7 +23,10 @@ export const ArtworkDetailsPage: React.FC = () => {
     toggleWishlist,
     isInWishlist,
     setActivePage,
-    navigateToArtist
+    navigateToArtist,
+    formatPrice,
+    formatOriginalPrice,
+    selectedCurrency
   } = useGallery();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -150,13 +153,26 @@ export const ArtworkDetailsPage: React.FC = () => {
           </div>
 
           {/* Price & Stock Display */}
-          <div className="bg-ivory-200 p-4 rounded-xl border border-ivory-300 space-y-1">
+          <div className="bg-ivory-200 p-4 rounded-xl border border-ivory-300 space-y-2">
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-navy-950">${selectedArtwork.price.toLocaleString()}</span>
+              <div>
+                <span className="text-2xl font-bold text-navy-950">
+                  {formatPrice(selectedArtwork.price, selectedArtwork.currency)}
+                </span>
+                <span className="text-xs text-neutral-500 ml-2">({selectedCurrency})</span>
+              </div>
               <span className={`text-xs font-semibold px-2.5 py-0.5 rounded ${
                 selectedArtwork.isSold ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'
               }`}>
                 {selectedArtwork.isSold ? 'Sold' : 'Available for Acquisition'}
+              </span>
+            </div>
+
+            {/* Original Artist Price Subtitle */}
+            <div className="text-xs text-neutral-600 border-t border-ivory-300/80 pt-2 font-mono">
+              <span className="text-neutral-500 font-sans">Original Listing Price: </span>
+              <span className="font-semibold text-navy-900">
+                {formatOriginalPrice(selectedArtwork.price, selectedArtwork.currency)} {selectedArtwork.currency}
               </span>
             </div>
 
