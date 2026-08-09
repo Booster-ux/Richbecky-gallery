@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" width="420" height="120">
+  <style>
+    .brand-title { font-family: 'Cinzel', 'Playfair Display', serif; font-size: 32px; font-weight: 600; fill: #0F2537; letter-spacing: 2px; }
+    .brand-sub { font-family: 'Inter', sans-serif; font-size: 26px; font-weight: 800; fill: #0F2537; letter-spacing: 6px; }
+  </style>
+
+  <!-- Official Richbecky Gallery Emblem (RB Monogram) -->
+  <g transform="translate(15, 10) scale(0.75)">
+    <!-- Gold B Outline Curve -->
+    <path d="M 30 20 L 70 20 C 88 20 98 35 92 55 C 85 70 70 75 52 75 C 75 75 92 90 85 110 C 78 128 58 132 25 132 Z" fill="none" stroke="#C5A059" stroke-width="7" stroke-linejoin="round"/>
+    
+    <!-- Deep Navy R Graceful Swoosh -->
+    <path d="M 45 10 C 25 45 18 85 28 125 C 38 80 60 55 82 32 C 70 50 48 85 68 132" fill="none" stroke="#0F2537" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="145" y="58" class="brand-title">RICHBECKY</text>
+  <text x="145" y="94" class="brand-sub">GALLERY</text>
+</svg>

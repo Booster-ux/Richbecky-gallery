@@ -13,6 +13,8 @@ import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CustomerAccountPage } from './pages/CustomerAccountPage';
 import { WishlistPage } from './pages/WishlistPage';
+import { AboutPage } from './pages/AboutPage';
+import { JournalPage } from './pages/JournalPage';
 import { ArtistRegisterPage } from './pages/ArtistRegisterPage';
 import { ArtistDashboardPage } from './pages/ArtistDashboardPage';
 import { AddArtworkPage } from './pages/AddArtworkPage';
@@ -40,6 +42,10 @@ const AppContent: React.FC = () => {
         return <CustomerAccountPage />;
       case 'wishlist':
         return <WishlistPage />;
+      case 'about':
+        return <AboutPage />;
+      case 'journal':
+        return <JournalPage />;
       case 'artist-register':
         return <ArtistRegisterPage />;
       case 'artist-dashboard':

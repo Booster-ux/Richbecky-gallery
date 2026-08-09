@@ -27,7 +27,7 @@ export const AddArtworkPage: React.FC = () => {
       title,
       artistId: 'artist-1',
       artistName: 'Rebecca Esho',
-      artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
+      artistAvatar: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
       type,
       category,
       medium,

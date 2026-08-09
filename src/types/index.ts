@@ -126,6 +126,8 @@ export type ActivePage =
   | 'checkout'
   | 'account'
   | 'wishlist'
+  | 'about'
+  | 'journal'
   | 'artist-register'
   | 'artist-dashboard'
   | 'add-artwork'

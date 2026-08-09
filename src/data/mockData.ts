@@ -1,6 +1,6 @@
 import { Artwork, Artist, Category, Order, User } from '../types';
 
-export const LOGO_URL = 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786281072344.png';
+export const LOGO_URL = '/logo.svg';
 
 export const INITIAL_ARTWORKS: Artwork[] = [
   {
@@ -8,7 +8,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     title: 'ISEMBAYE',
     artistId: 'artist-1',
     artistName: 'Rebecca Esho',
-    artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
+    artistAvatar: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
     type: 'Original',
     category: 'Figurative',
     medium: 'Oil, Traditional Beading & Fabric Collage on Canvas',
@@ -20,9 +20,9 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     isSold: false,
     isFeatured: true,
     isNewArrival: true,
-    imageUrl: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=85',
     additionalImages: [
-      'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg'
+      'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=85'
     ],
     description: 'ISEMBAYE is a visual tribute to the resilience of Africa. It tells the story of a continent that has endured centuries of hardship, exploitation, and adversity, yet has never lost its spirit.\n\nDespite the weight of history, Africa continues to rise with courage, strength, and unwavering hope. Every challenge has become a testament to the endurance of its people, whose determination refuses to be broken.\n\nThis artwork celebrates the unyielding character of Africa—its ability to withstand pain, preserve its identity, and keep moving forward. ISEMBAYE is a reminder that true strength is not found in a life without struggles, but in the courage to rise after every fall.',
     certificateIncluded: true,
@@ -34,7 +34,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     title: 'THIS IS OUR WAY',
     artistId: 'artist-1',
     artistName: 'Rebecca Esho',
-    artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
+    artistAvatar: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
     type: 'Original',
     category: 'Figurative',
     medium: 'Oil on Canvas',
@@ -46,9 +46,9 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     isSold: false,
     isFeatured: true,
     isNewArrival: true,
-    imageUrl: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288739763.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=85',
     additionalImages: [
-      'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288739763.jpg'
+      'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=85'
     ],
     description: 'I paint this because we must not forget.\n\nHe stands in the land that belongs to us — dressed in the woven stripes of who we are, the kijipa, the old cloth of our fathers, worn close to the skin where no foreign hand can reach. Around his neck are the sacred marks of our lineage. In his hands, the beaded crown — carried from one generation to the next, not as decoration, but as declaration of who holds authority over this land. A small blue bird rests against him — a quiet messenger between us and those who came before us.\n\nOne eye sees what is in front of him. The other eye, luminous and wide open, looks inward — into our memory, into our ancestry, into everything that was nearly stolen from us.\n\nBehind him stand the mud walls of our home. The earth that bore us. The ground that was never truly surrendered, no matter what they said.\n\nThey came. They placed their own people in charge to rule over us. They told us our ways were worthless — that the beaded crown, the cloth of our fathers, the pride of Odua, the morning call of Ilé Karo Ojire — that these things had no value. Some of us believed them. Some of us traded our ancestral garment for their fashion, forgetting that underneath every new garment, we are still wearing the kijipa. We are still us.\n\nBut nothing changed what we are. We are Odua\'s children. We are black. We are one. Our culture did not die — it waited. And now we choose to come back to it, not with shame, but with pride. We are not bastards of this soil. We resist. We return. We decolonize — not just our land, but our minds.\n\nWe will never trade the way of our fathers to anyone. This is us. This has always been us.',
     certificateIncluded: true,
@@ -60,7 +60,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     title: 'THE FIRST DIALOGUE',
     artistId: 'artist-3',
     artistName: 'Kolawole Adedeji',
-    artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288845976.jpg',
+    artistAvatar: 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=400&q=80',
     type: 'Original',
     category: 'Figurative',
     medium: 'Oil on Canvas',
@@ -72,9 +72,9 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     isSold: false,
     isFeatured: true,
     isNewArrival: true,
-    imageUrl: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288845976.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85',
     additionalImages: [
-      'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288845976.jpg'
+      'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85'
     ],
     description: 'The First Dialogue reflects on the historic encounter between Europeans and the indigenous people of Africa, particularly within what is now Nigeria. It explores the moment when conversations began that would profoundly shape the continent\'s history.\n\nThe painting expresses the idea that the intentions behind those early meetings were not fully understood by our ancestors. What appeared to be an exchange of knowledge and faith eventually led to lasting political, economic, and cultural changes that transformed African societies.\n\nThe striking yellow line running through the composition symbolizes the boundary where that first dialogue took place. It is more than a visual element—it represents the dividing line between Africa\'s past and the new reality that followed. It marks the moment when history changed direction.\n\nInspired by the words often attributed to Jomo Kenyatta:\n\n«"When the missionaries arrived, the Africans had the land and the missionaries had the Bible. They taught us to pray with our eyes closed. When we opened them, they had the land and we had the Bible."»\n\nThis artwork is also a call to preserve Africa\'s cultural identity. Languages may fade, traditions may evolve, but culture remains the strongest expression of who we are and where we come from. As long as The First Dialogue exists, that defining conversation—and the lessons it carries—will continue to inspire reflection for generations to come.',
     certificateIncluded: true,
@@ -86,7 +86,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     title: 'UNDER OUR NEW GARMENT',
     artistId: 'artist-3',
     artistName: 'Kolawole Adedeji',
-    artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288845976.jpg',
+    artistAvatar: 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=400&q=80',
     type: 'Original',
     category: 'Figurative',
     medium: 'Oil on Canvas',
@@ -98,9 +98,9 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     isSold: false,
     isFeatured: true,
     isNewArrival: true,
-    imageUrl: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289008243.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=85',
     additionalImages: [
-      'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289008243.jpg'
+      'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=85'
     ],
     description: 'At first glance, you see the bold red hat, the tailored modern jacket, and the bright blue turtleneck. But look closer—that is not the whole story.\n\nUnder Our New Garment is a deeply personal self-portrait and a reflection on the identity of modern Africa. It tells the story of a people who have embraced aspects of the modern world while refusing to abandon the heritage that defines them.\n\nGrowing up, my father sewed traditional clothing for our family. Today, although I wear contemporary fashion, I carry those memories and values with me. Beneath every new garment lies an older identity that continues to shape who I am.\n\nThe cowrie shells resting on my chest are far more than ornaments. Throughout West and Central Africa, they have symbolized wealth, spirituality, wisdom, prosperity, and a sacred connection to our ancestors. They represent a cultural inheritance that cannot be replaced by changing fashions or modern lifestyles.\n\nThe modern clothing symbolizes education, globalization, technology, and the opportunities of today\'s world. The cowries remind us that progress should never require the loss of our identity. We can embrace the future without abandoning the traditions, stories, and values that gave us life.\n\nUnder Our New Garment is a visual statement that African identity is layered, resilient, and enduring. It challenges viewers to reflect on the balance between cultural evolution and cultural preservation.\n\nProgress does not mean forgetting. It means carrying your roots with pride as you move forward.\n\nWhat are you wearing under your new garment?',
     certificateIncluded: true,
@@ -112,7 +112,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     title: 'Thought of Hope',
     artistId: 'artist-5',
     artistName: 'Okunlola Olamilekan J (Palette)',
-    artistAvatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289110407.jpg',
+    artistAvatar: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=400&q=80',
     type: 'Original',
     category: 'Figurative',
     medium: 'Oil Paint on Canvas',
@@ -124,9 +124,9 @@ export const INITIAL_ARTWORKS: Artwork[] = [
     isSold: false,
     isFeatured: true,
     isNewArrival: true,
-    imageUrl: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289110407.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=1200&q=85',
     additionalImages: [
-      'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289110407.jpg'
+      'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=1200&q=85'
     ],
     description: 'This art piece signifies the suffering, tormenting, and challenging lives of the less privileged in Nigeria and Africa as a whole study, where the rich stay greedy and the poor stay in need, and leaders keep taking without returning or maintaining the sources for the benefit of society...\n\nThey said education is the key to success, but they changed the padlock.\nThey said young ones are the leaders of tomorrow, but the seat became family property.\n\nThey become obstacles, killing dreams and wasting the time of their own people.\n\nThe question now is: Is there hope in tomorrow? Is it truly going to be alright?...',
     certificateIncluded: true,
@@ -139,8 +139,8 @@ export const ARTISTS: Artist[] = [
   {
     id: 'artist-1',
     name: 'Rebecca Esho',
-    avatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
-    coverImage: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
+    avatar: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=85',
     bio: 'Rebecca Esho is a celebrated contemporary African artist specializing in mixed media, traditional beading, and figurative oil portraiture celebrating African heritage, identity, and resilience.',
     country: 'Nigeria / Africa',
     exhibitionsCount: 16,
@@ -169,8 +169,8 @@ export const ARTISTS: Artist[] = [
   {
     id: 'artist-3',
     name: 'Kolawole Adedeji',
-    avatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288845976.jpg',
-    coverImage: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288845976.jpg',
+    avatar: 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=400&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85',
     bio: 'Kolawole Adedeji is a distinguished contemporary Nigerian visual artist whose figurative oil compositions interrogate pre-colonial African sovereignty, historical encounters, and cultural preservation.',
     country: 'Nigeria',
     exhibitionsCount: 14,
@@ -198,8 +198,8 @@ export const ARTISTS: Artist[] = [
   {
     id: 'artist-5',
     name: 'Okunlola Olamilekan J (Palette)',
-    avatar: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289110407.jpg',
-    coverImage: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786289110407.jpg',
+    avatar: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=400&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=1200&q=85',
     bio: 'Okunlola Olamilekan J (Palette) is an emotive Nigerian oil painter whose narrative figurative works address economic justice, youth advocacy, and social resilience across Africa.',
     country: 'Nigeria',
     exhibitionsCount: 11,
@@ -217,35 +217,35 @@ export const CATEGORIES: Category[] = [
     id: 'cat-1',
     name: 'Abstract',
     count: 14,
-    image: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/artwork_1_blue_gold_1786281890336.png',
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80',
     description: 'Expressive color harmonies, geometric structures, and rich tactile textures.'
   },
   {
     id: 'cat-2',
     name: 'Minimalist',
     count: 9,
-    image: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/artwork_2_architectural_1786281919518.png',
+    image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80',
     description: 'Restrained compositions celebrating subtle form, balance, and quiet space.'
   },
   {
     id: 'cat-3',
     name: 'Figurative',
     count: 16,
-    image: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/media__1786288555178.jpg',
+    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
     description: 'Evocative human portraiture and modern narrative representations.'
   },
   {
     id: 'cat-4',
     name: 'Sculpture',
     count: 11,
-    image: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/artwork_4_sculpture_1786281959649.png',
+    image: 'https://images.unsplash.com/photo-1561839561-213b1be4b84a?auto=format&fit=crop&w=800&q=80',
     description: 'Three-dimensional masterpieces in bronze, Carrara marble, and mixed metals.'
   },
   {
     id: 'cat-5',
     name: 'Landscape',
     count: 8,
-    image: 'file:///C:/Users/USER/.gemini/antigravity-ide/brain/5b32ac2c-1f43-4c28-a05b-5c9dd91dbad7/artwork_5_landscape_1786282131924.png',
+    image: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=800&q=80',
     description: 'Atmospheric vistas, mist-laden horizons, and serene natural horizons.'
   }
 ];
