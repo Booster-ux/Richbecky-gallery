@@ -265,7 +265,7 @@ export const Header: React.FC = () => {
               {isAuthenticated && currentUser?.avatar ? (
                 <img
                   src={currentUser.avatar}
-                  alt={currentUser.name}
+                  alt={currentUser?.name || 'Account'}
                   className="w-8 h-8 rounded-full object-cover border border-gold-400"
                 />
               ) : (

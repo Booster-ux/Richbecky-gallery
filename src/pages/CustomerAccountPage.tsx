@@ -22,6 +22,7 @@ import { Address } from '../types';
 export const CustomerAccountPage: React.FC = () => {
   const {
     currentUser,
+    logout,
     orders,
     wishlist,
     setActivePage,
@@ -38,13 +39,18 @@ export const CustomerAccountPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<CustomerTab>('overview');
   const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<any | null>(null);
 
+  const userName = currentUser?.name || 'Collector Patron';
+  const userEmail = currentUser?.email || 'collector@richbeckygallery.com';
+  const userPhone = currentUser?.phone || '+44 20 7946 0912';
+  const userAvatar = currentUser?.avatar || '/images/artworks/isembaye.jpg';
+
   // Address book local state
   const customerProfile = customers[0];
   const [addresses, setAddresses] = useState<Address[]>(customerProfile?.addresses || [
     {
       id: 'addr-1',
       label: 'Primary Residence',
-      fullName: currentUser.name,
+      fullName: userName,
       addressLine: '14 Mayfair Gardens, Grosvenor Square',
       city: 'London',
       country: 'United Kingdom',
@@ -64,7 +70,7 @@ export const CustomerAccountPage: React.FC = () => {
       const newAddr: Address = {
         id: `addr-${Date.now()}`,
         label: 'Additional Vault Residence',
-        fullName: currentUser.name,
+        fullName: userName,
         addressLine: newAddressLine,
         city: newCity,
         country: newCountry,
@@ -85,8 +91,7 @@ export const CustomerAccountPage: React.FC = () => {
   };
 
   const handleLogout = () => {
-    showToast('Signed out of collector session.', 'info');
-    setActivePage('home');
+    logout();
   };
 
   return (
@@ -96,14 +101,14 @@ export const CustomerAccountPage: React.FC = () => {
       <div className="bg-navy-950 text-ivory-100 p-8 rounded-2xl border border-gold-500/30 shadow-gallery flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <img
-            src={currentUser.avatar}
-            alt={currentUser.name}
+            src={userAvatar}
+            alt={userName}
             className="w-20 h-20 rounded-full object-cover border-2 border-gold-400"
           />
           <div>
             <span className="text-gold-400 text-xs font-bold uppercase tracking-widest block">VIP Patron Collector</span>
-            <h1 className="font-serif text-2xl font-bold text-white mt-0.5">{currentUser.name}</h1>
-            <p className="text-xs text-neutral-300 font-light">{currentUser.email} • {currentUser.phone}</p>
+            <h1 className="font-serif text-2xl font-bold text-white mt-0.5">{userName}</h1>
+            <p className="text-xs text-neutral-300 font-light">{userEmail} • {userPhone}</p>
           </div>
         </div>
 

@@ -4,7 +4,7 @@ import { Lock, ShieldCheck, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { LOGO_URL } from '../data/mockData';
 
 export const AdminLoginPage: React.FC = () => {
-  const { setCurrentUserRole, setActivePage, showToast } = useGallery();
+  const { loginAdmin } = useGallery();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -13,12 +13,9 @@ export const AdminLoginPage: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulated authentic authentication flow ready for backend API integration
     setTimeout(() => {
       setIsSubmitting(false);
-      setCurrentUserRole('admin');
-      setActivePage('admin-dashboard');
-      showToast('Authenticated successfully. Welcome to Executive Governance Console.', 'success');
+      loginAdmin(email, password);
     }, 600);
   };
 

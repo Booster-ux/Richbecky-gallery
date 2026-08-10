@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { Palette, ArrowRight } from 'lucide-react';
 
 export const ArtistRegisterPage: React.FC = () => {
-  const { setActivePage, showToast, setCurrentUserRole } = useGallery();
+  const { setActivePage, showToast, submitArtistApplication } = useGallery();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -24,9 +24,21 @@ export const ArtistRegisterPage: React.FC = () => {
       return;
     }
 
-    showToast('Artist Representation Application Submitted! Switching to Artist Dashboard.', 'success');
-    setCurrentUserRole('artist');
-    setActivePage('artist-dashboard');
+    submitArtistApplication({
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      country: 'Nigeria',
+      city: 'Lagos',
+      website: formData.website,
+      instagram: formData.instagram,
+      artistName: formData.fullName,
+      bio: formData.bio,
+      mediums: 'Oil & Mixed Media',
+      yearsActive: 5,
+      portfolioImages: ['/images/artworks/isembaye.jpg'],
+      agreedToTerms: true
+    });
   };
 
   return (
@@ -166,7 +178,7 @@ export const ArtistRegisterPage: React.FC = () => {
           type="submit"
           className="w-full py-4 bg-navy-900 hover:bg-gold-500 hover:text-navy-950 text-white rounded font-semibold text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2"
         >
-          Submit Application & Launch Artist Dashboard <ArrowRight className="w-4 h-4" />
+          Submit Representation Application <ArrowRight className="w-4 h-4" />
         </button>
 
       </form>

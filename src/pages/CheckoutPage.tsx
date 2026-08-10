@@ -9,9 +9,9 @@ export const CheckoutPage: React.FC = () => {
   const grandTotal = cartTotal + shippingFee;
 
   const [shippingInfo, setShippingInfo] = useState({
-    fullName: currentUser.name || 'Lady Rebecca Sterling',
-    email: currentUser.email || 'rebecca.sterling@artcollector.com',
-    phone: currentUser.phone || '+44 20 7946 0912',
+    fullName: currentUser?.name || 'Lady Rebecca Sterling',
+    email: currentUser?.email || 'rebecca.sterling@artcollector.com',
+    phone: currentUser?.phone || '+44 20 7946 0912',
     address: '14 Mayfair Gardens, Grosvenor Square',
     city: 'London',
     country: 'United Kingdom',
