@@ -78,7 +78,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
   {
     id: 'art-3',
     title: 'THE FIRST DIALOGUE',
-    artistId: 'artist-3',
+    artistId: 'artist-2',
     artistName: 'Kolawole Adedeji',
     artistAvatar: '/images/artworks/the_first_dialogue.jpg',
     type: 'Original',
@@ -108,7 +108,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
   {
     id: 'art-4',
     title: 'UNDER OUR NEW GARMENT',
-    artistId: 'artist-3',
+    artistId: 'artist-2',
     artistName: 'Kolawole Adedeji',
     artistAvatar: '/images/artworks/the_first_dialogue.jpg',
     type: 'Original',
@@ -138,7 +138,7 @@ export const INITIAL_ARTWORKS: Artwork[] = [
   {
     id: 'art-5',
     title: 'Thought of Hope',
-    artistId: 'artist-5',
+    artistId: 'artist-3',
     artistName: 'Okunlola Olamilekan J (Palette)',
     artistAvatar: '/images/artworks/thought_of_hope.jpg',
     type: 'Original',
@@ -167,16 +167,17 @@ export const INITIAL_ARTWORKS: Artwork[] = [
   }
 ];
 
+// ONLY the 3 REAL artists represented by the 5 real artworks
 export const ARTISTS: Artist[] = [
   {
     id: 'artist-1',
     name: 'Rebecca Esho',
     avatar: '/images/artworks/isembaye.jpg',
     coverImage: '/images/artworks/isembaye.jpg',
-    bio: 'Rebecca Esho is a celebrated contemporary African artist specializing in mixed media, traditional beading, and figurative oil portraiture celebrating African heritage, identity, and resilience.',
-    country: 'Nigeria / Africa',
-    exhibitionsCount: 16,
-    artworksCount: 12,
+    bio: 'Rebecca Esho is a celebrated contemporary African visual artist specializing in mixed media, traditional beading, and figurative oil portraiture celebrating African heritage, identity, and resilience.',
+    country: 'Nigeria',
+    exhibitionsCount: 0,
+    artworksCount: 2,
     isFollowed: true,
     commissionRate: 15,
     status: 'Active',
@@ -187,30 +188,13 @@ export const ARTISTS: Artist[] = [
   },
   {
     id: 'artist-2',
-    name: 'Marcus Vance',
-    avatar: '/images/artworks/this_is_our_way.jpg',
-    coverImage: '/images/artworks/this_is_our_way.jpg',
-    bio: 'Marcus Vance explores minimalist architectural geometry and atmospheric light play. His fine art archival photography has been featured in international gallery solos.',
-    country: 'United Kingdom',
-    exhibitionsCount: 12,
-    artworksCount: 9,
-    isFollowed: false,
-    commissionRate: 15,
-    status: 'Active',
-    socialLinks: {
-      website: 'https://marcusvance.co.uk',
-      instagram: '@marcusvance_studio'
-    }
-  },
-  {
-    id: 'artist-3',
     name: 'Kolawole Adedeji',
     avatar: '/images/artworks/the_first_dialogue.jpg',
     coverImage: '/images/artworks/the_first_dialogue.jpg',
-    bio: 'Kolawole Adedeji is a distinguished contemporary Nigerian visual artist whose figurative oil compositions interrogate pre-colonial African sovereignty and cultural preservation.',
+    bio: 'Kolawole Adedeji is a distinguished contemporary Nigerian visual artist whose figurative oil compositions interrogate pre-colonial African sovereignty, historical encounters, and cultural preservation.',
     country: 'Nigeria',
-    exhibitionsCount: 14,
-    artworksCount: 10,
+    exhibitionsCount: 0,
+    artworksCount: 2,
     isFollowed: true,
     commissionRate: 15,
     status: 'Active',
@@ -220,30 +204,14 @@ export const ARTISTS: Artist[] = [
     }
   },
   {
-    id: 'artist-4',
-    name: 'Henri Dupont',
-    avatar: '/images/artworks/under_our_new_garment.jpg',
-    coverImage: '/images/artworks/under_our_new_garment.jpg',
-    bio: 'Working from Paris, Henri Dupont sculpts fluid organic forms in bronze, marble, and polished steel.',
-    country: 'France',
-    exhibitionsCount: 15,
-    artworksCount: 11,
-    isFollowed: false,
-    commissionRate: 15,
-    status: 'Active',
-    socialLinks: {
-      instagram: '@henridupont_sculpture'
-    }
-  },
-  {
-    id: 'artist-5',
+    id: 'artist-3',
     name: 'Okunlola Olamilekan J (Palette)',
     avatar: '/images/artworks/thought_of_hope.jpg',
     coverImage: '/images/artworks/thought_of_hope.jpg',
-    bio: 'Okunlola Olamilekan J (Palette) is an emotive Nigerian oil painter whose narrative figurative works address economic justice and youth advocacy across Africa.',
+    bio: 'Okunlola Olamilekan J (Palette) is an emotive Nigerian oil painter whose narrative figurative works address economic justice, youth advocacy, and social resilience across Africa.',
     country: 'Nigeria',
-    exhibitionsCount: 11,
-    artworksCount: 8,
+    exhibitionsCount: 0,
+    artworksCount: 1,
     isFollowed: false,
     commissionRate: 15,
     status: 'Active',
@@ -254,212 +222,61 @@ export const ARTISTS: Artist[] = [
   }
 ];
 
+// Categories matching the 5 real artworks
 export const CATEGORIES: Category[] = [
   {
     id: 'cat-1',
-    name: 'Abstract',
-    count: 14,
+    name: 'Figurative',
+    count: 5,
     image: '/images/artworks/isembaye.jpg',
-    description: 'Expressive color harmonies, geometric structures, and rich tactile textures.'
+    description: 'Evocative African portraiture, historical narratives, and indigenous cultural identity.'
   },
   {
     id: 'cat-2',
-    name: 'Minimalist',
-    count: 9,
-    image: '/images/artworks/this_is_our_way.jpg',
-    description: 'Restrained compositions celebrating subtle form, balance, and quiet space.'
+    name: 'Abstract',
+    count: 0,
+    image: '/images/artworks/the_first_dialogue.jpg',
+    description: 'Expressive color harmonies, geometric structures, and rich tactile textures.'
   },
   {
     id: 'cat-3',
-    name: 'Figurative',
-    count: 16,
-    image: '/images/artworks/the_first_dialogue.jpg',
-    description: 'Evocative human portraiture and modern narrative representations.'
-  },
-  {
-    id: 'cat-4',
-    name: 'Sculpture',
-    count: 11,
-    image: '/images/artworks/under_our_new_garment.jpg',
-    description: 'Three-dimensional masterpieces in bronze, Carrara marble, and mixed metals.'
-  },
-  {
-    id: 'cat-5',
     name: 'Landscape',
-    count: 8,
+    count: 0,
     image: '/images/artworks/thought_of_hope.jpg',
-    description: 'Atmospheric vistas, mist-laden horizons, and serene natural horizons.'
+    description: 'Atmospheric vistas, natural horizons, and environmental reflections.'
   }
 ];
 
 export const MOCK_USER: User = {
   id: 'user-101',
-  name: 'Lady Rebecca Sterling',
-  email: 'rebecca.sterling@artcollector.com',
-  phone: '+44 20 7946 0912',
+  name: 'Richbecky Collector',
+  email: 'collector@richbeckygallery.com',
+  phone: '+234 800 RICHBECKY',
   role: 'customer',
   avatar: '/images/artworks/isembaye.jpg',
-  bio: 'Private art collector & patron of contemporary abstract expressionism.'
+  bio: 'Patron of contemporary African visual art & culture.'
 };
 
-export const MOCK_CUSTOMERS: CustomerProfile[] = [
-  {
-    id: 'cust-1',
-    name: 'Lady Rebecca Sterling',
-    email: 'rebecca.sterling@artcollector.com',
-    phone: '+44 20 7946 0912',
-    vipStatus: 'VIP Patron Collector',
-    totalSpend: 14850,
-    orderCount: 4,
-    wishlistCount: 6,
-    addresses: [
-      {
-        id: 'addr-1',
-        label: 'Primary Mayfair Residence',
-        fullName: 'Lady Rebecca Sterling',
-        addressLine: '14 Mayfair Gardens, Grosvenor Square',
-        city: 'London',
-        country: 'United Kingdom',
-        zipCode: 'W1K 6JP',
-        isDefault: true
-      }
-    ]
-  },
-  {
-    id: 'cust-2',
-    name: 'Chief Babatunde Alabi',
-    email: 'babatunde.alabi@lagosgroup.ng',
-    phone: '+234 803 123 4567',
-    vipStatus: 'Senior Collector Patron',
-    totalSpend: 28500,
-    orderCount: 6,
-    wishlistCount: 12,
-    addresses: [
-      {
-        id: 'addr-2',
-        label: 'Ikoyi Private Residence',
-        fullName: 'Chief Babatunde Alabi',
-        addressLine: '22 Bourdillon Road',
-        city: 'Ikoyi, Lagos',
-        country: 'Nigeria',
-        zipCode: '101233',
-        isDefault: true
-      }
-    ]
-  }
-];
-
-export const MOCK_ORDERS: Order[] = [
-  {
-    id: 'RBG-88402',
-    date: '2026-07-28',
-    items: [{ artwork: INITIAL_ARTWORKS[0], quantity: 1 }],
-    subtotal: 365,
-    shippingFee: 50,
-    total: 415,
-    displayCurrency: 'USD',
-    shippingInfo: {
-      fullName: 'Lady Rebecca Sterling',
-      email: 'rebecca.sterling@artcollector.com',
-      phone: '+44 20 7946 0912',
-      address: '14 Mayfair Gardens, Grosvenor Square',
-      city: 'London',
-      country: 'United Kingdom',
-      zipCode: 'W1K 6JP'
-    },
-    paymentMethod: 'Card',
-    status: 'Delivered',
-    trackingNumber: 'DHL-994821034'
-  },
-  {
-    id: 'RBG-88319',
-    date: '2026-06-15',
-    items: [{ artwork: INITIAL_ARTWORKS[1], quantity: 1 }],
-    subtotal: 250000,
-    shippingFee: 15000,
-    total: 265000,
-    displayCurrency: 'NGN',
-    shippingInfo: {
-      fullName: 'Chief Babatunde Alabi',
-      email: 'babatunde.alabi@lagosgroup.ng',
-      phone: '+234 803 123 4567',
-      address: '22 Bourdillon Road',
-      city: 'Ikoyi, Lagos',
-      country: 'Nigeria',
-      zipCode: '101233'
-    },
-    paymentMethod: 'Bank Transfer',
-    status: 'Shipped',
-    trackingNumber: 'FEDEX-88392019'
-  }
-];
-
-export const MOCK_ENQUIRIES: Enquiry[] = [
-  {
-    id: 'enq-101',
-    customerName: 'Lord Alistair Crawford',
-    customerEmail: 'alistair.crawford@artadvisory.co.uk',
-    customerPhone: '+44 7700 900077',
-    enquiryType: 'Private Collection Advisory',
-    artworkId: 'art-1',
-    artworkTitle: 'ISEMBAYE',
-    message: 'We are curating a private exhibition in Geneva and would like to inquire about private viewing and authenticity provenance documentation for ISEMBAYE.',
-    date: '2026-08-08',
-    status: 'New'
-  },
-  {
-    id: 'enq-102',
-    customerName: 'Dr. Amina Bello',
-    customerEmail: 'amina.bello@culturefoundation.ng',
-    customerPhone: '+234 802 999 8811',
-    enquiryType: 'Artwork Enquiry',
-    artworkId: 'art-3',
-    artworkTitle: 'THE FIRST DIALOGUE',
-    message: 'Interested in acquiring THE FIRST DIALOGUE for our institutional collection in Abuja. Please advise on crating and insured transport logistics.',
-    date: '2026-08-05',
-    status: 'In Progress',
-    replyNotes: 'Curatorial team preparing custom wooden crating specs.'
-  }
-];
-
-export const MOCK_PAYOUTS: Payout[] = [
-  {
-    id: 'pay-701',
-    artistId: 'artist-1',
-    artistName: 'Rebecca Esho',
-    amount: 212500,
-    currency: 'NGN',
-    status: 'Paid',
-    period: '2026-07 (Cycle 2)',
-    payoutMethod: 'Guaranty Trust Bank Wire',
-    date: '2026-07-31'
-  },
-  {
-    id: 'pay-702',
-    artistId: 'artist-3',
-    artistName: 'Kolawole Adedeji',
-    amount: 212500,
-    currency: 'NGN',
-    status: 'Pending',
-    period: '2026-08 (Cycle 1)',
-    payoutMethod: 'First Bank Nigeria Wire',
-    date: '2026-08-15'
-  }
-];
+// Real empty states instead of fabricated demo records
+export const MOCK_CUSTOMERS: CustomerProfile[] = [];
+export const MOCK_ORDERS: Order[] = [];
+export const MOCK_ENQUIRIES: Enquiry[] = [];
+export const MOCK_PAYOUTS: Payout[] = [];
+export const MOCK_ADMIN_NOTIFICATIONS: NotificationItem[] = [];
 
 export const MOCK_FAQS: FAQItem[] = [
   {
     id: 'faq-1',
     category: 'Authenticity',
     question: 'Are all artworks accompanied by an official Certificate of Authenticity?',
-    answer: 'Yes. Every original artwork and fine art print acquired through Richbecky Gallery includes a signed Certificate of Authenticity specifying medium, dimensions, year of creation, artist signature verification, and gallery seal.',
+    answer: 'Yes. Every original artwork acquired through Richbecky Gallery includes a signed Certificate of Authenticity specifying medium, dimensions, year of creation, artist signature verification, and gallery director seal.',
     order: 1
   },
   {
     id: 'faq-2',
     category: 'Shipping',
     question: 'How are fragile oil paintings packaged and shipped internationally?',
-    answer: 'Artworks are crated in custom museum-grade wooden boxes lined with moisture barrier padding. All shipments are fully insured and handled via white-glove international air couriers (DHL / FedEx Express).',
+    answer: 'Artworks are crated in custom museum-grade wooden boxes lined with moisture barrier padding. All shipments are fully insured and handled via white-glove international courier service.',
     order: 2
   },
   {
@@ -492,26 +309,5 @@ export const MOCK_SHIPPING_REGIONS: ShippingRegion[] = [
     fee: 180,
     processingTime: '6-9 Business Days',
     internationalAvailable: true
-  }
-];
-
-export const MOCK_ADMIN_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'notif-1',
-    title: 'New Artwork Submission',
-    message: 'Rebecca Esho submitted a new masterwork: "ISEMBAYE".',
-    type: 'submission',
-    date: '10 mins ago',
-    read: false,
-    targetRole: 'admin'
-  },
-  {
-    id: 'notif-2',
-    title: 'Private Advisory Enquiry',
-    message: 'Lord Alistair Crawford requested private collection consultation.',
-    type: 'enquiry',
-    date: '2 hours ago',
-    read: false,
-    targetRole: 'admin'
   }
 ];

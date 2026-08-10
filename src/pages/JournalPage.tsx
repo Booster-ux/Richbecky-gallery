@@ -11,24 +11,24 @@ export const JournalPage: React.FC = () => {
       title: 'Decolonizing the Canvas: The Symbolic Language of Rebecca Esho',
       date: 'August 2026',
       category: 'Artist Feature',
-      excerpt: 'Exploring how traditional kijipa cloth, cowrie shells, and sacred beading converge to preserve cultural memory and ancestral sovereignty.',
-      image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80'
+      excerpt: 'Exploring how traditional kijipa cloth, cowrie shells, and sacred beading converge in ISEMBAYE and THIS IS OUR WAY to preserve cultural memory and ancestral sovereignty.',
+      image: '/images/artworks/isembaye.jpg'
     },
     {
       id: 'journal-2',
       title: 'The First Dialogue: Colonial Encounters and African Visual History',
-      date: 'July 2026',
+      date: 'August 2026',
       category: 'Curatorial Essay',
-      excerpt: 'Kolawole Adedeji discusses the yellow boundary line running through his seminal composition, reflecting on history and cultural resilience.',
-      image: 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=800&q=80'
+      excerpt: 'Kolawole Adedeji discusses the yellow boundary line running through his seminal composition THE FIRST DIALOGUE, reflecting on history and pre-colonial autonomy.',
+      image: '/images/artworks/the_first_dialogue.jpg'
     },
     {
       id: 'journal-3',
-      title: 'Navigating Multi-Currency Art Acquisition for International Patrons',
-      date: 'June 2026',
-      category: 'Collector Guide',
-      excerpt: 'Understanding exchange rate dynamics, customs documentation, and Certificate verification when building an African contemporary collection.',
-      image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80'
+      title: 'Thought of Hope: Economic Resilience and Youth Advocacy',
+      date: 'August 2026',
+      category: 'Curatorial Essay',
+      excerpt: 'Okunlola Olamilekan J (Palette) interrogates economic hardship and social questions through his narrative masterwork Thought of Hope.',
+      image: '/images/artworks/thought_of_hope.jpg'
     }
   ];
 
@@ -38,7 +38,7 @@ export const JournalPage: React.FC = () => {
       {/* Header */}
       <div className="border-b border-ivory-300 pb-8 text-center max-w-3xl mx-auto space-y-3">
         <span className="text-xs font-semibold text-gold-700 uppercase tracking-widest flex items-center justify-center gap-1.5">
-          <BookOpen className="w-4 h-4" /> The Collector's Journal
+          <BookOpen className="w-4 h-4" /> The Curatorial Journal
         </span>
         <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-navy-900">
           Essays, Curatorial Notes & Artist Dialogues
@@ -53,8 +53,8 @@ export const JournalPage: React.FC = () => {
         {articles.map(article => (
           <article key={article.id} className="bg-white rounded-xl border border-ivory-300 overflow-hidden shadow-subtle hover:shadow-gallery transition duration-300 flex flex-col justify-between">
             <div className="space-y-4 p-6">
-              <div className="aspect-video w-full overflow-hidden rounded-lg">
-                <img src={article.image} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition duration-500" />
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-navy-950/5">
+                <img src={article.image} alt={article.title} className="w-full h-full object-contain hover:scale-105 transition duration-500" />
               </div>
               <div className="space-y-1">
                 <span className="text-[11px] font-semibold text-gold-700 uppercase tracking-wider">{article.category} • {article.date}</span>

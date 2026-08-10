@@ -528,41 +528,51 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              {filteredOrders.map(order => (
-                <div key={order.id} className="border border-ivory-300 rounded-xl p-5 space-y-3 text-xs">
-                  <div className="flex flex-wrap items-center justify-between border-b border-ivory-200 pb-2">
-                    <div>
-                      <span className="font-bold text-navy-950 text-sm">{order.id}</span>
-                      <span className="text-neutral-400 ml-2">Date: {order.date}</span>
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map(order => (
+                  <div key={order.id} className="border border-ivory-300 rounded-xl p-5 space-y-3 text-xs">
+                    <div className="flex flex-wrap items-center justify-between border-b border-ivory-200 pb-2">
+                      <div>
+                        <span className="font-bold text-navy-950 text-sm">{order.id}</span>
+                        <span className="text-neutral-400 ml-2">Date: {order.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Status:</span>
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderFulfillmentStatus)}
+                          className="bg-ivory-200 text-navy-950 font-bold px-2 py-1 rounded border border-ivory-400"
+                        >
+                          <option value="Processing">Processing</option>
+                          <option value="Paid">Paid</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-neutral-500">Status:</span>
-                      <select
-                        value={order.status}
-                        onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderFulfillmentStatus)}
-                        className="bg-ivory-200 text-navy-950 font-bold px-2 py-1 rounded border border-ivory-400"
-                      >
-                        <option value="Processing">Processing</option>
-                        <option value="Paid">Paid</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <span className="font-bold text-navy-950 block">Customer: {order.shippingInfo.fullName}</span>
-                      <p className="text-neutral-600">{order.shippingInfo.address}, {order.shippingInfo.city}, {order.shippingInfo.country}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-bold text-navy-950 text-sm block">Total: {formatPrice(order.total, order.displayCurrency)}</span>
-                      <span className="text-neutral-500">Method: {order.paymentMethod}</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <span className="font-bold text-navy-950 block">Customer: {order.shippingInfo.fullName}</span>
+                        <p className="text-neutral-600">{order.shippingInfo.address}, {order.shippingInfo.city}, {order.shippingInfo.country}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-navy-950 text-sm block">Total: {formatPrice(order.total, order.displayCurrency)}</span>
+                        <span className="text-neutral-500">Method: {order.paymentMethod}</span>
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                  <ShoppingBag className="w-8 h-8 text-neutral-400 mx-auto" />
+                  <h4 className="font-serif text-base font-bold text-navy-950">No Orders Recorded Yet</h4>
+                  <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                    New collector acquisition orders will appear here automatically as checkouts are processed.
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}
@@ -572,36 +582,46 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="space-y-6 bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle">
             <h2 className="font-serif text-xl font-bold text-navy-950">Patron & Collector Directory</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {customers.map(c => (
-                <div key={c.id} className="border border-ivory-300 rounded-xl p-5 space-y-3 text-xs">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-serif text-base font-bold text-navy-950">{c.name}</h3>
-                      <p className="text-neutral-500">{c.email} • {c.phone}</p>
+            {customers.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {customers.map(c => (
+                  <div key={c.id} className="border border-ivory-300 rounded-xl p-5 space-y-3 text-xs">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-serif text-base font-bold text-navy-950">{c.name}</h3>
+                        <p className="text-neutral-500">{c.email} • {c.phone}</p>
+                      </div>
+                      <span className="px-2.5 py-1 bg-gold-100 text-gold-900 font-bold rounded uppercase text-[10px]">
+                        {c.vipStatus}
+                      </span>
                     </div>
-                    <span className="px-2.5 py-1 bg-gold-100 text-gold-900 font-bold rounded uppercase text-[10px]">
-                      {c.vipStatus}
-                    </span>
-                  </div>
 
-                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-ivory-200 text-center">
-                    <div>
-                      <span className="text-neutral-400 text-[10px] uppercase block">Acquisitions</span>
-                      <span className="font-bold text-navy-950">{c.orderCount}</span>
-                    </div>
-                    <div>
-                      <span className="text-neutral-400 text-[10px] uppercase block">Total Spend</span>
-                      <span className="font-bold text-navy-950">${c.totalSpend.toLocaleString()}</span>
-                    </div>
-                    <div>
-                      <span className="text-neutral-400 text-[10px] uppercase block">Wishlist</span>
-                      <span className="font-bold text-navy-950">{c.wishlistCount}</span>
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-ivory-200 text-center">
+                      <div>
+                        <span className="text-neutral-400 text-[10px] uppercase block">Acquisitions</span>
+                        <span className="font-bold text-navy-950">{c.orderCount}</span>
+                      </div>
+                      <div>
+                        <span className="text-neutral-400 text-[10px] uppercase block">Total Spend</span>
+                        <span className="font-bold text-navy-950">${c.totalSpend.toLocaleString()}</span>
+                      </div>
+                      <div>
+                        <span className="text-neutral-400 text-[10px] uppercase block">Wishlist</span>
+                        <span className="font-bold text-navy-950">{c.wishlistCount}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                <UserCheck className="w-8 h-8 text-neutral-400 mx-auto" />
+                <h4 className="font-serif text-base font-bold text-navy-950">No Collector Profiles Recorded Yet</h4>
+                <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                  Registered collectors and VIP patrons will be catalogued here as acquisitions occur.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -655,30 +675,40 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="space-y-6 bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle">
             <h2 className="font-serif text-xl font-bold text-navy-950">Artist Payout Queue</h2>
 
-            <div className="space-y-4 text-xs">
-              {payouts.map(p => (
-                <div key={p.id} className="border border-ivory-300 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <h3 className="font-serif text-base font-bold text-navy-950">{p.artistName}</h3>
-                    <p className="text-neutral-500">Period: {p.period} • Method: {p.payoutMethod}</p>
-                    <span className="font-bold text-navy-950 text-sm block mt-1">{formatOriginalPrice(p.amount, p.currency)} {p.currency}</span>
-                  </div>
+            {payouts.length > 0 ? (
+              <div className="space-y-4 text-xs">
+                {payouts.map(p => (
+                  <div key={p.id} className="border border-ivory-300 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-navy-950">{p.artistName}</h3>
+                      <p className="text-neutral-500">Period: {p.period} • Method: {p.payoutMethod}</p>
+                      <span className="font-bold text-navy-950 text-sm block mt-1">{formatOriginalPrice(p.amount, p.currency)} {p.currency}</span>
+                    </div>
 
-                  <div className="flex items-center gap-3">
-                    <select
-                      value={p.status}
-                      onChange={(e) => updatePayoutStatus(p.id, e.target.value as Payout['status'])}
-                      className="bg-ivory-200 text-navy-950 font-bold px-3 py-1.5 rounded border border-ivory-400"
-                    >
-                      <option value="Pending">Pending</option>
-                      <option value="Processing">Processing</option>
-                      <option value="Paid">Paid</option>
-                      <option value="Failed">Failed</option>
-                    </select>
+                    <div className="flex items-center gap-3">
+                      <select
+                        value={p.status}
+                        onChange={(e) => updatePayoutStatus(p.id, e.target.value as Payout['status'])}
+                        className="bg-ivory-200 text-navy-950 font-bold px-3 py-1.5 rounded border border-ivory-400"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Failed">Failed</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                <CreditCard className="w-8 h-8 text-neutral-400 mx-auto" />
+                <h4 className="font-serif text-base font-bold text-navy-950">No Artist Payouts Pending</h4>
+                <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                  Artist earnings and payout schedules will populate as sales complete.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -687,41 +717,51 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="space-y-6 bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle">
             <h2 className="font-serif text-xl font-bold text-navy-950">Collector Advisory & Enquiries Inbox</h2>
 
-            <div className="space-y-4 text-xs">
-              {enquiries.map(e => (
-                <div key={e.id} className="border border-ivory-300 rounded-xl p-5 space-y-3">
-                  <div className="flex items-center justify-between border-b border-ivory-200 pb-2">
-                    <div>
-                      <span className="font-bold text-navy-950 text-sm">{e.customerName}</span>
-                      <span className="text-neutral-400 ml-2">({e.customerEmail})</span>
+            {enquiries.length > 0 ? (
+              <div className="space-y-4 text-xs">
+                {enquiries.map(e => (
+                  <div key={e.id} className="border border-ivory-300 rounded-xl p-5 space-y-3">
+                    <div className="flex items-center justify-between border-b border-ivory-200 pb-2">
+                      <div>
+                        <span className="font-bold text-navy-950 text-sm">{e.customerName}</span>
+                        <span className="text-neutral-400 ml-2">({e.customerEmail})</span>
+                      </div>
+                      <span className={`px-2.5 py-0.5 rounded font-bold uppercase text-[10px] ${
+                        e.status === 'New' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                      }`}>
+                        {e.status}
+                      </span>
                     </div>
-                    <span className={`px-2.5 py-0.5 rounded font-bold uppercase text-[10px] ${
-                      e.status === 'New' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                    }`}>
-                      {e.status}
-                    </span>
-                  </div>
 
-                  <div className="space-y-1">
-                    <span className="text-gold-700 font-bold uppercase text-[11px] block">{e.enquiryType}</span>
-                    {e.artworkTitle && <p className="text-neutral-500">Artwork Reference: <strong className="text-navy-950">{e.artworkTitle}</strong></p>}
-                    <p className="text-neutral-700 bg-ivory-100 p-3 rounded">{e.message}</p>
-                  </div>
-
-                  {e.replyNotes && (
-                    <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-900">
-                      <strong>Curatorial Notes:</strong> {e.replyNotes}
+                    <div className="space-y-1">
+                      <span className="text-gold-700 font-bold uppercase text-[11px] block">{e.enquiryType}</span>
+                      {e.artworkTitle && <p className="text-neutral-500">Artwork Reference: <strong className="text-navy-950">{e.artworkTitle}</strong></p>}
+                      <p className="text-neutral-700 bg-ivory-100 p-3 rounded">{e.message}</p>
                     </div>
-                  )}
 
-                  <div className="pt-2 flex gap-2">
-                    <button onClick={() => updateEnquiryStatus(e.id, 'Resolved')} className="px-3 py-1.5 bg-emerald-800 text-white font-bold rounded">
-                      Mark Resolved
-                    </button>
+                    {e.replyNotes && (
+                      <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-900">
+                        <strong>Curatorial Notes:</strong> {e.replyNotes}
+                      </div>
+                    )}
+
+                    <div className="pt-2 flex gap-2">
+                      <button onClick={() => updateEnquiryStatus(e.id, 'Resolved')} className="px-3 py-1.5 bg-emerald-800 text-white font-bold rounded">
+                        Mark Resolved
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                <MessageSquare className="w-8 h-8 text-neutral-400 mx-auto" />
+                <h4 className="font-serif text-base font-bold text-navy-950">No Advisory Enquiries Received Yet</h4>
+                <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                  Private curatorial and artwork inquiries submitted by site visitors will arrive here.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

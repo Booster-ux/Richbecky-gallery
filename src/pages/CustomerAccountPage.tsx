@@ -193,57 +193,67 @@ export const CustomerAccountPage: React.FC = () => {
               </h2>
 
               <div className="space-y-6 text-xs">
-                {orders.map(order => (
-                  <div key={order.id} className="border border-ivory-300 rounded-xl p-5 space-y-4">
-                    <div className="flex flex-wrap items-center justify-between border-b border-ivory-200 pb-3">
-                      <div>
-                        <span className="font-bold text-navy-950 text-sm">{order.id}</span>
-                        <span className="text-neutral-400 ml-2">Placed: {order.date}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded font-bold uppercase text-[10px]">
-                          {order.status}
-                        </span>
-                        <button
-                          onClick={() => setSelectedOrderForInvoice(order)}
-                          className="px-3 py-1 bg-navy-950 text-white rounded font-bold text-[11px] flex items-center gap-1"
-                        >
-                          <Printer className="w-3.5 h-3.5" /> Printable Invoice
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Shipment Timeline Progress Bar */}
-                    <div className="p-4 bg-ivory-100 rounded-lg space-y-2 border border-ivory-300">
-                      <span className="font-bold text-navy-950 block text-[11px] uppercase tracking-wider">Shipment Delivery Progress</span>
-                      <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold uppercase">
-                        <div className="text-emerald-800">1. Order Placed</div>
-                        <div className="text-emerald-800">2. Frame Crating</div>
-                        <div className={order.status === 'Shipped' || order.status === 'Delivered' ? 'text-emerald-800' : 'text-neutral-400'}>
-                          3. Air Transit
+                {orders.length > 0 ? (
+                  orders.map(order => (
+                    <div key={order.id} className="border border-ivory-300 rounded-xl p-5 space-y-4">
+                      <div className="flex flex-wrap items-center justify-between border-b border-ivory-200 pb-3">
+                        <div>
+                          <span className="font-bold text-navy-950 text-sm">{order.id}</span>
+                          <span className="text-neutral-400 ml-2">Placed: {order.date}</span>
                         </div>
-                        <div className={order.status === 'Delivered' ? 'text-emerald-800' : 'text-neutral-400'}>
-                          4. Delivered
+                        <div className="flex items-center gap-3">
+                          <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded font-bold uppercase text-[10px]">
+                            {order.status}
+                          </span>
+                          <button
+                            onClick={() => setSelectedOrderForInvoice(order)}
+                            className="px-3 py-1 bg-navy-950 text-white rounded font-bold text-[11px] flex items-center gap-1"
+                          >
+                            <Printer className="w-3.5 h-3.5" /> Printable Invoice
+                          </button>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      {order.items.map(({ artwork, quantity }) => (
-                        <div key={artwork.id} className="flex items-center justify-between py-2 border-b border-ivory-200 last:border-0">
-                          <div className="flex items-center gap-3">
-                            <img src={artwork.imageUrl} alt="" className="w-12 h-14 object-cover rounded border" />
-                            <div>
-                              <span className="font-bold text-navy-950 block">{artwork.title}</span>
-                              <span className="text-neutral-500">{artwork.artistName} • Qty: {quantity}</span>
-                            </div>
+                      {/* Shipment Timeline Progress Bar */}
+                      <div className="p-4 bg-ivory-100 rounded-lg space-y-2 border border-ivory-300">
+                        <span className="font-bold text-navy-950 block text-[11px] uppercase tracking-wider">Shipment Delivery Progress</span>
+                        <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-bold uppercase">
+                          <div className="text-emerald-800">1. Order Placed</div>
+                          <div className="text-emerald-800">2. Frame Crating</div>
+                          <div className={order.status === 'Shipped' || order.status === 'Delivered' ? 'text-emerald-800' : 'text-neutral-400'}>
+                            3. Air Transit
                           </div>
-                          <span className="font-bold text-navy-950">{formatPrice(artwork.price * quantity, artwork.currency)}</span>
+                          <div className={order.status === 'Delivered' ? 'text-emerald-800' : 'text-neutral-400'}>
+                            4. Delivered
+                          </div>
                         </div>
-                      ))}
+                      </div>
+
+                      <div className="space-y-2">
+                        {order.items.map(({ artwork, quantity }) => (
+                          <div key={artwork.id} className="flex items-center justify-between py-2 border-b border-ivory-200 last:border-0">
+                            <div className="flex items-center gap-3">
+                              <img src={artwork.imageUrl} alt="" className="w-12 h-14 object-cover rounded border" />
+                              <div>
+                                <span className="font-bold text-navy-950 block">{artwork.title}</span>
+                                <span className="text-neutral-500">{artwork.artistName} • Qty: {quantity}</span>
+                              </div>
+                            </div>
+                            <span className="font-bold text-navy-950">{formatPrice(artwork.price * quantity, artwork.currency)}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                    <Package className="w-8 h-8 text-neutral-400 mx-auto" />
+                    <h4 className="font-serif text-base font-bold text-navy-950">No Order Acquisitions Recorded Yet</h4>
+                    <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                      Your completed artwork purchases and live shipment tracking progress will appear here.
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}
@@ -354,15 +364,25 @@ export const CustomerAccountPage: React.FC = () => {
               </h2>
 
               <div className="space-y-4 text-xs">
-                {enquiries.map(e => (
-                  <div key={e.id} className="p-4 border border-ivory-300 rounded-xl space-y-2">
-                    <div className="flex justify-between font-bold">
-                      <span className="text-gold-700 uppercase">{e.enquiryType}</span>
-                      <span className="text-neutral-400">{e.date}</span>
+                {enquiries.length > 0 ? (
+                  enquiries.map(e => (
+                    <div key={e.id} className="p-4 border border-ivory-300 rounded-xl space-y-2">
+                      <div className="flex justify-between font-bold">
+                        <span className="text-gold-700 uppercase">{e.enquiryType}</span>
+                        <span className="text-neutral-400">{e.date}</span>
+                      </div>
+                      <p className="text-neutral-700">{e.message}</p>
                     </div>
-                    <p className="text-neutral-700">{e.message}</p>
+                  ))
+                ) : (
+                  <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                    <MessageSquare className="w-8 h-8 text-neutral-400 mx-auto" />
+                    <h4 className="font-serif text-base font-bold text-navy-950">No Advisory Messages Transmitted Yet</h4>
+                    <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                      Inquiries submitted to gallery directors regarding private acquisitions or viewings will appear here.
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}

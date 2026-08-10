@@ -28,11 +28,11 @@ export const ArtistProfilePage: React.FC = () => {
       
       {/* Cover Header */}
       <div className="relative rounded-2xl overflow-hidden bg-navy-900 border border-gold-500/20 shadow-gallery">
-        <div className="h-64 sm:h-80 w-full relative">
+        <div className="h-64 sm:h-80 w-full relative bg-navy-950 p-4">
           <img
-            src={artist.coverImage || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80'}
-            alt=""
-            className="w-full h-full object-cover brightness-75"
+            src={artist.coverImage || artist.avatar}
+            alt={artist.name}
+            className="w-full h-full object-contain brightness-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
         </div>
@@ -106,8 +106,8 @@ export const ArtistProfilePage: React.FC = () => {
           
           <div className="space-y-4 text-xs">
             <div className="flex items-center justify-between border-b border-navy-800 pb-3">
-              <span className="text-neutral-400">Solo & Group Exhibitions</span>
-              <span className="font-bold text-white text-sm">{artist.exhibitionsCount} Internationally</span>
+              <span className="text-neutral-400">Representation Status</span>
+              <span className="font-bold text-white text-sm">Exclusive Gallery Roster</span>
             </div>
 
             <div className="flex items-center justify-between border-b border-navy-800 pb-3">
