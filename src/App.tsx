@@ -20,6 +20,8 @@ import { ArtistDashboardPage } from './pages/ArtistDashboardPage';
 import { AddArtworkPage } from './pages/AddArtworkPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { ContactAdvisoryPage } from './pages/ContactAdvisoryPage';
+import { PolicyPage } from './pages/PolicyPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 
 const AppContent: React.FC = () => {
@@ -57,6 +59,10 @@ const AppContent: React.FC = () => {
         return <AdminLoginPage />;
       case 'admin-dashboard':
         return <AdminDashboardPage />;
+      case 'contact-advisory':
+        return <ContactAdvisoryPage />;
+      case 'policies':
+        return <PolicyPage />;
       case 'order-confirmation':
         return <OrderConfirmationPage />;
       default:

@@ -11,7 +11,8 @@ import {
   Maximize2,
   Calendar,
   Layers,
-  Ruler
+  Ruler,
+  MessageSquare
 } from 'lucide-react';
 import { handleImageError, getProductionImageUrl } from '../services/imageService';
 
@@ -27,7 +28,8 @@ export const ArtworkDetailsPage: React.FC = () => {
     navigateToArtist,
     formatPrice,
     formatOriginalPrice,
-    selectedCurrency
+    selectedCurrency,
+    setSelectedArtworkForEnquiry
   } = useGallery();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -241,6 +243,16 @@ export const ArtworkDetailsPage: React.FC = () => {
             >
               <Heart className={`w-4 h-4 ${inWishlist ? 'fill-current text-gold-600' : ''}`} />
               {inWishlist ? 'Saved in Wishlist' : 'Save to Favorites Wishlist'}
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedArtworkForEnquiry(selectedArtwork);
+                setActivePage('contact-advisory');
+              }}
+              className="w-full py-2.5 rounded font-bold text-xs uppercase tracking-wider transition border border-gold-500/40 bg-navy-950 text-gold-400 hover:bg-gold-500 hover:text-navy-950 flex items-center justify-center gap-2"
+            >
+              <MessageSquare className="w-4 h-4" /> Inquire About Private Viewing & Advisory
             </button>
           </div>
 

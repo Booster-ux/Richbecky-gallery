@@ -127,22 +127,22 @@ export const Footer: React.FC = () => {
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('about')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('contact-advisory')} className="hover:text-gold-400 transition">
                   Contact Advisory
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('about')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('policies')} className="hover:text-gold-400 transition">
                   FAQ & Inquiries
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('about')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('policies')} className="hover:text-gold-400 transition">
                   Shipping & Logistics
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('about')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('policies')} className="hover:text-gold-400 transition">
                   Returns & Guarantees
                 </button>
               </li>
@@ -157,8 +157,8 @@ export const Footer: React.FC = () => {
             © {new Date().getFullYear()} Richbecky Gallery. All rights reserved.
           </div>
           <div className="flex space-x-6 mt-4 sm:mt-0">
-            <a href="#" className="hover:text-neutral-200 transition">Privacy Policy</a>
-            <a href="#" className="hover:text-neutral-200 transition">Terms & Conditions</a>
+            <button onClick={() => setActivePage('policies')} className="hover:text-neutral-200 transition">Privacy Policy</button>
+            <button onClick={() => setActivePage('policies')} className="hover:text-neutral-200 transition">Terms & Conditions</button>
             <button onClick={() => setActivePage('admin-login')} className="hover:text-gold-400 transition text-neutral-500">
               Admin Portal
             </button>

@@ -1,48 +1,65 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { Clock, PlusCircle, ArrowLeft } from 'lucide-react';
-import { CurrencyCode } from '../types';
-import { SUPPORTED_CURRENCIES } from '../services/currencyService';
+import { CurrencyCode, ArtworkType } from '../types';
+import { Upload, Award, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export const AddArtworkPage: React.FC = () => {
-  const { addNewArtwork, setActivePage, categories } = useGallery();
+  const { addNewArtwork, setActivePage, selectedCurrency } = useGallery();
 
   const [title, setTitle] = useState('');
+  const [type, setType] = useState<ArtworkType>('Original');
   const [category, setCategory] = useState('Figurative');
   const [medium, setMedium] = useState('Oil on Canvas');
-  const [dimensions, setDimensions] = useState('30 x 36 inches (76.2 x 91.4 cm)');
+  const [materials, setMaterials] = useState('');
+  const [dimensions, setDimensions] = useState('30 x 36 inches');
   const [year, setYear] = useState(2026);
-  const [type, setType] = useState<'Original' | 'Fine Art Print'>('Original');
   const [price, setPrice] = useState<number>(250000);
   const [currency, setCurrency] = useState<CurrencyCode>('NGN');
   const [stock, setStock] = useState(1);
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('/images/artworks/isembaye.jpg');
+  const [additionalImagesText, setAdditionalImagesText] = useState('');
   const [description, setDescription] = useState('');
-  const [isFeatured, setIsFeatured] = useState(false);
+  const [artistStatement, setArtistStatement] = useState('');
+  const [artworkStory, setArtworkStory] = useState('');
+  const [editionInfo, setEditionInfo] = useState('1-of-1 Original Masterpiece');
+  const [signatureInfo, setSignatureInfo] = useState('Signed & Dated front bottom right');
+  const [shippingInfoNotes, setShippingInfoNotes] = useState('Crated in custom wooden box with insured global air transit');
+  const [certificateIncluded, setCertificateIncluded] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const additionalImages = additionalImagesText
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean);
 
     addNewArtwork({
       title,
       artistId: 'artist-1',
       artistName: 'Rebecca Esho',
-      artistAvatar: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
+      artistAvatar: '/images/artworks/isembaye.jpg',
       type,
       category,
       medium,
+      materials,
       dimensions,
       year,
       price,
       currency,
       stock: type === 'Original' ? 1 : stock,
       isSold: false,
-      isFeatured,
+      isFeatured: false,
       isNewArrival: true,
-      imageUrl,
-      additionalImages: [imageUrl],
+      imageUrl: imageUrl || '/images/artworks/isembaye.jpg',
+      additionalImages: additionalImages.length > 0 ? additionalImages : [imageUrl],
       description,
-      certificateIncluded: type === 'Original'
+      artistStatement,
+      artworkStory,
+      editionInfo,
+      signatureInfo,
+      shippingInfoNotes,
+      certificateIncluded
     });
 
     setActivePage('artist-dashboard');
@@ -51,219 +68,257 @@ export const AddArtworkPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in space-y-8">
       
-      {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-ivory-300 pb-4">
-        <div>
-          <button
-            onClick={() => setActivePage('artist-dashboard')}
-            className="text-xs text-neutral-500 hover:text-navy-900 flex items-center gap-1 mb-1"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Artist Dashboard
-          </button>
-          <h1 className="font-serif text-3xl font-bold text-navy-900">Upload New Artwork</h1>
-        </div>
-
-        {/* Clear Status Badge per Specification */}
-        <div className="bg-amber-50 text-amber-900 border border-amber-300 px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-600" /> Default Status: Pending Admin Approval
-        </div>
+      <div className="border-b border-ivory-300 pb-6">
+        <span className="text-gold-700 text-xs font-bold uppercase tracking-widest block">Studio Submission Workflow</span>
+        <h1 className="font-serif text-3xl font-bold text-navy-950 mt-1">Submit New Masterwork for Exhibition</h1>
+        <p className="text-xs text-neutral-500 font-light mt-1">
+          Submissions undergo curatorial review by gallery directors within 24-48 hours before being published.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-ivory-300 shadow-gallery space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-ivory-300 shadow-gallery space-y-6 text-xs">
         
-        <h2 className="font-serif text-lg font-semibold text-navy-900 border-b border-ivory-200 pb-3">
-          1. Artwork Basic Details
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="sm:col-span-2">
-            <label className="block text-neutral-700 font-medium mb-1">Artwork Title *</label>
+        {/* Basic Details */}
+        <div className="space-y-4">
+          <h3 className="font-serif text-base font-bold text-navy-950 border-b border-ivory-200 pb-2">1. Primary Artwork Specifications</h3>
+          
+          <div>
+            <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Artwork Title *</label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Symphony of Midnight Gold"
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500 font-serif text-sm font-semibold"
+              placeholder="e.g. ISEMBAYE"
+              className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-navy-950 focus:outline-none focus:border-gold-500"
             />
           </div>
 
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">Artwork Type *</label>
-            <div className="grid grid-cols-2 gap-2 bg-ivory-200 p-1 rounded">
-              <button
-                type="button"
-                onClick={() => { setType('Original'); setStock(1); }}
-                className={`py-2 text-xs rounded font-semibold transition ${
-                  type === 'Original' ? 'bg-navy-900 text-gold-400 shadow-sm' : 'text-neutral-600'
-                }`}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Artwork Type</label>
+              <select
+                value={type}
+                onChange={(e) => {
+                  const t = e.target.value as ArtworkType;
+                  setType(t);
+                  if (t === 'Original') setStock(1);
+                }}
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-semibold text-navy-950"
               >
-                Original Artwork
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setType('Fine Art Print')}
-                className={`py-2 text-xs rounded font-semibold transition ${
-                  type === 'Fine Art Print' ? 'bg-navy-900 text-gold-400 shadow-sm' : 'text-neutral-600'
-                }`}
-              >
-                Fine Art Print
-              </button>
+                <option value="Original">Original Artwork (1-of-1)</option>
+                <option value="Fine Art Print">Fine Art Print Series</option>
+              </select>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">Curatorial Category *</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500"
-            >
-              {categories.map(c => (
-                <option key={c.id} value={c.name}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Category</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-semibold text-navy-950"
+              >
+                <option value="Figurative">Figurative</option>
+                <option value="Abstract">Abstract</option>
+                <option value="Minimalist">Minimalist</option>
+                <option value="Sculpture">Sculpture</option>
+                <option value="Landscape">Landscape</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">Medium & Technique *</label>
-            <input
-              type="text"
-              required
-              value={medium}
-              onChange={(e) => setMedium(e.target.value)}
-              placeholder="e.g. Oil, Acrylic & 24K Gold Leaf on Linen"
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">Dimensions (H x W x D) *</label>
-            <input
-              type="text"
-              required
-              value={dimensions}
-              onChange={(e) => setDimensions(e.target.value)}
-              placeholder="100 x 120 cm (39.4 x 47.2 in)"
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">Numerical Listing Price *</label>
-            <input
-              type="number"
-              required
-              min="1"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              placeholder="e.g. 250000"
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500 font-semibold"
-            />
-          </div>
-
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">Original Listing Currency *</label>
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500 font-semibold"
-            >
-              {SUPPORTED_CURRENCIES.map(curr => (
-                <option key={curr.code} value={curr.code}>
-                  {curr.code} ({curr.symbol} - {curr.name})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">
-              Available Quantity / Stock *
-            </label>
-            <input
-              type="number"
-              required
-              disabled={type === 'Original'}
-              min="1"
-              value={type === 'Original' ? 1 : stock}
-              onChange={(e) => setStock(Number(e.target.value))}
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500 disabled:opacity-60"
-            />
-            {type === 'Original' && (
-              <span className="text-[11px] text-gold-700 block mt-1">
-                ✓ Original artwork quantity is locked to 1.
-              </span>
-            )}
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Year of Creation</label>
+              <input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-semibold"
+              />
+            </div>
           </div>
         </div>
 
-        <h2 className="font-serif text-lg font-semibold text-navy-900 border-b border-ivory-200 pb-3 pt-4">
-          2. Imagery & Curatorial Statement
-        </h2>
+        {/* Pricing & Stock */}
+        <div className="space-y-4 pt-4 border-t border-ivory-200">
+          <h3 className="font-serif text-base font-bold text-navy-950 border-b border-ivory-200 pb-2">2. Artist Listing Price & Stock</h3>
 
-        <div className="space-y-4 text-xs">
-          <div>
-            <label className="block text-neutral-700 font-medium mb-1">High-Resolution Image URL *</label>
-            <input
-              type="text"
-              required
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Listing Price *</label>
+              <input
+                type="number"
+                required
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-sm font-bold text-navy-950"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Original Listing Currency *</label>
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-bold text-navy-950"
+              >
+                <option value="NGN">NGN - Nigerian Naira (₦)</option>
+                <option value="USD">USD - US Dollar ($)</option>
+                <option value="GBP">GBP - British Pound (£)</option>
+                <option value="EUR">EUR - Euro (€)</option>
+                <option value="CAD">CAD - Canadian Dollar ($)</option>
+                <option value="AUD">AUD - Australian Dollar ($)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Available Quantity</label>
+              <input
+                type="number"
+                disabled={type === 'Original'}
+                value={type === 'Original' ? 1 : stock}
+                onChange={(e) => setStock(Number(e.target.value))}
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-bold disabled:opacity-60"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Medium & Technical Specs */}
+        <div className="space-y-4 pt-4 border-t border-ivory-200">
+          <h3 className="font-serif text-base font-bold text-navy-950 border-b border-ivory-200 pb-2">3. Physical & Technical Details</h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Primary Medium *</label>
+              <input
+                type="text"
+                required
+                value={medium}
+                onChange={(e) => setMedium(e.target.value)}
+                placeholder="e.g. Oil, Traditional Beading & Fabric Collage on Canvas"
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-navy-950"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Dimensions *</label>
+              <input
+                type="text"
+                required
+                value={dimensions}
+                onChange={(e) => setDimensions(e.target.value)}
+                placeholder="e.g. 30 x 36 inches (76.2 x 91.4 cm)"
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-navy-950"
+              />
+            </div>
           </div>
 
-          {/* Image Preview Box */}
-          {imageUrl && (
-            <div className="p-3 bg-ivory-100 rounded border border-ivory-300 flex items-center gap-4">
-              <img src={imageUrl} alt="Preview" className="w-20 h-24 object-cover rounded shadow" />
-              <div>
-                <span className="font-semibold text-navy-900 block text-xs">Artwork Image Preview</span>
-                <span className="text-[11px] text-neutral-500">Museum-grade photography recommended</span>
-              </div>
-            </div>
-          )}
+          <div>
+            <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Detailed Materials & Pigments</label>
+            <input
+              type="text"
+              value={materials}
+              onChange={(e) => setMaterials(e.target.value)}
+              placeholder="e.g. Heavy Duty Linen Canvas, Windsor Artist-Grade Oil Pigments, Vintage Kijipa Fabric"
+              className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-navy-950"
+            />
+          </div>
+        </div>
+
+        {/* Story & Statements */}
+        <div className="space-y-4 pt-4 border-t border-ivory-200">
+          <h3 className="font-serif text-base font-bold text-navy-950 border-b border-ivory-200 pb-2">4. Curatorial Narrative & Story</h3>
 
           <div>
-            <label className="block text-neutral-700 font-medium mb-1">Full Description / Artist Notes *</label>
+            <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Story Behind the Artwork *</label>
             <textarea
               required
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the conceptual background, symbolism, and physical finish of this work..."
-              className="w-full bg-ivory-100 border border-ivory-300 rounded p-2.5 text-navy-900 focus:outline-none focus:border-gold-500"
+              placeholder="Explain the background, meaning, and inspiration..."
+              className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-navy-950"
             />
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer text-navy-900 pt-2 font-medium">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Artist Statement</label>
+              <input
+                type="text"
+                value={artistStatement}
+                onChange={(e) => setArtistStatement(e.target.value)}
+                placeholder="Short statement regarding your creative vision..."
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Signature Information</label>
+              <input
+                type="text"
+                value={signatureInfo}
+                onChange={(e) => setSignatureInfo(e.target.value)}
+                placeholder="e.g. Signed & Dated bottom right"
+                className="w-full bg-ivory-100 border border-ivory-300 rounded p-3"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Artwork Image Assets */}
+        <div className="space-y-4 pt-4 border-t border-ivory-200">
+          <h3 className="font-serif text-base font-bold text-navy-950 border-b border-ivory-200 pb-2">5. High-Resolution Artwork Image URLs</h3>
+
+          <div>
+            <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Main Image Asset URL *</label>
             <input
-              type="checkbox"
-              checked={isFeatured}
-              onChange={(e) => setIsFeatured(e.target.checked)}
-              className="accent-gold-500 rounded"
+              type="text"
+              required
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="/images/artworks/isembaye.jpg"
+              className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-mono text-navy-950"
             />
-            Request Homepage Exhibition Spotlight Feature
+          </div>
+
+          <div>
+            <label className="font-bold text-navy-950 uppercase tracking-wider block mb-1">Additional Detail Image URLs (one per line)</label>
+            <textarea
+              rows={2}
+              value={additionalImagesText}
+              onChange={(e) => setAdditionalImagesText(e.target.value)}
+              placeholder="/images/artworks/isembaye.jpg"
+              className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 font-mono"
+            />
+          </div>
+        </div>
+
+        {/* Certificate */}
+        <div className="pt-4 border-t border-ivory-200 flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="cert"
+            checked={certificateIncluded}
+            onChange={(e) => setCertificateIncluded(e.target.checked)}
+            className="w-4 h-4 accent-gold-500 rounded"
+          />
+          <label htmlFor="cert" className="font-bold text-navy-950 flex items-center gap-1.5">
+            <Award className="w-4 h-4 text-gold-600" /> Include Signed Certificate of Authenticity with this artwork
           </label>
         </div>
 
-        <div className="pt-4 border-t border-ivory-300 flex items-center justify-between">
-          <div className="text-xs text-neutral-500 flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-amber-600" /> Status after submit: <strong>Pending Admin Approval</strong>
-          </div>
-
+        {/* Submit Button */}
+        <div className="pt-6 flex justify-end">
           <button
             type="submit"
-            className="px-8 py-3.5 bg-navy-900 hover:bg-gold-500 hover:text-navy-950 text-white rounded font-semibold text-xs uppercase tracking-widest transition shadow-md flex items-center gap-2"
+            className="px-9 py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded font-bold text-xs uppercase tracking-widest transition duration-300 shadow-xl flex items-center gap-2"
           >
-            <PlusCircle className="w-4 h-4" /> Submit Artwork for Approval
+            Submit Artwork for Curatorial Review <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
       </form>
-
     </div>
   );
 };

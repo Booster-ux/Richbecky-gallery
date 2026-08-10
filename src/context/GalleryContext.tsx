@@ -9,14 +9,28 @@ import {
   Order,
   FilterState,
   ActivePage,
-  CurrencyCode
+  CurrencyCode,
+  Enquiry,
+  CustomerProfile,
+  Payout,
+  FAQItem,
+  ShippingRegion,
+  NotificationItem,
+  OrderFulfillmentStatus,
+  EnquiryStatus
 } from '../types';
 import {
   INITIAL_ARTWORKS,
   ARTISTS,
   CATEGORIES,
   MOCK_USER,
-  MOCK_ORDERS
+  MOCK_ORDERS,
+  MOCK_ENQUIRIES,
+  MOCK_CUSTOMERS,
+  MOCK_PAYOUTS,
+  MOCK_FAQS,
+  MOCK_SHIPPING_REGIONS,
+  MOCK_ADMIN_NOTIFICATIONS
 } from '../data/mockData';
 import {
   convertPrice,
@@ -38,7 +52,7 @@ interface GalleryContextType {
   navigateToArtwork: (artwork: Artwork) => void;
   navigateToArtist: (artist: Artist) => void;
   
-  // Data
+  // Core Data
   artworks: Artwork[];
   artists: Artist[];
   categories: Category[];
@@ -58,7 +72,7 @@ interface GalleryContextType {
   removeFromCart: (artworkId: string) => void;
   updateCartQuantity: (artworkId: string, quantity: number) => void;
   clearCart: () => void;
-  cartTotal: number; // In selected display currency
+  cartTotal: number;
   cartCount: number;
 
   // Wishlist
@@ -66,7 +80,7 @@ interface GalleryContextType {
   toggleWishlist: (artwork: Artwork) => void;
   isInWishlist: (artworkId: string) => boolean;
 
-  // User & Auth Role (Customer / Artist / Admin)
+  // User & Roles
   currentUser: User;
   setCurrentUserRole: (role: 'customer' | 'artist' | 'admin') => void;
 
@@ -75,15 +89,39 @@ interface GalleryContextType {
   setFilterState: React.Dispatch<React.SetStateAction<FilterState>>;
   resetFilters: () => void;
   
-  // Artist & Admin Workflows
+  // Artist & Admin Artwork Workflows
   addNewArtwork: (artworkData: Omit<Artwork, 'id' | 'createdAt' | 'status'>) => void;
+  updateArtwork: (updatedArtwork: Artwork) => void;
   approveArtwork: (artworkId: string) => void;
   rejectArtwork: (artworkId: string) => void;
+  toggleFeatureArtwork: (artworkId: string) => void;
+  archiveArtwork: (artworkId: string) => void;
   
-  // Orders & Checkout
+  // Orders & Fulfillment
   orders: Order[];
   lastPlacedOrder: Order | null;
   placeOrder: (shippingInfo: any, paymentMethod: 'Card' | 'Bank Transfer') => void;
+  updateOrderStatus: (orderId: string, status: OrderFulfillmentStatus) => void;
+
+  // Enquiries & Advisory
+  enquiries: Enquiry[];
+  addEnquiry: (enquiryData: Omit<Enquiry, 'id' | 'date' | 'status'>) => void;
+  updateEnquiryStatus: (enquiryId: string, status: EnquiryStatus, replyNotes?: string) => void;
+  selectedArtworkForEnquiry: Artwork | null;
+  setSelectedArtworkForEnquiry: (artwork: Artwork | null) => void;
+
+  // Customers & Payouts & FAQ & Shipping Domain Models
+  customers: CustomerProfile[];
+  payouts: Payout[];
+  updatePayoutStatus: (payoutId: string, status: Payout['status']) => void;
+  faqs: FAQItem[];
+  addFAQ: (faq: Omit<FAQItem, 'id'>) => void;
+  updateFAQ: (faq: FAQItem) => void;
+  deleteFAQ: (id: string) => void;
+  shippingRegions: ShippingRegion[];
+  updateShippingRegion: (updatedRegion: ShippingRegion) => void;
+  adminNotifications: NotificationItem[];
+  markNotificationRead: (id: string) => void;
 
   // Toast
   toast: ToastState;
@@ -110,8 +148,8 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(INITIAL_ARTWORKS[0]);
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(ARTISTS[0]);
+  const [selectedArtworkForEnquiry, setSelectedArtworkForEnquiry] = useState<Artwork | null>(null);
 
-  // Selected Customer Currency (persisted in LocalStorage)
   const [selectedCurrency, setSelectedCurrencyState] = useState<CurrencyCode>(() => {
     const savedCurrency = localStorage.getItem('richbecky_customer_currency') as CurrencyCode | null;
     return savedCurrency || detectCustomerCurrency();
@@ -123,14 +161,19 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     showToast(`Display currency changed to ${currency}`, 'info');
   };
   
-  // Load initial state from LocalStorage or fall back to default mock data
   const [artworks, setArtworks] = useState<Artwork[]>(() => {
     const saved = localStorage.getItem('richbecky_artworks');
     return saved ? JSON.parse(saved) : INITIAL_ARTWORKS;
   });
 
-  const [artists, setArtists] = useState<Artist[]>(ARTISTS);
+  const [artists] = useState<Artist[]>(ARTISTS);
   const [categories] = useState<Category[]>(CATEGORIES);
+  const [customers] = useState<CustomerProfile[]>(MOCK_CUSTOMERS);
+  const [enquiries, setEnquiries] = useState<Enquiry[]>(MOCK_ENQUIRIES);
+  const [payouts, setPayouts] = useState<Payout[]>(MOCK_PAYOUTS);
+  const [faqs, setFaqs] = useState<FAQItem[]>(MOCK_FAQS);
+  const [shippingRegions, setShippingRegions] = useState<ShippingRegion[]>(MOCK_SHIPPING_REGIONS);
+  const [adminNotifications, setAdminNotifications] = useState<NotificationItem[]>(MOCK_ADMIN_NOTIFICATIONS);
 
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('richbecky_cart');
@@ -154,7 +197,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     visible: false
   });
 
-  // Sync state to LocalStorage
   useEffect(() => {
     localStorage.setItem('richbecky_artworks', JSON.stringify(artworks));
   }, [artworks]);
@@ -167,7 +209,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('richbecky_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  // Toast Helper
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     setToast({ message, type, visible: true });
     setTimeout(() => {
@@ -179,7 +220,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setToast(prev => ({ ...prev, visible: false }));
   };
 
-  // Currency formatting & conversion helpers
   const formatPrice = (amount: number, fromCurrency: CurrencyCode = 'USD'): string => {
     return formatPriceWithCurrency(amount, fromCurrency, selectedCurrency);
   };
@@ -192,7 +232,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return formatRawAmount(amount, currency);
   };
 
-  // Navigation helpers
   const navigateToArtwork = (artwork: Artwork) => {
     setSelectedArtwork(artwork);
     setActivePage('artwork-detail');
@@ -205,7 +244,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Cart operations with strict artwork type rules
   const addToCart = (artwork: Artwork, requestedQty: number = 1) => {
     if (artwork.isSold) {
       showToast('This artwork has already been acquired.', 'warning');
@@ -224,11 +262,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
 
         const newQty = Math.min(existingItem.quantity + requestedQty, artwork.stock);
-        if (newQty === existingItem.quantity && newQty >= artwork.stock) {
-          showToast(`Maximum available print stock reached (${artwork.stock}).`, 'warning');
-          return prevCart;
-        }
-
         const updated = [...prevCart];
         updated[existingIndex] = { ...existingItem, quantity: newQty };
         showToast(`Updated "${artwork.title}" quantity in cart.`);
@@ -256,7 +289,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       prev.map(item => {
         if (item.artwork.id === artworkId) {
           if (item.artwork.type === 'Original' && newQty > 1) {
-            showToast('Original artwork quantity is restricted to 1.', 'info');
             return { ...item, quantity: 1 };
           }
           const maxAllowed = Math.min(newQty, item.artwork.stock);
@@ -271,7 +303,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCart([]);
   };
 
-  // Calculate cart total in customer's selected display currency
   const cartTotal = cart.reduce((sum, item) => {
     const itemConvertedPrice = convertPrice(item.artwork.price, item.artwork.currency, selectedCurrency);
     return sum + itemConvertedPrice * item.quantity;
@@ -279,7 +310,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Wishlist operations
   const toggleWishlist = (artwork: Artwork) => {
     setWishlist(prev => {
       const exists = prev.some(item => item.artwork.id === artwork.id);
@@ -297,17 +327,15 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return wishlist.some(item => item.artwork.id === artworkId);
   };
 
-  // Switch Role helper
   const setCurrentUserRole = (role: 'customer' | 'artist' | 'admin') => {
     setCurrentUser(prev => ({ ...prev, role }));
-    showToast(`Switched workspace view to: ${role.toUpperCase()}`, 'info');
+    showToast(`Switched view to: ${role.toUpperCase()}`, 'info');
   };
 
   const resetFilters = () => {
     setFilterState(DEFAULT_FILTER_STATE);
   };
 
-  // Artist upload artwork form handling
   const addNewArtwork = (data: Omit<Artwork, 'id' | 'createdAt' | 'status'>) => {
     const newArt: Artwork = {
       ...data,
@@ -320,7 +348,11 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     showToast(`Artwork "${newArt.title}" submitted successfully for Admin Approval!`, 'success');
   };
 
-  // Admin Approval workflows
+  const updateArtwork = (updatedArtwork: Artwork) => {
+    setArtworks(prev => prev.map(a => a.id === updatedArtwork.id ? updatedArtwork : a));
+    showToast(`Updated "${updatedArtwork.title}" specifications.`, 'success');
+  };
+
   const approveArtwork = (artworkId: string) => {
     setArtworks(prev =>
       prev.map(art => (art.id === artworkId ? { ...art, status: 'Approved' } : art))
@@ -335,7 +367,20 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     showToast('Artwork status set to Rejected.', 'warning');
   };
 
-  // Checkout process
+  const toggleFeatureArtwork = (artworkId: string) => {
+    setArtworks(prev =>
+      prev.map(art => (art.id === artworkId ? { ...art, isFeatured: !art.isFeatured } : art))
+    );
+    showToast('Toggled featured status for artwork.', 'info');
+  };
+
+  const archiveArtwork = (artworkId: string) => {
+    setArtworks(prev =>
+      prev.map(art => (art.id === artworkId ? { ...art, status: 'Rejected' } : art))
+    );
+    showToast('Artwork archived.', 'info');
+  };
+
   const placeOrder = (shippingInfo: any, paymentMethod: 'Card' | 'Bank Transfer') => {
     const subtotal = cartTotal;
     const shippingFee = subtotal > getConvertedPrice(3000, 'USD') ? 0 : getConvertedPrice(150, 'USD');
@@ -360,6 +405,60 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setActivePage('order-confirmation');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     showToast('Order confirmed! Receipt generated.', 'success');
+  };
+
+  const updateOrderStatus = (orderId: string, status: OrderFulfillmentStatus) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+    showToast(`Order ${orderId} fulfillment status updated to ${status}.`, 'info');
+  };
+
+  const addEnquiry = (enquiryData: Omit<Enquiry, 'id' | 'date' | 'status'>) => {
+    const newEnq: Enquiry = {
+      ...enquiryData,
+      id: `enq-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+      status: 'New'
+    };
+    setEnquiries(prev => [newEnq, ...prev]);
+    showToast('Your advisory enquiry has been transmitted to Gallery Directors.', 'success');
+  };
+
+  const updateEnquiryStatus = (enquiryId: string, status: EnquiryStatus, replyNotes?: string) => {
+    setEnquiries(prev => prev.map(e => e.id === enquiryId ? { ...e, status, replyNotes: replyNotes || e.replyNotes } : e));
+    showToast(`Enquiry ${enquiryId} status set to ${status}.`, 'info');
+  };
+
+  const updatePayoutStatus = (payoutId: string, status: Payout['status']) => {
+    setPayouts(prev => prev.map(p => p.id === payoutId ? { ...p, status } : p));
+    showToast(`Payout status updated to ${status}.`, 'info');
+  };
+
+  const addFAQ = (faqData: Omit<FAQItem, 'id'>) => {
+    const newFaq: FAQItem = {
+      ...faqData,
+      id: `faq-${Date.now()}`
+    };
+    setFaqs(prev => [...prev, newFaq]);
+    showToast('FAQ item added.', 'success');
+  };
+
+  const updateFAQ = (updatedFaq: FAQItem) => {
+    setFaqs(prev => prev.map(f => f.id === updatedFaq.id ? updatedFaq : f));
+    showToast('FAQ item updated.', 'info');
+  };
+
+  const deleteFAQ = (id: string) => {
+    setFaqs(prev => prev.filter(f => f.id !== id));
+    showToast('FAQ item deleted.', 'warning');
+  };
+
+  const updateShippingRegion = (updatedRegion: ShippingRegion) => {
+    setShippingRegions(prev => prev.map(r => r.id === updatedRegion.id ? updatedRegion : r));
+    showToast('Shipping region settings updated.', 'info');
+  };
+
+  const markNotificationRead = (id: string) => {
+    setAdminNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
 
   return (
@@ -395,11 +494,31 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setFilterState,
         resetFilters,
         addNewArtwork,
+        updateArtwork,
         approveArtwork,
         rejectArtwork,
+        toggleFeatureArtwork,
+        archiveArtwork,
         orders,
         lastPlacedOrder,
         placeOrder,
+        updateOrderStatus,
+        enquiries,
+        addEnquiry,
+        updateEnquiryStatus,
+        selectedArtworkForEnquiry,
+        setSelectedArtworkForEnquiry,
+        customers,
+        payouts,
+        updatePayoutStatus,
+        faqs,
+        addFAQ,
+        updateFAQ,
+        deleteFAQ,
+        shippingRegions,
+        updateShippingRegion,
+        adminNotifications,
+        markNotificationRead,
         toast,
         showToast,
         hideToast
