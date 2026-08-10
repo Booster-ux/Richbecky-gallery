@@ -13,7 +13,7 @@ import {
   Layers,
   Ruler
 } from 'lucide-react';
-import { handleImageError } from '../services/imageService';
+import { handleImageError, getProductionImageUrl } from '../services/imageService';
 
 export const ArtworkDetailsPage: React.FC = () => {
   const {
@@ -88,9 +88,9 @@ export const ArtworkDetailsPage: React.FC = () => {
           {/* Main Large Image Container */}
           <div className="relative aspect-art w-full rounded-xl overflow-hidden bg-ivory-200 border border-ivory-300 shadow-gallery group">
             <img
-              src={galleryImages[activeImageIndex]}
+              src={getProductionImageUrl(galleryImages[activeImageIndex], selectedArtwork.title)}
               alt={selectedArtwork.title}
-              onError={(e) => handleImageError(e)}
+              onError={(e) => handleImageError(e, selectedArtwork.title)}
               className="w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-102"
             />
             

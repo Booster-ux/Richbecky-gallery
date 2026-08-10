@@ -3,7 +3,7 @@ import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { ArrowRight, Sparkles, Award, ShieldCheck, BookOpen, Mail } from 'lucide-react';
 import { LOGO_URL } from '../data/mockData';
-import { handleImageError } from '../services/imageService';
+import { handleImageError, getProductionImageUrl } from '../services/imageService';
 
 export const HomePage: React.FC = () => {
   const {
@@ -81,7 +81,7 @@ export const HomePage: React.FC = () => {
               >
                 <div className="w-full h-[480px] sm:h-[600px] flex items-center justify-center bg-navy-950/60 rounded-lg overflow-hidden">
                   <img
-                    src={featuredHeroArt.imageUrl}
+                    src={getProductionImageUrl(featuredHeroArt.imageUrl, featuredHeroArt.title)}
                     alt={featuredHeroArt.title}
                     onError={(e) => handleImageError(e, featuredHeroArt.title)}
                     className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"

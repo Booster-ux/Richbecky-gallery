@@ -1,5 +1,7 @@
 // Image Service for Richbecky Gallery
-// Production-safe image URL resolution & neutral "Image Unavailable" state
+// Production-safe image URL resolution, cache-busting versioning & neutral "Image Unavailable" state
+
+export const ASSET_VERSION = '1.0.2';
 
 /**
  * Returns a neutral SVG Data URI placeholder when an image is unavailable.
@@ -11,13 +13,15 @@ export function getNeutralImagePlaceholder(title?: string): string {
 }
 
 /**
- * Resolves production-ready image URLs.
- * Maps relative image paths for Vercel deployment.
+ * Resolves production-ready image URLs with automatic cache-busting parameters.
+ * Bypasses stale browser/CDN 404 cache for returning visitors.
  */
 export function getProductionImageUrl(url: string, title?: string): string {
   if (!url) {
     return getNeutralImagePlaceholder(title);
   }
+
+  let finalUrl = url;
 
   // Handle local Windows file:/// paths by mapping to production public paths
   if (url.startsWith('file:///')) {
@@ -25,25 +29,28 @@ export function getProductionImageUrl(url: string, title?: string): string {
     const filename = parts[parts.length - 1];
 
     if (filename.includes('1786288555178') || filename.includes('isembaye')) {
-      return '/images/artworks/isembaye.jpg';
+      finalUrl = '/images/artworks/isembaye.jpg';
+    } else if (filename.includes('1786288739763') || filename.includes('this_is_our_way')) {
+      finalUrl = '/images/artworks/this_is_our_way.jpg';
+    } else if (filename.includes('1786288845976') || filename.includes('first_dialogue')) {
+      finalUrl = '/images/artworks/the_first_dialogue.jpg';
+    } else if (filename.includes('1786289008243') || filename.includes('under_our_new_garment')) {
+      finalUrl = '/images/artworks/under_our_new_garment.jpg';
+    } else if (filename.includes('1786289110407') || filename.includes('thought_of_hope')) {
+      finalUrl = '/images/artworks/thought_of_hope.jpg';
+    } else {
+      return getNeutralImagePlaceholder(title);
     }
-    if (filename.includes('1786288739763') || filename.includes('this_is_our_way')) {
-      return '/images/artworks/this_is_our_way.jpg';
-    }
-    if (filename.includes('1786288845976') || filename.includes('first_dialogue')) {
-      return '/images/artworks/the_first_dialogue.jpg';
-    }
-    if (filename.includes('1786289008243') || filename.includes('under_our_new_garment')) {
-      return '/images/artworks/under_our_new_garment.jpg';
-    }
-    if (filename.includes('1786289110407') || filename.includes('thought_of_hope')) {
-      return '/images/artworks/thought_of_hope.jpg';
-    }
-
-    return getNeutralImagePlaceholder(title);
   }
 
-  return url;
+  // Data URIs do not require cache busting
+  if (finalUrl.startsWith('data:')) {
+    return finalUrl;
+  }
+
+  // Append cache busting version parameter to bypass stale 404 browser cache
+  const separator = finalUrl.includes('?') ? '&' : '?';
+  return `${finalUrl}${separator}v=${ASSET_VERSION}`;
 }
 
 /**

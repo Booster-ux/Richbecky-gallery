@@ -2,7 +2,7 @@ import React from 'react';
 import { Artwork } from '../types';
 import { useGallery } from '../context/GalleryContext';
 import { Heart, ShoppingBag, Award, Eye } from 'lucide-react';
-import { handleImageError } from '../services/imageService';
+import { handleImageError, getProductionImageUrl } from '../services/imageService';
 
 interface ArtworkCardProps {
   artwork: Artwork;
@@ -22,7 +22,7 @@ export const ArtworkCard: React.FC<ArtworkCardProps> = ({ artwork, showWishlist 
         onClick={() => navigateToArtwork(artwork)}
       >
         <img
-          src={artwork.imageUrl}
+          src={getProductionImageUrl(artwork.imageUrl, artwork.title)}
           alt={artwork.title}
           onError={(e) => handleImageError(e, artwork.title)}
           className="w-full h-full object-contain object-center transition-transform duration-700 ease-out group-hover:scale-105"
