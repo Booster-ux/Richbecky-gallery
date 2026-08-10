@@ -62,12 +62,12 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-ivory-100/95 backdrop-blur-md border-b border-ivory-300 transition-all duration-200 shadow-subtle">
+    <header className="sticky top-0 z-40 w-full bg-ivory-100/98 backdrop-blur-md border-b border-ivory-300 transition-all duration-200 shadow-subtle">
       
       {/* Top Announcement & Currency Bar */}
-      <div className="bg-navy-950 text-ivory-100 py-2 px-4 sm:px-8 text-xs font-light tracking-wide flex items-center justify-between gap-4 border-b border-navy-800">
+      <div className="bg-navy-950 text-ivory-100 py-2.5 px-4 sm:px-8 text-xs font-light tracking-wide flex items-center justify-between gap-4 border-b border-navy-900">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-gold-400 font-medium">
+          <span className="flex items-center gap-1.5 text-gold-400 font-bold">
             <Sparkles className="w-3.5 h-3.5" /> Certificate of Authenticity Included
           </span>
           <span className="hidden md:inline text-navy-700">|</span>
@@ -75,16 +75,16 @@ export const Header: React.FC = () => {
         </div>
         
         {/* Currency Selector */}
-        <div className="flex items-center gap-2 bg-navy-900/90 px-3 py-1 rounded border border-gold-500/25">
+        <div className="flex items-center gap-2 bg-navy-900 px-3 py-1 rounded border border-gold-500/30">
           <Globe className="w-3.5 h-3.5 text-gold-400" />
-          <span className="text-[11px] text-neutral-300 font-medium hidden sm:inline">Currency:</span>
+          <span className="text-xs text-neutral-300 font-medium hidden sm:inline">Currency:</span>
           <select
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value as CurrencyCode)}
-            className="bg-transparent text-gold-400 text-xs font-semibold focus:outline-none cursor-pointer"
+            className="bg-transparent text-gold-400 text-xs font-bold focus:outline-none cursor-pointer"
           >
             {SUPPORTED_CURRENCIES.map(curr => (
-              <option key={curr.code} value={curr.code} className="bg-navy-900 text-white">
+              <option key={curr.code} value={curr.code} className="bg-navy-950 text-white">
                 {curr.code} ({curr.symbol})
               </option>
             ))}
@@ -94,7 +94,7 @@ export const Header: React.FC = () => {
 
       {/* Main Luxury Navigation Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-6">
+        <div className="flex items-center justify-between h-24 gap-8">
           
           {/* Official Logo */}
           <div className="flex-shrink-0 flex items-center">
@@ -105,7 +105,7 @@ export const Header: React.FC = () => {
               <img
                 src={LOGO_URL}
                 alt="Richbecky Gallery"
-                className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
+                className="h-12 sm:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
               />
             </button>
           </div>
@@ -122,15 +122,15 @@ export const Header: React.FC = () => {
                 }}
                 onFocus={() => setSearchFocused(true)}
                 placeholder="Search artworks, artists, mediums..."
-                className="w-full bg-white border border-ivory-400 rounded-full py-2 pl-9 pr-4 text-xs text-navy-900 placeholder-neutral-400 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition duration-200 shadow-sm"
+                className="w-full bg-white border border-ivory-400 rounded-full py-2.5 pl-10 pr-4 text-xs text-navy-900 placeholder-neutral-400 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition duration-200 shadow-sm"
               />
-              <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
             </form>
 
             {/* Live Search Results Overlay */}
             {searchFocused && searchResults.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-ivory-300 overflow-hidden z-50 animate-fade-in">
-                <div className="p-2 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider px-3 border-b border-ivory-200">
+                <div className="p-2.5 text-xs font-bold text-neutral-400 uppercase tracking-wider px-3 border-b border-ivory-200">
                   Matching Works
                 </div>
                 {searchResults.map(art => (
@@ -140,12 +140,12 @@ export const Header: React.FC = () => {
                       navigateToArtwork(art);
                       setSearchFocused(false);
                     }}
-                    className="w-full text-left px-3 py-2.5 hover:bg-ivory-200 flex items-center gap-3 transition"
+                    className="w-full text-left px-3 py-3 hover:bg-ivory-200 flex items-center gap-3 transition"
                   >
-                    <img src={art.imageUrl} alt={art.title} className="w-9 h-9 object-cover rounded" />
+                    <img src={art.imageUrl} alt={art.title} className="w-10 h-10 object-contain bg-ivory-200 rounded" />
                     <div>
-                      <div className="text-xs font-semibold text-navy-900 line-clamp-1">{art.title}</div>
-                      <div className="text-[11px] text-neutral-500">{art.artistName} • {formatPrice(art.price, art.currency)}</div>
+                      <div className="text-xs font-bold text-navy-950 line-clamp-1">{art.title}</div>
+                      <div className="text-xs text-neutral-500">{art.artistName} • {formatPrice(art.price, art.currency)}</div>
                     </div>
                   </button>
                 ))}
@@ -154,7 +154,7 @@ export const Header: React.FC = () => {
                     setActivePage('catalogue');
                     setSearchFocused(false);
                   }}
-                  className="w-full py-2 bg-ivory-100 text-center text-xs font-semibold text-gold-700 hover:bg-ivory-200 transition"
+                  className="w-full py-2.5 bg-ivory-100 text-center text-xs font-bold text-gold-700 hover:bg-ivory-200 transition"
                 >
                   View full catalogue results →
                 </button>
@@ -162,12 +162,12 @@ export const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Desktop Main Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-8 text-xs font-semibold uppercase tracking-widest text-navy-900">
+          {/* Desktop Main Navigation Links with Comfortably Readable Sizing */}
+          <nav className="hidden lg:flex items-center space-x-9 text-xs sm:text-sm font-bold uppercase tracking-widest text-navy-950">
             <button
               onClick={() => setActivePage('catalogue')}
               className={`transition-colors py-1.5 border-b-2 ${
-                activePage === 'catalogue' ? 'border-gold-500 text-gold-700' : 'border-transparent hover:text-gold-600'
+                activePage === 'catalogue' ? 'border-gold-500 text-gold-700 font-extrabold' : 'border-transparent hover:text-gold-600'
               }`}
             >
               Artworks
@@ -186,7 +186,7 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setActivePage('artist-profile')}
               className={`transition-colors py-1.5 border-b-2 ${
-                activePage === 'artist-profile' ? 'border-gold-500 text-gold-700' : 'border-transparent hover:text-gold-600'
+                activePage === 'artist-profile' ? 'border-gold-500 text-gold-700 font-extrabold' : 'border-transparent hover:text-gold-600'
               }`}
             >
               Artists
@@ -195,7 +195,7 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setActivePage('about')}
               className={`transition-colors py-1.5 border-b-2 ${
-                activePage === 'about' ? 'border-gold-500 text-gold-700' : 'border-transparent hover:text-gold-600'
+                activePage === 'about' ? 'border-gold-500 text-gold-700 font-extrabold' : 'border-transparent hover:text-gold-600'
               }`}
             >
               About
@@ -204,7 +204,7 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setActivePage('journal')}
               className={`transition-colors py-1.5 border-b-2 ${
-                activePage === 'journal' ? 'border-gold-500 text-gold-700' : 'border-transparent hover:text-gold-600'
+                activePage === 'journal' ? 'border-gold-500 text-gold-700 font-extrabold' : 'border-transparent hover:text-gold-600'
               }`}
             >
               Journal
@@ -212,17 +212,17 @@ export const Header: React.FC = () => {
           </nav>
 
           {/* Right Action Icons (Wishlist, Cart, Account) */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             
             {/* Wishlist */}
             <button
               onClick={() => setActivePage('wishlist')}
-              className="relative p-2 text-navy-900 hover:text-gold-600 transition"
+              className="relative p-2 text-navy-950 hover:text-gold-600 transition"
               aria-label="Wishlist"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
               {wishlist.length > 0 && (
-                <span className="absolute top-0 right-0 bg-gold-500 text-navy-950 font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow">
+                <span className="absolute top-0 right-0 bg-gold-500 text-navy-950 font-bold text-[10px] w-4.5 h-4.5 rounded-full flex items-center justify-center shadow">
                   {wishlist.length}
                 </span>
               )}
@@ -231,12 +231,12 @@ export const Header: React.FC = () => {
             {/* Cart */}
             <button
               onClick={() => setActivePage('cart')}
-              className="relative p-2 text-navy-900 hover:text-gold-600 transition"
+              className="relative p-2 text-navy-950 hover:text-gold-600 transition"
               aria-label="Cart"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
               {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-navy-900 text-gold-400 font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow">
+                <span className="absolute top-0 right-0 bg-navy-950 text-gold-400 font-bold text-[10px] w-4.5 h-4.5 rounded-full flex items-center justify-center shadow">
                   {cartCount}
                 </span>
               )}
@@ -245,14 +245,14 @@ export const Header: React.FC = () => {
             {/* Account */}
             <button
               onClick={() => setActivePage('account')}
-              className="flex items-center gap-1.5 p-1 rounded-full text-navy-900 hover:text-gold-600 transition border border-ivory-300"
+              className="flex items-center gap-1.5 p-1 rounded-full text-navy-950 hover:text-gold-600 transition border border-ivory-300"
               aria-label="Account"
             >
               {currentUser.avatar ? (
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
-                  className="w-7 h-7 rounded-full object-cover border border-gold-400"
+                  className="w-8 h-8 rounded-full object-cover border border-gold-400"
                 />
               ) : (
                 <User className="w-5 h-5" />
@@ -262,7 +262,7 @@ export const Header: React.FC = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-navy-900 hover:text-gold-600 focus:outline-none"
+              className="lg:hidden p-2 text-navy-950 hover:text-gold-600 focus:outline-none"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -288,10 +288,10 @@ export const Header: React.FC = () => {
           </form>
 
           {/* Navigation Links */}
-          <div className="flex flex-col space-y-4 text-xs font-semibold uppercase tracking-widest text-navy-900">
+          <div className="flex flex-col space-y-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-navy-950">
             <button
               onClick={() => { setActivePage('catalogue'); setMobileMenuOpen(false); }}
-              className="text-left py-2 border-b border-ivory-200"
+              className="text-left py-2.5 border-b border-ivory-200"
             >
               Artworks Catalogue
             </button>
@@ -301,31 +301,31 @@ export const Header: React.FC = () => {
                 setActivePage('catalogue');
                 setMobileMenuOpen(false);
               }}
-              className="text-left py-2 border-b border-ivory-200"
+              className="text-left py-2.5 border-b border-ivory-200"
             >
               Explore Categories
             </button>
             <button
               onClick={() => { setActivePage('artist-profile'); setMobileMenuOpen(false); }}
-              className="text-left py-2 border-b border-ivory-200"
+              className="text-left py-2.5 border-b border-ivory-200"
             >
               Master Artists
             </button>
             <button
               onClick={() => { setActivePage('about'); setMobileMenuOpen(false); }}
-              className="text-left py-2 border-b border-ivory-200"
+              className="text-left py-2.5 border-b border-ivory-200"
             >
               About Richbecky Gallery
             </button>
             <button
               onClick={() => { setActivePage('journal'); setMobileMenuOpen(false); }}
-              className="text-left py-2 border-b border-ivory-200"
+              className="text-left py-2.5 border-b border-ivory-200"
             >
               The Collector's Journal
             </button>
             <button
               onClick={() => { setActivePage('artist-register'); setMobileMenuOpen(false); }}
-              className="text-left py-2 text-gold-700 font-bold border-b border-ivory-200"
+              className="text-left py-2.5 text-gold-700 font-bold border-b border-ivory-200"
             >
               For Artists • Sell Your Art
             </button>

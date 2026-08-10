@@ -1,69 +1,59 @@
 // Image Service for Richbecky Gallery
-// Resolves production-safe image URLs for Vercel deployment & local preview
-
-export const DEFAULT_FALLBACK_IMAGES: Record<string, string> = {
-  logo: '/logo.svg',
-  'art-1': 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=85',
-  'art-2': 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=85',
-  'art-3': 'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=1200&q=85',
-  'art-4': 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=85',
-  'art-5': 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=1200&q=85',
-  category_abstract: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80',
-  category_minimalist: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80',
-  category_figurative: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
-  category_sculpture: 'https://images.unsplash.com/photo-1561839561-213b1be4b84a?auto=format&fit=crop&w=800&q=80',
-  category_landscape: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=800&q=80',
-};
+// Production-safe image URL resolution & neutral "Image Unavailable" state
 
 /**
- * Returns a production-ready image URL.
- * Handles local file:/// paths by attempting to use public relative paths or web fallbacks.
+ * Returns a neutral SVG Data URI placeholder when an image is unavailable.
+ * Strictly avoids displaying unrelated artworks to prevent misleading collectors.
  */
-export function getProductionImageUrl(url: string, fallbackKey?: keyof typeof DEFAULT_FALLBACK_IMAGES): string {
+export function getNeutralImagePlaceholder(title?: string): string {
+  const label = title ? encodeURIComponent(title) : 'Artwork Image';
+  return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect width="600" height="750" fill="%23F4F1EA"/><rect x="2" y="2" width="596" height="746" fill="none" stroke="%23E2DCD0" stroke-width="2"/><g transform="translate(300, 340)" text-anchor="middle"><circle cx="0" cy="-20" r="36" fill="%23E8E3D8"/><path d="M-18 -20 L18 -20 M0 -38 L0 -2" stroke="%23A09888" stroke-width="3" stroke-linecap="round"/><text x="0" y="45" font-family="serif" font-size="16" font-weight="600" fill="%230F2537" letter-spacing="1.5">${label}</text><text x="0" y="70" font-family="sans-serif" font-size="12" fill="%238C8272" letter-spacing="2" font-weight="500">IMAGE UNAVAILABLE</text></g></svg>`;
+}
+
+/**
+ * Resolves production-ready image URLs.
+ * Maps relative image paths for Vercel deployment.
+ */
+export function getProductionImageUrl(url: string, title?: string): string {
   if (!url) {
-    return fallbackKey && DEFAULT_FALLBACK_IMAGES[fallbackKey] ? DEFAULT_FALLBACK_IMAGES[fallbackKey] : '/logo.svg';
+    return getNeutralImagePlaceholder(title);
   }
 
-  // If URL is a local Windows file:/// path, transform or fallback for Vercel production
+  // Handle local Windows file:/// paths by mapping to production public paths
   if (url.startsWith('file:///')) {
-    // Extract filename from path
     const parts = url.split('/');
     const filename = parts[parts.length - 1];
-    
-    // Check if filename matches known artwork images
+
     if (filename.includes('1786288555178') || filename.includes('isembaye')) {
-      return `/images/${filename}`;
+      return '/images/artworks/isembaye.jpg';
     }
     if (filename.includes('1786288739763') || filename.includes('this_is_our_way')) {
-      return `/images/${filename}`;
+      return '/images/artworks/this_is_our_way.jpg';
     }
     if (filename.includes('1786288845976') || filename.includes('first_dialogue')) {
-      return `/images/${filename}`;
+      return '/images/artworks/the_first_dialogue.jpg';
     }
     if (filename.includes('1786289008243') || filename.includes('under_our_new_garment')) {
-      return `/images/${filename}`;
+      return '/images/artworks/under_our_new_garment.jpg';
     }
     if (filename.includes('1786289110407') || filename.includes('thought_of_hope')) {
-      return `/images/${filename}`;
+      return '/images/artworks/thought_of_hope.jpg';
     }
 
-    // Default web fallback for Vercel
-    if (fallbackKey && DEFAULT_FALLBACK_IMAGES[fallbackKey]) {
-      return DEFAULT_FALLBACK_IMAGES[fallbackKey];
-    }
-    return `https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1000&q=80`;
+    return getNeutralImagePlaceholder(title);
   }
 
   return url;
 }
 
 /**
- * React Image error handler that gracefully replaces broken images with fallback
+ * React image error handler that gracefully shows a neutral "Image Unavailable" placeholder.
+ * Strictly avoids showing unrelated replacement artworks.
  */
-export function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>, fallbackUrl?: string) {
+export function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>, title?: string) {
   const target = e.currentTarget;
   if (!target.dataset.hasFallenBack) {
     target.dataset.hasFallenBack = 'true';
-    target.src = fallbackUrl || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1000&q=80';
+    target.src = getNeutralImagePlaceholder(title);
   }
 }
