@@ -24,6 +24,7 @@ export const Header: React.FC = () => {
     setFilterState,
     artworks,
     navigateToArtwork,
+    isAuthenticated,
     currentUser,
     selectedCurrency,
     setSelectedCurrency,
@@ -242,13 +243,26 @@ export const Header: React.FC = () => {
               )}
             </button>
 
-            {/* Account */}
+            {/* Account / Auth */}
             <button
-              onClick={() => setActivePage('account')}
+              onClick={() => {
+                if (isAuthenticated && currentUser) {
+                  if (currentUser.role === 'artist') {
+                    if (currentUser.artistApprovalStatus === 'Approved') setActivePage('artist-dashboard');
+                    else setActivePage('artist-status');
+                  } else if (currentUser.role === 'admin') {
+                    setActivePage('admin-dashboard');
+                  } else {
+                    setActivePage('account');
+                  }
+                } else {
+                  setActivePage('login');
+                }
+              }}
               className="flex items-center gap-1.5 p-1 rounded-full text-navy-950 hover:text-gold-600 transition border border-ivory-300"
               aria-label="Account"
             >
-              {currentUser.avatar ? (
+              {isAuthenticated && currentUser?.avatar ? (
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}

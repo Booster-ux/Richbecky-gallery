@@ -43,6 +43,9 @@ export const AdminDashboardPage: React.FC = () => {
     faqs,
     shippingRegions,
     adminNotifications,
+    artistApplications,
+    approveArtistApplication,
+    rejectArtistApplication,
     approveArtwork,
     rejectArtwork,
     toggleFeatureArtwork,
@@ -473,37 +476,110 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* SECTION 3: ARTIST MANAGEMENT */}
         {activeSection === 'artists' && (
-          <div className="space-y-6 bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle">
-            <h2 className="font-serif text-xl font-bold text-navy-950">Represented Artist Roster</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {artists.map(a => (
-                <div key={a.id} className="border border-ivory-300 rounded-xl p-5 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <img src={a.avatar} alt={a.name} className="w-14 h-14 rounded-full object-cover border-2 border-gold-400" />
-                    <div>
-                      <h3 className="font-serif text-base font-bold text-navy-950">{a.name}</h3>
-                      <p className="text-xs text-neutral-500">{a.country} • {a.exhibitionsCount} Exhibitions</p>
-                      <span className="text-[11px] text-gold-700 font-bold uppercase block mt-0.5">
-                        Status: Active Roster Artist
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-ivory-200 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="text-neutral-500 block">Commission Rate Placeholder:</span>
-                      <strong className="text-navy-950 font-bold">{a.commissionRate || defaultCommissionRate}% Gallery Fee</strong>
-                    </div>
-
-                    <div className="space-x-2">
-                      <button onClick={() => showToast(`Artist ${a.name} status verified.`, 'info')} className="px-3 py-1.5 bg-navy-950 text-white rounded font-bold text-[11px]">
-                        Manage Commission
-                      </button>
-                    </div>
-                  </div>
+          <div className="space-y-8">
+            {/* Sub-section 1: Artist Applications Queue */}
+            <div className="bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle space-y-4">
+              <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+                <div>
+                  <h2 className="font-serif text-xl font-bold text-navy-950">Artist Representation Applications</h2>
+                  <p className="text-xs text-neutral-500">Review, evaluate curatorial portfolio, and approve artist access to the Artist Studio</p>
                 </div>
-              ))}
+                <span className="px-3 py-1 bg-gold-100 text-gold-900 rounded-full font-bold text-xs uppercase">
+                  {artistApplications.filter(a => a.status === 'Pending').length} Pending Review
+                </span>
+              </div>
+
+              {artistApplications.length > 0 ? (
+                <div className="space-y-4 text-xs">
+                  {artistApplications.map(app => (
+                    <div key={app.id} className="border border-ivory-300 rounded-xl p-5 space-y-3 bg-ivory-100">
+                      <div className="flex flex-wrap items-center justify-between border-b border-ivory-200 pb-2">
+                        <div>
+                          <span className="font-bold text-navy-950 text-sm">{app.artistName}</span>
+                          <span className="text-neutral-500 ml-2">({app.email} • {app.country})</span>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded font-bold uppercase text-[10px] ${
+                          app.status === 'Approved'
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            : app.status === 'Pending'
+                            ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                            : 'bg-rose-100 text-rose-800 border border-rose-300'
+                        }`}>
+                          {app.status}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-neutral-700">
+                        <div>
+                          <span className="font-bold text-navy-950 block">Mediums & Practice:</span>
+                          <p>{app.mediums} ({app.yearsActive} Years Active)</p>
+                          {app.instagram && <p className="text-gold-700 font-semibold mt-1">Instagram: {app.instagram}</p>}
+                        </div>
+                        <div>
+                          <span className="font-bold text-navy-950 block">Biography Excerpt:</span>
+                          <p className="line-clamp-2">{app.bio}</p>
+                        </div>
+                      </div>
+
+                      {app.status === 'Pending' && (
+                        <div className="pt-2 border-t border-ivory-200 flex justify-end gap-2">
+                          <button
+                            onClick={() => rejectArtistApplication(app.id, 'Application does not align with current curatorial schedule.')}
+                            className="px-4 py-1.5 bg-rose-100 text-rose-800 rounded font-bold text-xs"
+                          >
+                            Reject Application
+                          </button>
+                          <button
+                            onClick={() => approveArtistApplication(app.id)}
+                            className="px-5 py-1.5 bg-emerald-800 text-white rounded font-bold text-xs shadow"
+                          >
+                            Approve Representation
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center bg-ivory-100 rounded-lg text-xs text-neutral-500">
+                  No artist representation applications in queue.
+                </div>
+              )}
+            </div>
+
+            {/* Sub-section 2: Represented Roster */}
+            <div className="bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle space-y-6">
+              <h2 className="font-serif text-xl font-bold text-navy-950">Active Represented Artist Roster</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {artists.map(a => (
+                  <div key={a.id} className="border border-ivory-300 rounded-xl p-5 space-y-4">
+                    <div className="flex items-center gap-4">
+                      <img src={a.avatar} alt={a.name} className="w-14 h-14 rounded-full object-cover border-2 border-gold-400" />
+                      <div>
+                        <h3 className="font-serif text-base font-bold text-navy-950">{a.name}</h3>
+                        <p className="text-xs text-neutral-500">{a.country} • Roster Artist</p>
+                        <span className="text-[11px] text-emerald-700 font-bold uppercase block mt-0.5">
+                          Status: Active Approved Roster
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-ivory-200 flex items-center justify-between text-xs">
+                      <div>
+                        <span className="text-neutral-500 block">Commission Rate:</span>
+                        <strong className="text-navy-950 font-bold">{a.commissionRate || defaultCommissionRate}% Gallery Fee</strong>
+                      </div>
+
+                      <div className="space-x-2">
+                        <button onClick={() => showToast(`Artist ${a.name} representation verified.`, 'info')} className="px-3 py-1.5 bg-navy-950 text-white rounded font-bold text-[11px]">
+                          Manage Roster
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

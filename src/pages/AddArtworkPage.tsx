@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { CurrencyCode, ArtworkType } from '../types';
-import { Upload, Award, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Upload, Award, ShieldCheck, ArrowRight, Eye, CheckCircle2, X } from 'lucide-react';
 
 export const AddArtworkPage: React.FC = () => {
-  const { addNewArtwork, setActivePage, selectedCurrency } = useGallery();
+  const { addNewArtwork, setActivePage, selectedCurrency, formatOriginalPrice } = useGallery();
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState<ArtworkType>('Original');
@@ -26,9 +26,14 @@ export const AddArtworkPage: React.FC = () => {
   const [shippingInfoNotes, setShippingInfoNotes] = useState('Crated in custom wooden box with insured global air transit');
   const [certificateIncluded, setCertificateIncluded] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
+  const handleOpenPreview = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowPreviewModal(true);
+  };
+
+  const handleFinalSubmit = () => {
     const additionalImages = additionalImagesText
       .split('\n')
       .map(s => s.trim())
@@ -62,6 +67,7 @@ export const AddArtworkPage: React.FC = () => {
       certificateIncluded
     });
 
+    setShowPreviewModal(false);
     setActivePage('artist-dashboard');
   };
 
@@ -76,7 +82,7 @@ export const AddArtworkPage: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-ivory-300 shadow-gallery space-y-6 text-xs">
+      <form onSubmit={handleOpenPreview} className="bg-white p-8 rounded-2xl border border-ivory-300 shadow-gallery space-y-6 text-xs">
         
         {/* Basic Details */}
         <div className="space-y-4">
@@ -308,17 +314,88 @@ export const AddArtworkPage: React.FC = () => {
           </label>
         </div>
 
-        {/* Submit Button */}
+        {/* Action Buttons */}
         <div className="pt-6 flex justify-end">
           <button
             type="submit"
             className="px-9 py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded font-bold text-xs uppercase tracking-widest transition duration-300 shadow-xl flex items-center gap-2"
           >
-            Submit Artwork for Curatorial Review <ArrowRight className="w-4 h-4" />
+            <Eye className="w-4 h-4" /> Preview Masterwork Submission
           </button>
         </div>
 
       </form>
+
+      {/* Complete Artwork Preview Modal */}
+      {showPreviewModal && (
+        <div className="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white max-w-2xl w-full p-8 rounded-2xl space-y-6 text-xs shadow-2xl max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-ivory-300 pb-4">
+              <div>
+                <span className="text-gold-700 font-bold uppercase text-[10px]">Pre-Submission Curatorial Preview</span>
+                <h3 className="font-serif text-2xl font-bold text-navy-950">{title || 'Untitled Masterwork'}</h3>
+              </div>
+              <button onClick={() => setShowPreviewModal(false)} className="text-neutral-400 hover:text-navy-950">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="aspect-[4/5] bg-navy-950/5 rounded-lg overflow-hidden border">
+                <img src={imageUrl} alt="" className="w-full h-full object-contain" />
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <span className="text-neutral-500 uppercase text-[10px] block">Artist & Year:</span>
+                  <strong className="text-navy-950 text-sm">Rebecca Esho ({year})</strong>
+                </div>
+
+                <div>
+                  <span className="text-neutral-500 uppercase text-[10px] block">Medium & Dimensions:</span>
+                  <p className="font-medium text-navy-950">{medium}</p>
+                  <p className="text-neutral-600">{dimensions}</p>
+                </div>
+
+                <div>
+                  <span className="text-neutral-500 uppercase text-[10px] block">Listing Price:</span>
+                  <strong className="text-navy-950 text-base">{formatOriginalPrice(price, currency)} {currency}</strong>
+                </div>
+
+                <div>
+                  <span className="text-neutral-500 uppercase text-[10px] block">Authenticity & Certificate:</span>
+                  <p className="text-emerald-800 font-semibold">{certificateIncluded ? '✓ Signed Certificate Included' : 'No Certificate'}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-neutral-500 uppercase text-[10px] block font-bold mb-1">Curatorial Narrative:</span>
+              <p className="bg-ivory-100 p-3 rounded border text-neutral-700 leading-relaxed font-light">{description}</p>
+            </div>
+
+            <div className="pt-4 border-t border-ivory-300 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowPreviewModal(false)}
+                className="px-5 py-2.5 border rounded font-bold text-neutral-700"
+              >
+                Back to Edit
+              </button>
+              <button
+                type="button"
+                onClick={handleFinalSubmit}
+                className="px-7 py-2.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded font-bold text-xs uppercase tracking-widest shadow-xl flex items-center gap-2"
+              >
+                <CheckCircle2 className="w-4 h-4" /> Submit for Review
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

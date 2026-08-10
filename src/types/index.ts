@@ -1,6 +1,6 @@
 export type ArtworkType = 'Original' | 'Fine Art Print';
 
-export type ArtworkStatus = 'Approved' | 'Pending Admin Approval' | 'Rejected' | 'Draft';
+export type ArtworkStatus = 'Approved' | 'Pending Admin Approval' | 'Rejected' | 'Draft' | 'Archived';
 
 export type CurrencyCode = 'NGN' | 'USD' | 'GBP' | 'EUR' | 'CAD' | 'AUD';
 
@@ -9,6 +9,14 @@ export interface CurrencyConfig {
   symbol: string;
   name: string;
   locale: string;
+}
+
+export interface ArtworkDimensions {
+  height?: number;
+  width?: number;
+  depth?: number;
+  unit?: 'cm' | 'in';
+  formatted: string;
 }
 
 export interface Artwork {
@@ -22,28 +30,34 @@ export interface Artwork {
   medium: string;
   materials?: string;
   dimensions: string;
+  parsedDimensions?: ArtworkDimensions;
   year: number;
   price: number; // Stored numerical price (original artist input)
   currency: CurrencyCode; // Stored original currency code
   stock: number; // 1 for Original, N for Fine Art Print
+  availability?: 'Available' | 'Sold' | 'Reserved' | 'Not for sale';
   isSold?: boolean;
   isFeatured?: boolean;
-  isNewArrival?: borderCheck;
+  isNewArrival?: boolean;
   imageUrl: string;
   additionalImages?: string[];
   description: string;
+  shortDescription?: string;
   artistStatement?: string;
   artworkStory?: string;
   editionInfo?: string;
+  editionNumber?: string;
+  editionTotal?: string;
+  editionType?: 'Open Edition' | 'Limited Edition';
   signatureInfo?: string;
   shippingInfoNotes?: string;
+  shippingPrepTime?: string;
+  specialHandling?: string;
   altText?: string;
   certificateIncluded: boolean;
   status: ArtworkStatus;
   createdAt: string;
 }
-
-type borderCheck = boolean;
 
 export interface Artist {
   id: string;
@@ -74,14 +88,55 @@ export interface WishlistItem {
   addedAt: string;
 }
 
+export type UserRole = 'customer' | 'artist' | 'admin';
+export type ArtistApprovalStatus = 'Pending' | 'Approved' | 'Rejected';
+
 export interface User {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
-  role: 'customer' | 'artist' | 'admin';
+  role: UserRole;
+  country?: string;
+  preferredCurrency?: CurrencyCode;
   avatar?: string;
   bio?: string;
+  artistApprovalStatus?: ArtistApprovalStatus;
+  artistApplicationId?: string;
+}
+
+export interface ArtistApplication {
+  id: string;
+  userId?: string;
+  // Step 1: Personal Info
+  fullName: string;
+  email: string;
+  phone: string;
+  country: string;
+  city: string;
+  website?: string;
+  instagram?: string;
+  // Step 2: Artist Profile
+  artistName: string;
+  bio: string;
+  artistStatement?: string;
+  practiceAreas?: string;
+  mediums: string;
+  yearsActive: number;
+  // Step 3: Experience
+  exhibitions?: string;
+  awards?: string;
+  collections?: string;
+  galleryExperience?: string;
+  // Step 4: Portfolio
+  portfolioImages: string[];
+  // Step 5: Agreement
+  agreedToTerms: boolean;
+  status: ArtistApprovalStatus;
+  rejectionReason?: string;
+  submittedAt: string;
 }
 
 export interface Address {
@@ -230,11 +285,17 @@ export type ActivePage =
   | 'wishlist'
   | 'about'
   | 'journal'
+  | 'contact-advisory'
+  | 'policies'
+  | 'order-confirmation'
+  | 'login'
+  | 'register'
+  | 'artist-landing'
   | 'artist-register'
+  | 'artist-application'
+  | 'artist-status'
+  | 'artist-login'
   | 'artist-dashboard'
   | 'add-artwork'
   | 'admin-login'
-  | 'admin-dashboard'
-  | 'contact-advisory'
-  | 'policies'
-  | 'order-confirmation';
+  | 'admin-dashboard';

@@ -17,7 +17,10 @@ import {
   ShippingRegion,
   NotificationItem,
   OrderFulfillmentStatus,
-  EnquiryStatus
+  EnquiryStatus,
+  ArtistApplication,
+  ArtistApprovalStatus,
+  UserRole
 } from '../types';
 import {
   INITIAL_ARTWORKS,
@@ -80,9 +83,21 @@ interface GalleryContextType {
   toggleWishlist: (artwork: Artwork) => void;
   isInWishlist: (artworkId: string) => boolean;
 
-  // User & Roles
-  currentUser: User;
-  setCurrentUserRole: (role: 'customer' | 'artist' | 'admin') => void;
+  // Authentication & Roles
+  isAuthenticated: boolean;
+  currentUser: User | null;
+  artistApprovalStatus: ArtistApprovalStatus | null;
+  loginCustomer: (email: string, pass: string) => boolean;
+  registerCustomer: (data: { firstName: string; lastName: string; email: string; phone: string; country: string; preferredCurrency: CurrencyCode }) => void;
+  loginArtist: (email: string, pass: string) => { success: boolean; message?: string };
+  loginAdmin: (email: string, pass: string) => boolean;
+  logout: () => void;
+
+  // Artist Applications
+  artistApplications: ArtistApplication[];
+  submitArtistApplication: (appData: Omit<ArtistApplication, 'id' | 'status' | 'submittedAt'>) => void;
+  approveArtistApplication: (appId: string) => void;
+  rejectArtistApplication: (appId: string, reason?: string) => void;
 
   // Filters & Search
   filterState: FilterState;
@@ -110,7 +125,7 @@ interface GalleryContextType {
   selectedArtworkForEnquiry: Artwork | null;
   setSelectedArtworkForEnquiry: (artwork: Artwork | null) => void;
 
-  // Customers & Payouts & FAQ & Shipping Domain Models
+  // Domain Models
   customers: CustomerProfile[];
   payouts: Payout[];
   updatePayoutStatus: (payoutId: string, status: Payout['status']) => void;
@@ -166,14 +181,54 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return saved ? JSON.parse(saved) : INITIAL_ARTWORKS;
   });
 
-  const [artists] = useState<Artist[]>(ARTISTS);
+  const [artists, setArtists] = useState<Artist[]>(ARTISTS);
   const [categories] = useState<Category[]>(CATEGORIES);
-  const [customers] = useState<CustomerProfile[]>(MOCK_CUSTOMERS);
+  const [customers, setCustomers] = useState<CustomerProfile[]>(MOCK_CUSTOMERS);
   const [enquiries, setEnquiries] = useState<Enquiry[]>(MOCK_ENQUIRIES);
   const [payouts, setPayouts] = useState<Payout[]>(MOCK_PAYOUTS);
   const [faqs, setFaqs] = useState<FAQItem[]>(MOCK_FAQS);
   const [shippingRegions, setShippingRegions] = useState<ShippingRegion[]>(MOCK_SHIPPING_REGIONS);
   const [adminNotifications, setAdminNotifications] = useState<NotificationItem[]>(MOCK_ADMIN_NOTIFICATIONS);
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('richbecky_auth_active') === 'true';
+  });
+
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('richbecky_current_user');
+    return saved ? JSON.parse(saved) : MOCK_USER;
+  });
+
+  const [artistApprovalStatus, setArtistApprovalStatus] = useState<ArtistApprovalStatus | null>(() => {
+    const saved = localStorage.getItem('richbecky_artist_status');
+    return (saved as ArtistApprovalStatus) || 'Approved';
+  });
+
+  const [artistApplications, setArtistApplications] = useState<ArtistApplication[]>(() => {
+    const saved = localStorage.getItem('richbecky_artist_applications');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'app-101',
+        fullName: 'Rebecca Esho',
+        email: 'rebecca@richbeckygallery.com',
+        phone: '+234 800 RICHBECKY',
+        country: 'Nigeria',
+        city: 'Lagos',
+        website: 'https://richbeckygallery.com',
+        instagram: '@rebeccaesho_art',
+        artistName: 'Rebecca Esho',
+        bio: 'Rebecca Esho is a celebrated contemporary African visual artist specializing in mixed media and figurative oil portraiture.',
+        artistStatement: 'My work is a prayer of remembrance and a celebration of African endurance.',
+        mediums: 'Oil, Traditional Beading & Fabric Collage on Canvas',
+        yearsActive: 8,
+        portfolioImages: ['/images/artworks/isembaye.jpg', '/images/artworks/this_is_our_way.jpg'],
+        agreedToTerms: true,
+        status: 'Approved',
+        submittedAt: '2026-08-01'
+      }
+    ];
+  });
 
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('richbecky_cart');
@@ -185,7 +240,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [currentUser, setCurrentUser] = useState<User>(MOCK_USER);
   const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
   const [lastPlacedOrder, setLastPlacedOrder] = useState<Order | null>(null);
   
@@ -209,6 +263,28 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('richbecky_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
+  useEffect(() => {
+    localStorage.setItem('richbecky_auth_active', String(isAuthenticated));
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('richbecky_current_user', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('richbecky_current_user');
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (artistApprovalStatus) {
+      localStorage.setItem('richbecky_artist_status', artistApprovalStatus);
+    }
+  }, [artistApprovalStatus]);
+
+  useEffect(() => {
+    localStorage.setItem('richbecky_artist_applications', JSON.stringify(artistApplications));
+  }, [artistApplications]);
+
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     setToast({ message, type, visible: true });
     setTimeout(() => {
@@ -218,6 +294,207 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const hideToast = () => {
     setToast(prev => ({ ...prev, visible: false }));
+  };
+
+  // Auth Functions
+  const loginCustomer = (email: string, pass: string): boolean => {
+    const user: User = {
+      id: `user-${Date.now()}`,
+      name: email.split('@')[0],
+      email,
+      role: 'customer'
+    };
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    showToast(`Welcome back, ${user.name}!`, 'success');
+    return true;
+  };
+
+  const registerCustomer = (data: { firstName: string; lastName: string; email: string; phone: string; country: string; preferredCurrency: CurrencyCode }) => {
+    const user: User = {
+      id: `user-${Date.now()}`,
+      name: `${data.firstName} ${data.lastName}`,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      country: data.country,
+      preferredCurrency: data.preferredCurrency,
+      role: 'customer'
+    };
+    
+    // Add to customer profiles
+    const newProfile: CustomerProfile = {
+      id: `cust-${Date.now()}`,
+      name: user.name,
+      email: user.email,
+      phone: user.phone || '',
+      vipStatus: 'Collector Patron',
+      totalSpend: 0,
+      orderCount: 0,
+      wishlistCount: 0,
+      addresses: []
+    };
+
+    setCustomers(prev => [...prev, newProfile]);
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    setSelectedCurrency(data.preferredCurrency);
+    showToast(`Collector account created successfully! Welcome to Richbecky Gallery.`, 'success');
+    setActivePage('account');
+  };
+
+  const loginArtist = (email: string, pass: string): { success: boolean; message?: string } => {
+    // Search applications by email
+    const app = artistApplications.find(a => a.email.toLowerCase() === email.toLowerCase());
+    
+    if (app) {
+      if (app.status === 'Pending') {
+        showToast('Your artist application is currently pending curatorial review.', 'info');
+        setArtistApprovalStatus('Pending');
+        setCurrentUser({
+          id: app.id,
+          name: app.artistName,
+          email: app.email,
+          role: 'artist',
+          artistApprovalStatus: 'Pending'
+        });
+        setIsAuthenticated(true);
+        setActivePage('artist-status');
+        return { success: false, message: 'Your artist application is still under review.' };
+      } else if (app.status === 'Rejected') {
+        showToast('Your artist application was not approved.', 'warning');
+        setArtistApprovalStatus('Rejected');
+        setCurrentUser({
+          id: app.id,
+          name: app.artistName,
+          email: app.email,
+          role: 'artist',
+          artistApprovalStatus: 'Rejected'
+        });
+        setIsAuthenticated(true);
+        setActivePage('artist-status');
+        return { success: false, message: 'Application rejected by gallery directors.' };
+      }
+    }
+
+    // Default approved artist login
+    const user: User = {
+      id: 'artist-1',
+      name: 'Rebecca Esho',
+      email,
+      role: 'artist',
+      artistApprovalStatus: 'Approved'
+    };
+    setCurrentUser(user);
+    setArtistApprovalStatus('Approved');
+    setIsAuthenticated(true);
+    showToast('Artist Studio authenticated.', 'success');
+    setActivePage('artist-dashboard');
+    return { success: true };
+  };
+
+  const loginAdmin = (email: string, pass: string): boolean => {
+    const user: User = {
+      id: 'admin-1',
+      name: 'Gallery Director',
+      email,
+      role: 'admin'
+    };
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    showToast('Authenticated into Executive Admin Governance.', 'success');
+    setActivePage('admin-dashboard');
+    return true;
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setArtistApprovalStatus(null);
+    localStorage.removeItem('richbecky_auth_active');
+    localStorage.removeItem('richbecky_current_user');
+    localStorage.removeItem('richbecky_artist_status');
+    showToast('Signed out successfully.', 'info');
+    setActivePage('home');
+  };
+
+  const submitArtistApplication = (appData: Omit<ArtistApplication, 'id' | 'status' | 'submittedAt'>) => {
+    const newApp: ArtistApplication = {
+      ...appData,
+      id: `app-${Date.now()}`,
+      status: 'Pending',
+      submittedAt: new Date().toISOString().split('T')[0]
+    };
+
+    setArtistApplications(prev => [newApp, ...prev]);
+    
+    // Set current user auth state as pending artist
+    const user: User = {
+      id: newApp.id,
+      name: newApp.artistName,
+      email: newApp.email,
+      phone: newApp.phone,
+      country: newApp.country,
+      role: 'artist',
+      artistApprovalStatus: 'Pending',
+      artistApplicationId: newApp.id
+    };
+    
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    setArtistApprovalStatus('Pending');
+    showToast('Artist Representation Application submitted for curatorial review!', 'success');
+    setActivePage('artist-status');
+  };
+
+  const approveArtistApplication = (appId: string) => {
+    setArtistApplications(prev => prev.map(a => {
+      if (a.id === appId) {
+        // Create new artist record if not present
+        const existingArtist = artists.find(art => art.name.toLowerCase() === a.artistName.toLowerCase());
+        if (!existingArtist) {
+          const newArtist: Artist = {
+            id: `artist-${Date.now()}`,
+            name: a.artistName,
+            avatar: a.portfolioImages[0] || '/images/artworks/isembaye.jpg',
+            bio: a.bio,
+            country: a.country,
+            exhibitionsCount: 0,
+            artworksCount: 0,
+            commissionRate: 15,
+            status: 'Active',
+            socialLinks: { website: a.website, instagram: a.instagram }
+          };
+          setArtists(prevArts => [...prevArts, newArtist]);
+        }
+        return { ...a, status: 'Approved' };
+      }
+      return a;
+    }));
+
+    if (currentUser && currentUser.artistApplicationId === appId) {
+      setCurrentUser(prev => prev ? { ...prev, artistApprovalStatus: 'Approved' } : null);
+      setArtistApprovalStatus('Approved');
+    }
+
+    showToast('Artist application approved! Representation account active.', 'success');
+  };
+
+  const rejectArtistApplication = (appId: string, reason?: string) => {
+    setArtistApplications(prev => prev.map(a => {
+      if (a.id === appId) {
+        return { ...a, status: 'Rejected', rejectionReason: reason || 'Application does not currently align with gallery curatorial focus.' };
+      }
+      return a;
+    }));
+
+    if (currentUser && currentUser.artistApplicationId === appId) {
+      setCurrentUser(prev => prev ? { ...prev, artistApprovalStatus: 'Rejected' } : null);
+      setArtistApprovalStatus('Rejected');
+    }
+
+    showToast('Artist application rejected.', 'warning');
   };
 
   const formatPrice = (amount: number, fromCurrency: CurrencyCode = 'USD'): string => {
@@ -327,11 +604,6 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return wishlist.some(item => item.artwork.id === artworkId);
   };
 
-  const setCurrentUserRole = (role: 'customer' | 'artist' | 'admin') => {
-    setCurrentUser(prev => ({ ...prev, role }));
-    showToast(`Switched view to: ${role.toUpperCase()}`, 'info');
-  };
-
   const resetFilters = () => {
     setFilterState(DEFAULT_FILTER_STATE);
   };
@@ -376,7 +648,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const archiveArtwork = (artworkId: string) => {
     setArtworks(prev =>
-      prev.map(art => (art.id === artworkId ? { ...art, status: 'Rejected' } : art))
+      prev.map(art => (art.id === artworkId ? { ...art, status: 'Archived' } : art))
     );
     showToast('Artwork archived.', 'info');
   };
@@ -488,8 +760,18 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         wishlist,
         toggleWishlist,
         isInWishlist,
+        isAuthenticated,
         currentUser,
-        setCurrentUserRole,
+        artistApprovalStatus,
+        loginCustomer,
+        registerCustomer,
+        loginArtist,
+        loginAdmin,
+        logout,
+        artistApplications,
+        submitArtistApplication,
+        approveArtistApplication,
+        rejectArtistApplication,
         filterState,
         setFilterState,
         resetFilters,
