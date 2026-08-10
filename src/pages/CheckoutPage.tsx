@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { CreditCard, Landmark, Info } from 'lucide-react';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const CheckoutPage: React.FC = () => {
   const { cart, cartTotal, placeOrder, currentUser, formatPrice, formatOriginalPrice, selectedCurrency } = useGallery();
@@ -204,7 +205,12 @@ export const CheckoutPage: React.FC = () => {
           <div className="space-y-4 divide-y divide-ivory-200">
             {cart.map(({ artwork, quantity }) => (
               <div key={artwork.id} className="pt-3 first:pt-0 flex items-center gap-3 text-xs">
-                <img src={artwork.imageUrl} alt="" className="w-12 h-14 object-cover rounded border" />
+                <img
+                  src={getProductionImageUrl(artwork.imageUrl, artwork.title)}
+                  alt={artwork.title}
+                  onError={(e) => handleImageError(e, artwork.title)}
+                  className="w-12 h-14 object-cover rounded border"
+                />
                 <div className="flex-1">
                   <div className="font-semibold text-navy-900 line-clamp-1">{artwork.title}</div>
                   <div className="text-neutral-500">{artwork.artistName} • Qty: {quantity}</div>

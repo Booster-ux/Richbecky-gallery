@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { Award, Globe, Instagram, ExternalLink, Heart, Sparkles } from 'lucide-react';
-import { handleImageError } from '../services/imageService';
+import { handleImageError, getProductionImageUrl } from '../services/imageService';
 
 export const ArtistProfilePage: React.FC = () => {
   const { selectedArtist, artists, artworks, showToast } = useGallery();
@@ -30,8 +30,9 @@ export const ArtistProfilePage: React.FC = () => {
       <div className="relative rounded-2xl overflow-hidden bg-navy-900 border border-gold-500/20 shadow-gallery">
         <div className="h-64 sm:h-80 w-full relative bg-navy-950 p-4">
           <img
-            src={artist.coverImage || artist.avatar}
+            src={getProductionImageUrl(artist.coverImage || artist.avatar, artist.name)}
             alt={artist.name}
+            onError={(e) => handleImageError(e, artist.name)}
             className="w-full h-full object-contain brightness-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
@@ -42,9 +43,9 @@ export const ArtistProfilePage: React.FC = () => {
           
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6">
             <img
-              src={artist.avatar}
+              src={getProductionImageUrl(artist.avatar, artist.name)}
               alt={artist.name}
-              onError={(e) => handleImageError(e)}
+              onError={(e) => handleImageError(e, artist.name)}
               className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-2xl bg-white"
             />
             

@@ -13,6 +13,7 @@ import {
 import { LOGO_URL } from '../data/mockData';
 import { SUPPORTED_CURRENCIES } from '../services/currencyService';
 import { CurrencyCode } from '../types';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const Header: React.FC = () => {
   const {
@@ -143,7 +144,12 @@ export const Header: React.FC = () => {
                     }}
                     className="w-full text-left px-3 py-3 hover:bg-ivory-200 flex items-center gap-3 transition"
                   >
-                    <img src={art.imageUrl} alt={art.title} className="w-10 h-10 object-contain bg-ivory-200 rounded" />
+                    <img
+                      src={getProductionImageUrl(art.imageUrl, art.title)}
+                      alt={art.title}
+                      onError={(e) => handleImageError(e, art.title)}
+                      className="w-10 h-10 object-contain bg-ivory-200 rounded"
+                    />
                     <div>
                       <div className="text-xs font-bold text-navy-950 line-clamp-1">{art.title}</div>
                       <div className="text-xs text-neutral-500">{art.artistName} • {formatPrice(art.price, art.currency)}</div>
@@ -209,6 +215,17 @@ export const Header: React.FC = () => {
               }`}
             >
               Journal
+            </button>
+
+            <button
+              onClick={() => setActivePage('artist-landing')}
+              className={`transition-colors py-1.5 border-b-2 ${
+                activePage === 'artist-landing' || activePage === 'artist-application' || activePage === 'artist-login'
+                  ? 'border-gold-500 text-gold-700 font-extrabold'
+                  : 'border-transparent text-gold-700 hover:text-gold-800 font-bold'
+              }`}
+            >
+              For Artists
             </button>
           </nav>
 
@@ -338,10 +355,10 @@ export const Header: React.FC = () => {
               The Collector's Journal
             </button>
             <button
-              onClick={() => { setActivePage('artist-register'); setMobileMenuOpen(false); }}
+              onClick={() => { setActivePage('artist-landing'); setMobileMenuOpen(false); }}
               className="text-left py-2.5 text-gold-700 font-bold border-b border-ivory-200"
             >
-              For Artists • Sell Your Art
+              For Artists • Submit Work
             </button>
           </div>
 

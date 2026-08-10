@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { Trash2, ArrowRight, ShoppingBag, ShieldCheck, Award } from 'lucide-react';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const CartPage: React.FC = () => {
   const { cart, removeFromCart, updateCartQuantity, cartTotal, setActivePage, navigateToArtwork, formatPrice, selectedCurrency } = useGallery();
@@ -49,8 +50,9 @@ export const CartPage: React.FC = () => {
               {/* Artwork Thumbnail & Info */}
               <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigateToArtwork(artwork)}>
                 <img
-                  src={artwork.imageUrl}
+                  src={getProductionImageUrl(artwork.imageUrl, artwork.title)}
                   alt={artwork.title}
+                  onError={(e) => handleImageError(e, artwork.title)}
                   className="w-20 h-24 object-cover rounded border border-ivory-300 flex-shrink-0"
                 />
                 <div>

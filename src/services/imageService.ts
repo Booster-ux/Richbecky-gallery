@@ -16,7 +16,7 @@ export function getNeutralImagePlaceholder(title?: string): string {
  * Resolves production-ready image URLs with automatic cache-busting parameters.
  * Bypasses stale browser/CDN 404 cache for returning visitors.
  */
-export function getProductionImageUrl(url: string, title?: string): string {
+export function getProductionImageUrl(url?: string, title?: string): string {
   if (!url) {
     return getNeutralImagePlaceholder(title);
   }

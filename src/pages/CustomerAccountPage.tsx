@@ -18,6 +18,7 @@ import {
   ShoppingBag
 } from 'lucide-react';
 import { Address } from '../types';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const CustomerAccountPage: React.FC = () => {
   const {
@@ -238,7 +239,12 @@ export const CustomerAccountPage: React.FC = () => {
                         {order.items.map(({ artwork, quantity }) => (
                           <div key={artwork.id} className="flex items-center justify-between py-2 border-b border-ivory-200 last:border-0">
                             <div className="flex items-center gap-3">
-                              <img src={artwork.imageUrl} alt="" className="w-12 h-14 object-cover rounded border" />
+                              <img
+                                src={getProductionImageUrl(artwork.imageUrl, artwork.title)}
+                                alt={artwork.title}
+                                onError={(e) => handleImageError(e, artwork.title)}
+                                className="w-12 h-14 object-cover rounded border"
+                              />
                               <div>
                                 <span className="font-bold text-navy-950 block">{artwork.title}</span>
                                 <span className="text-neutral-500">{artwork.artistName} • Qty: {quantity}</span>
@@ -274,7 +280,12 @@ export const CustomerAccountPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {wishlist.map(({ artwork }) => (
                     <div key={artwork.id} className="border border-ivory-300 rounded-lg p-4 flex gap-4 items-center text-xs">
-                      <img src={artwork.imageUrl} alt="" className="w-16 h-20 object-cover rounded border" />
+                      <img
+                        src={getProductionImageUrl(artwork.imageUrl, artwork.title)}
+                        alt={artwork.title}
+                        onError={(e) => handleImageError(e, artwork.title)}
+                        className="w-16 h-20 object-cover rounded border"
+                      />
                       <div className="flex-1">
                         <h4 className="font-serif text-sm font-bold text-navy-950">{artwork.title}</h4>
                         <p className="text-neutral-500">{artwork.artistName}</p>

@@ -9,12 +9,17 @@ import {
   DollarSign,
   CreditCard,
   User,
-  Bell,
   Settings,
+  Bell,
+  LogOut,
+  FileText,
+  HelpCircle,
+  Layers,
+  Sparkles,
   Calculator,
-  Package,
-  Layers
+  Package
 } from 'lucide-react';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 import { CurrencyCode } from '../types';
 
 export const ArtistDashboardPage: React.FC = () => {
@@ -139,7 +144,12 @@ export const ArtistDashboardPage: React.FC = () => {
             {artistWorks.map(art => (
               <div key={art.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <img src={art.imageUrl} alt={art.title} className="w-16 h-20 object-cover rounded border" />
+                  <img
+                    src={getProductionImageUrl(art.imageUrl, art.title)}
+                    alt={art.title}
+                    onError={(e) => handleImageError(e, art.title)}
+                    className="w-16 h-20 object-cover rounded border"
+                  />
                   <div>
                     <h3 className="font-serif text-base font-bold text-navy-950">{art.title}</h3>
                     <p className="text-xs text-neutral-500">{art.category} • {art.type} • {formatOriginalPrice(art.price, art.currency)} {art.currency}</p>

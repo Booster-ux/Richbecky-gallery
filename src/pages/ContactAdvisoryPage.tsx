@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { EnquiryType } from '../types';
 import { LOGO_URL } from '../data/mockData';
-import { MessageSquare, ShieldCheck, Award, Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ShieldCheck, Award } from 'lucide-react';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const ContactAdvisoryPage: React.FC = () => {
   const { addEnquiry, selectedArtworkForEnquiry, showToast } = useGallery();
@@ -58,7 +59,12 @@ export const ContactAdvisoryPage: React.FC = () => {
           
           {selectedArtworkForEnquiry && (
             <div className="p-4 bg-ivory-100 rounded-xl border border-ivory-300 flex items-center gap-4">
-              <img src={selectedArtworkForEnquiry.imageUrl} alt="" className="w-14 h-16 object-cover rounded border" />
+              <img
+                src={getProductionImageUrl(selectedArtworkForEnquiry.imageUrl, selectedArtworkForEnquiry.title)}
+                alt={selectedArtworkForEnquiry.title}
+                onError={(e) => handleImageError(e, selectedArtworkForEnquiry.title)}
+                className="w-14 h-16 object-cover rounded border"
+              />
               <div>
                 <span className="text-gold-700 font-bold uppercase text-[10px]">Auto-Attached Artwork Reference</span>
                 <h4 className="font-serif text-base font-bold text-navy-950">{selectedArtworkForEnquiry.title}</h4>

@@ -31,6 +31,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Artwork, OrderFulfillmentStatus, EnquiryStatus, Payout, FAQItem, ShippingRegion } from '../types';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const AdminDashboardPage: React.FC = () => {
   const {
@@ -306,7 +307,12 @@ export const AdminDashboardPage: React.FC = () => {
                     {pendingArtworks.map(art => (
                       <div key={art.id} className="p-4 bg-ivory-100 rounded-lg border border-ivory-300 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <img src={art.imageUrl} alt="" className="w-12 h-14 object-cover rounded" />
+                          <img
+                            src={getProductionImageUrl(art.imageUrl, art.title)}
+                            alt={art.title}
+                            onError={(e) => handleImageError(e, art.title)}
+                            className="w-12 h-14 object-cover rounded"
+                          />
                           <div>
                             <h4 className="font-serif text-sm font-bold text-navy-950">{art.title}</h4>
                             <p className="text-xs text-neutral-500">{art.artistName} • {formatOriginalPrice(art.price, art.currency)} {art.currency}</p>
@@ -434,7 +440,12 @@ export const AdminDashboardPage: React.FC = () => {
                         />
                       </td>
                       <td className="p-3 font-semibold text-navy-950 flex items-center gap-3">
-                        <img src={art.imageUrl} alt="" className="w-10 h-12 object-cover rounded border" />
+                        <img
+                          src={getProductionImageUrl(art.imageUrl, art.title)}
+                          alt={art.title}
+                          onError={(e) => handleImageError(e, art.title)}
+                          className="w-10 h-12 object-cover rounded border"
+                        />
                         <div>
                           <span className="block font-bold text-sm">{art.title}</span>
                           <span className="text-[11px] text-neutral-500">{art.medium.split(',')[0]} ({art.year})</span>
@@ -555,7 +566,12 @@ export const AdminDashboardPage: React.FC = () => {
                 {artists.map(a => (
                   <div key={a.id} className="border border-ivory-300 rounded-xl p-5 space-y-4">
                     <div className="flex items-center gap-4">
-                      <img src={a.avatar} alt={a.name} className="w-14 h-14 rounded-full object-cover border-2 border-gold-400" />
+                      <img
+                        src={getProductionImageUrl(a.avatar, a.name)}
+                        alt={a.name}
+                        onError={(e) => handleImageError(e, a.name)}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-gold-400"
+                      />
                       <div>
                         <h3 className="font-serif text-base font-bold text-navy-950">{a.name}</h3>
                         <p className="text-xs text-neutral-500">{a.country} • Roster Artist</p>
@@ -848,7 +864,12 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {useGallery().categories.map(c => (
                 <div key={c.id} className="border border-ivory-300 rounded-lg p-4 flex gap-4 items-center">
-                  <img src={c.image} alt="" className="w-16 h-16 object-cover rounded" />
+                  <img
+                    src={getProductionImageUrl(c.image, c.name)}
+                    alt={c.name}
+                    onError={(e) => handleImageError(e, c.name)}
+                    className="w-16 h-16 object-cover rounded"
+                  />
                   <div>
                     <h3 className="font-serif text-base font-bold text-navy-950">{c.name}</h3>
                     <p className="text-xs text-neutral-500">{c.count} Works • {c.description}</p>

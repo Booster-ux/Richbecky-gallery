@@ -157,7 +157,7 @@ export const HomePage: React.FC = () => {
               className="group relative h-72 rounded-xl overflow-hidden cursor-pointer border border-ivory-300 shadow-subtle hover:shadow-2xl transition duration-500 bg-ivory-200 p-2"
             >
               <img
-                src={cat.image}
+                src={getProductionImageUrl(cat.image, cat.name)}
                 alt={cat.name}
                 onError={(e) => handleImageError(e, cat.name)}
                 className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
@@ -251,7 +251,7 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12">
             <div className="lg:col-span-5 relative min-h-[400px] flex items-center justify-center bg-navy-900 p-4">
               <img
-                src={artists[0].coverImage}
+                src={getProductionImageUrl(artists[0].coverImage || artists[0].avatar, artists[0].name)}
                 alt={artists[0].name}
                 onError={(e) => handleImageError(e, artists[0].name)}
                 className="w-full h-full object-contain"
@@ -352,6 +352,38 @@ export const HomePage: React.FC = () => {
               <Mail className="w-4 h-4" /> Join Journal
             </button>
           </form>
+        </div>
+      </section>
+
+      {/* 10. FOR ARTISTS ENTRY POINT */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white p-10 sm:p-16 rounded-2xl border border-ivory-300 shadow-gallery flex flex-col lg:flex-row items-center justify-between gap-10">
+          <div className="space-y-4 max-w-2xl">
+            <span className="text-gold-700 text-xs uppercase tracking-widest font-bold block">
+              FOR ARTISTS
+            </span>
+            <h3 className="font-serif text-3xl sm:text-4xl font-semibold text-navy-950">
+              Share your work with Richbecky Gallery.
+            </h3>
+            <p className="text-base text-neutral-700 font-light leading-relaxed">
+              Artists can submit their work for consideration and, once approved, manage their collection through the Artist Portal.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+            <button
+              onClick={() => setActivePage('artist-application')}
+              className="w-full sm:w-auto px-8 py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-sm font-bold text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-2"
+            >
+              Apply as an Artist <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setActivePage('artist-login')}
+              className="w-full sm:w-auto px-8 py-4 bg-ivory-100 hover:bg-ivory-200 text-navy-950 border border-ivory-300 rounded-sm font-bold text-xs uppercase tracking-widest transition flex items-center justify-center"
+            >
+              Artist Login
+            </button>
+          </div>
         </div>
       </section>
 

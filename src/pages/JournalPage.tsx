@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArrowRight, BookOpen } from 'lucide-react';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 export const JournalPage: React.FC = () => {
   const { setActivePage } = useGallery();
@@ -54,7 +55,12 @@ export const JournalPage: React.FC = () => {
           <article key={article.id} className="bg-white rounded-xl border border-ivory-300 overflow-hidden shadow-subtle hover:shadow-gallery transition duration-300 flex flex-col justify-between">
             <div className="space-y-4 p-6">
               <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-navy-950/5">
-                <img src={article.image} alt={article.title} className="w-full h-full object-contain hover:scale-105 transition duration-500" />
+                <img
+                  src={getProductionImageUrl(article.image, article.title)}
+                  alt={article.title}
+                  onError={(e) => handleImageError(e, article.title)}
+                  className="w-full h-full object-contain hover:scale-105 transition duration-500"
+                />
               </div>
               <div className="space-y-1">
                 <span className="text-[11px] font-semibold text-gold-700 uppercase tracking-wider">{article.category} • {article.date}</span>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { X, ZoomIn } from 'lucide-react';
+import { X } from 'lucide-react';
+import { getProductionImageUrl, handleImageError } from '../services/imageService';
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -29,8 +30,9 @@ export const ImageModal: React.FC<ImageModalProps> = ({
 
       <div className="relative max-w-5xl max-h-[90vh] flex flex-col items-center justify-center">
         <img
-          src={imageUrl}
+          src={getProductionImageUrl(imageUrl, title)}
           alt={title}
+          onError={(e) => handleImageError(e, title)}
           className="max-w-full max-h-[80vh] object-contain rounded shadow-2xl border border-gold-500/20"
         />
         <div className="mt-4 text-center text-ivory-100">

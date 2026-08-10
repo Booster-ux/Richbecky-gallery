@@ -126,7 +126,12 @@ export const ArtworkDetailsPage: React.FC = () => {
                     activeImageIndex === idx ? 'border-gold-500 ring-2 ring-gold-200' : 'border-transparent opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={getProductionImageUrl(img, selectedArtwork.title)}
+                    alt=""
+                    onError={(e) => handleImageError(e, selectedArtwork.title)}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -296,7 +301,12 @@ export const ArtworkDetailsPage: React.FC = () => {
             <div className="border-t border-ivory-300 pt-6">
               <div className="bg-ivory-100 p-4 rounded-xl border border-ivory-300 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img src={artist.avatar} alt={artist.name} className="w-12 h-12 rounded-full object-cover border border-gold-400" />
+                  <img
+                    src={getProductionImageUrl(artist.avatar, artist.name)}
+                    alt={artist.name}
+                    onError={(e) => handleImageError(e, artist.name)}
+                    className="w-12 h-12 rounded-full object-cover border border-gold-400"
+                  />
                   <div>
                     <h4 className="font-serif text-sm font-semibold text-navy-900">{artist.name}</h4>
                     <span className="text-[11px] text-neutral-500">{artist.country} • {artist.exhibitionsCount} Exhibitions</span>
