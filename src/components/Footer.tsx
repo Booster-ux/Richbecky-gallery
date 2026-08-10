@@ -98,18 +98,18 @@ export const Footer: React.FC = () => {
             </h3>
             <ul className="space-y-2 text-xs text-neutral-300">
               <li>
-                <button onClick={() => setActivePage('artist-register')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('artist-landing')} className="hover:text-gold-400 transition">
                   Sell Your Art
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('artist-register')} className="hover:text-gold-400 transition">
-                  Artist Registration
+                <button onClick={() => setActivePage('artist-application')} className="hover:text-gold-400 transition">
+                  Artist Representation Application
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('account')} className="hover:text-gold-400 transition">
-                  Artist Portal
+                <button onClick={() => setActivePage('artist-login')} className="hover:text-gold-400 transition">
+                  Artist Studio Portal Login
                 </button>
               </li>
             </ul>

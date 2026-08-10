@@ -5,12 +5,88 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Richbecky Gallery | Premier Online Contemporary Art Marketplace</title>
-    <meta name="description" content="Discover, collect, and buy original fine art and limited edition prints from international contemporary artists at Richbecky Gallery." />
+    <meta name="description" content="Discover, collect, and acquire original contemporary African masterworks and fine art prints at Richbecky Gallery." />
     
+    <!-- Open Graph / Social Sharing Meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Richbecky Gallery | Premier Online Contemporary Art Marketplace" />
+    <meta property="og:description" content="Discover, collect, and acquire original contemporary African masterworks and fine art prints at Richbecky Gallery." />
+    <meta property="og:url" content="https://richbeckygallery.com" />
+    <meta property="og:image" content="https://richbeckygallery.com/images/artworks/isembaye.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Richbecky Gallery | Premier Online Contemporary Art Marketplace" />
+    <meta name="twitter:description" content="Discover, collect, and acquire original contemporary African masterworks and fine art prints at Richbecky Gallery." />
+    <meta name="twitter:image" content="https://richbeckygallery.com/images/artworks/isembaye.jpg" />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- JSON-LD Structured Data Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ArtGallery",
+      "name": "Richbecky Gallery",
+      "url": "https://richbeckygallery.com",
+      "logo": "https://richbeckygallery.com/logo.svg",
+      "description": "Premier online contemporary art marketplace connecting African master visual artists with international art collectors.",
+      "currenciesAccepted": "USD, NGN, GBP, EUR, CAD, AUD",
+      "paymentAccepted": "Credit Card, Direct Wire Transfer",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Contemporary Fine Art Masterworks",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "VisualArtwork",
+              "name": "ISEMBAYE",
+              "artist": "Rebecca Esho",
+              "artMedium": "Oil, Traditional Beading & Fabric Collage on Canvas"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "VisualArtwork",
+              "name": "THIS IS OUR WAY",
+              "artist": "Rebecca Esho",
+              "artMedium": "Oil on Canvas"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "VisualArtwork",
+              "name": "THE FIRST DIALOGUE",
+              "artist": "Kolawole Adedeji",
+              "artMedium": "Oil on Canvas"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "VisualArtwork",
+              "name": "UNDER OUR NEW GARMENT",
+              "artist": "Kolawole Adedeji",
+              "artMedium": "Oil on Canvas"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "VisualArtwork",
+              "name": "Thought of Hope",
+              "artist": "Okunlola Olamilekan J (Palette)",
+              "artMedium": "Oil Paint on Canvas"
+            }
+          }
+        ]
+      }
+    }
+    </script>
   </head>
   <body class="bg-ivory-100 text-neutral-800 font-sans antialiased selection:bg-gold-500 selection:text-white min-h-screen flex flex-col">
     <div id="root"></div>

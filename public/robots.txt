@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /artist/dashboard
+Disallow: /account/
+
+Sitemap: https://richbeckygallery.com/sitemap.xml
