@@ -26,8 +26,8 @@ export const AdminLoginPage: React.FC = () => {
         {/* Header */}
         <div className="text-center space-y-3">
           <img src={LOGO_URL} alt="Richbecky Gallery" className="h-12 w-auto mx-auto object-contain" />
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-navy-950 text-gold-400 text-[11px] font-semibold tracking-widest uppercase">
-            <Lock className="w-3 h-3 text-gold-400" /> Private Curatorial Access
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-50 text-gold-700 border border-gold-300 text-[11px] font-bold tracking-widest uppercase">
+            <Lock className="w-3 h-3 text-gold-600" /> Private Curatorial Access
           </div>
           <h1 className="font-serif text-2xl font-semibold text-navy-900">
             Executive Governance Authentication

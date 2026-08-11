@@ -173,16 +173,16 @@ export const AdminDashboardPage: React.FC = () => {
     <div className="min-h-screen bg-ivory-100 animate-fade-in flex flex-col lg:flex-row">
       
       {/* Sidebar Navigation */}
-      <aside className="w-full lg:w-72 bg-navy-950 text-ivory-200 border-r border-navy-900 flex-shrink-0 p-6 space-y-6">
+      <aside className="w-full lg:w-72 bg-white text-navy-950 border-r border-ivory-300 flex-shrink-0 p-6 space-y-6 shadow-subtle">
         <div>
-          <div className="text-gold-400 text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5">
-            <LayoutDashboard className="w-3.5 h-3.5 text-gold-400" /> Executive Console
+          <div className="text-gold-700 text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5">
+            <LayoutDashboard className="w-3.5 h-3.5 text-gold-600" /> Executive Console
           </div>
-          <h2 className="font-serif text-xl font-bold text-white mt-1">Richbecky Admin</h2>
-          <p className="text-[11px] text-neutral-400 font-light">Gallery Operations Portal</p>
+          <h2 className="font-serif text-xl font-bold text-navy-950 mt-1">Richbecky Admin</h2>
+          <p className="text-[11px] text-neutral-500 font-medium">Gallery Operations Portal</p>
         </div>
 
-        <nav className="space-y-1 text-xs font-semibold uppercase tracking-wider">
+        <nav className="space-y-1 text-xs font-bold uppercase tracking-wider">
           {(() => {
             interface AdminNavItem {
               id: AdminSection;
@@ -217,7 +217,7 @@ export const AdminDashboardPage: React.FC = () => {
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
                   className={`w-full text-left px-3.5 py-2.5 rounded-lg flex items-center justify-between transition ${
-                    active ? 'bg-gold-500 text-navy-950 font-bold shadow-md' : 'text-neutral-300 hover:bg-navy-900 hover:text-white'
+                    active ? 'bg-gold-500 text-navy-950 font-bold shadow-md' : 'text-neutral-700 hover:bg-ivory-100 hover:text-navy-950'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">

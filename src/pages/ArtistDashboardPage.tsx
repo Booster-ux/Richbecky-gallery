@@ -51,11 +51,11 @@ export const ArtistDashboardPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in space-y-8">
       
       {/* Artist Studio Header */}
-      <div className="bg-navy-950 text-ivory-100 p-8 rounded-2xl border border-gold-500/30 shadow-gallery flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="bg-white text-navy-950 p-8 rounded-2xl border border-ivory-300 shadow-gallery flex flex-col sm:flex-row items-center justify-between gap-6">
         <div>
-          <span className="text-gold-400 text-xs font-bold uppercase tracking-widest">Artist Management Studio</span>
-          <h1 className="font-serif text-3xl font-bold text-white mt-1">Rebecca Esho Fine Art Studio</h1>
-          <p className="text-xs text-neutral-300">Representation Status: Active Gallery Represented Artist</p>
+          <span className="text-gold-700 text-xs font-bold uppercase tracking-widest block">Artist Management Studio</span>
+          <h1 className="font-serif text-3xl font-bold text-navy-950 mt-1">Rebecca Esho Fine Art Studio</h1>
+          <p className="text-xs text-neutral-500 font-medium">Representation Status: Active Gallery Represented Artist</p>
         </div>
 
         <button

@@ -99,25 +99,25 @@ export const CustomerAccountPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in space-y-8">
       
       {/* Collector Profile Header */}
-      <div className="bg-navy-950 text-ivory-100 p-8 rounded-2xl border border-gold-500/30 shadow-gallery flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="bg-white text-navy-950 p-8 rounded-2xl border border-ivory-300 shadow-gallery flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <img
             src={userAvatar}
             alt={userName}
-            className="w-20 h-20 rounded-full object-cover border-2 border-gold-400"
+            className="w-20 h-20 rounded-full object-cover border-2 border-gold-500"
           />
           <div>
-            <span className="text-gold-400 text-xs font-bold uppercase tracking-widest block">VIP Patron Collector</span>
-            <h1 className="font-serif text-2xl font-bold text-white mt-0.5">{userName}</h1>
-            <p className="text-xs text-neutral-300 font-light">{userEmail} • {userPhone}</p>
+            <span className="text-gold-700 text-xs font-bold uppercase tracking-widest block">VIP Patron Collector</span>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-navy-950">{userName}</h1>
+            <p className="text-xs text-neutral-500 mt-1 font-medium">{userEmail} • {userPhone}</p>
           </div>
         </div>
 
         <button
           onClick={handleLogout}
-          className="px-4 py-2.5 bg-navy-900 hover:bg-rose-900 text-ivory-200 border border-ivory-300/20 rounded text-xs font-bold transition flex items-center gap-2"
+          className="px-5 py-2.5 bg-ivory-100 hover:bg-ivory-200 text-navy-950 border border-ivory-300 rounded text-xs font-bold uppercase tracking-wider transition flex items-center gap-2"
         >
-          <LogOut className="w-4 h-4" /> Sign Out
+          <LogOut className="w-4 h-4 text-gold-700" /> Sign Out
         </button>
       </div>
 

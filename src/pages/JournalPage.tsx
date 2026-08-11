@@ -54,7 +54,7 @@ export const JournalPage: React.FC = () => {
         {articles.map(article => (
           <article key={article.id} className="bg-white rounded-xl border border-ivory-300 overflow-hidden shadow-subtle hover:shadow-gallery transition duration-300 flex flex-col justify-between">
             <div className="space-y-4 p-6">
-              <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-navy-950/5">
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-ivory-100 p-2 flex items-center justify-center">
                 <img
                   src={getProductionImageUrl(article.image, article.title)}
                   alt={article.title}

@@ -7,30 +7,30 @@ export const Footer: React.FC = () => {
   const { setActivePage, setFilterState } = useGallery();
 
   return (
-    <footer className="bg-navy-950 text-ivory-200 mt-auto border-t border-navy-900 pt-16 pb-12">
+    <footer className="bg-ivory-200 text-navy-950 mt-auto border-t border-ivory-300 pt-16 pb-12">
       
       {/* Gallery Trust Badges */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 border-b border-navy-800/80 mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 border-b border-ivory-300 mb-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="flex flex-col items-center">
-            <Award className="w-6 h-6 text-gold-400 mb-2.5" />
-            <h4 className="text-xs font-semibold text-ivory-100 uppercase tracking-widest">Authenticated Art</h4>
-            <p className="text-[11px] text-neutral-400 mt-1 font-light">Signed Certificate of Authenticity included</p>
+            <Award className="w-6 h-6 text-gold-700 mb-2.5" />
+            <h4 className="text-xs font-bold text-navy-950 uppercase tracking-widest">Authenticated Art</h4>
+            <p className="text-[11px] text-neutral-600 mt-1 font-light">Signed Certificate of Authenticity included</p>
           </div>
           <div className="flex flex-col items-center">
-            <Truck className="w-6 h-6 text-gold-400 mb-2.5" />
-            <h4 className="text-xs font-semibold text-ivory-100 uppercase tracking-widest">White-Glove Delivery</h4>
-            <p className="text-[11px] text-neutral-400 mt-1 font-light">Fully insured global art transit & crating</p>
+            <Truck className="w-6 h-6 text-gold-700 mb-2.5" />
+            <h4 className="text-xs font-bold text-navy-950 uppercase tracking-widest">White-Glove Delivery</h4>
+            <p className="text-[11px] text-neutral-600 mt-1 font-light">Fully insured global art transit & crating</p>
           </div>
           <div className="flex flex-col items-center">
-            <ShieldCheck className="w-6 h-6 text-gold-400 mb-2.5" />
-            <h4 className="text-xs font-semibold text-ivory-100 uppercase tracking-widest">Curated Excellence</h4>
-            <p className="text-[11px] text-neutral-400 mt-1 font-light">Direct representation of contemporary masters</p>
+            <ShieldCheck className="w-6 h-6 text-gold-700 mb-2.5" />
+            <h4 className="text-xs font-bold text-navy-950 uppercase tracking-widest">Curated Excellence</h4>
+            <p className="text-[11px] text-neutral-600 mt-1 font-light">Direct representation of contemporary masters</p>
           </div>
           <div className="flex flex-col items-center">
-            <Lock className="w-6 h-6 text-gold-400 mb-2.5" />
-            <h4 className="text-xs font-semibold text-ivory-100 uppercase tracking-widest">Collector Protection</h4>
-            <p className="text-[11px] text-neutral-400 mt-1 font-light">Guaranteed authenticity & escrow security</p>
+            <Lock className="w-6 h-6 text-gold-700 mb-2.5" />
+            <h4 className="text-xs font-bold text-navy-950 uppercase tracking-widest">Collector Protection</h4>
+            <p className="text-[11px] text-neutral-600 mt-1 font-light">Guaranteed authenticity & escrow security</p>
           </div>
         </div>
       </div>
@@ -43,48 +43,48 @@ export const Footer: React.FC = () => {
             <div className="flex items-center">
               <img src={LOGO_URL} alt="Richbecky Gallery" className="h-12 w-auto object-contain" />
             </div>
-            <p className="text-xs text-neutral-400 leading-relaxed font-light">
+            <p className="text-xs text-neutral-600 leading-relaxed font-light">
               Richbecky Gallery is a premier online contemporary art marketplace connecting distinguished African visual artists and contemporary masters with international collectors, curators, and institutions.
             </p>
-            <div className="pt-2 flex items-center space-x-4 text-xs font-medium text-gold-400">
-              <a href="#" className="hover:text-gold-300 transition">Instagram</a>
+            <div className="pt-2 flex items-center space-x-4 text-xs font-semibold text-gold-700">
+              <a href="#" className="hover:underline transition">Instagram</a>
               <span>•</span>
-              <a href="#" className="hover:text-gold-300 transition">Artsy</a>
+              <a href="#" className="hover:underline transition">Artsy</a>
               <span>•</span>
-              <a href="#" className="hover:text-gold-300 transition">LinkedIn</a>
+              <a href="#" className="hover:underline transition">LinkedIn</a>
               <span>•</span>
-              <a href="#" className="hover:text-gold-300 transition">Twitter</a>
+              <a href="#" className="hover:underline transition">Twitter</a>
             </div>
           </div>
 
           {/* Column 2: EXPLORE */}
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-gold-400 uppercase tracking-widest border-b border-navy-800 pb-2">
+            <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-300 pb-2">
               Explore
             </h3>
-            <ul className="space-y-2 text-xs text-neutral-300">
+            <ul className="space-y-2 text-xs text-neutral-600 font-medium">
               <li>
-                <button onClick={() => setActivePage('catalogue')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('catalogue')} className="hover:text-gold-700 transition">
                   Artworks
                 </button>
               </li>
               <li>
-                <button onClick={() => { setFilterState(prev => ({ ...prev, category: 'All' })); setActivePage('catalogue'); }} className="hover:text-gold-400 transition">
+                <button onClick={() => { setFilterState(prev => ({ ...prev, category: 'All' })); setActivePage('catalogue'); }} className="hover:text-gold-700 transition">
                   Categories
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('artist-profile')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('artist-profile')} className="hover:text-gold-700 transition">
                   Artists
                 </button>
               </li>
               <li>
-                <button onClick={() => { setFilterState(prev => ({ ...prev, isNew: true })); setActivePage('catalogue'); }} className="hover:text-gold-400 transition">
+                <button onClick={() => { setFilterState(prev => ({ ...prev, isNew: true })); setActivePage('catalogue'); }} className="hover:text-gold-700 transition">
                   New Arrivals
                 </button>
               </li>
               <li>
-                <button onClick={() => { setFilterState(prev => ({ ...prev, isFeatured: true })); setActivePage('catalogue'); }} className="hover:text-gold-400 transition">
+                <button onClick={() => { setFilterState(prev => ({ ...prev, isFeatured: true })); setActivePage('catalogue'); }} className="hover:text-gold-700 transition">
                   Featured Collections
                 </button>
               </li>
@@ -93,22 +93,22 @@ export const Footer: React.FC = () => {
 
           {/* Column 3: FOR ARTISTS */}
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-gold-400 uppercase tracking-widest border-b border-navy-800 pb-2">
+            <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-300 pb-2">
               For Artists
             </h3>
-            <ul className="space-y-2 text-xs text-neutral-300">
+            <ul className="space-y-2 text-xs text-neutral-600 font-medium">
               <li>
-                <button onClick={() => setActivePage('artist-landing')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('artist-landing')} className="hover:text-gold-700 transition">
                   Sell Your Art
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('artist-application')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('artist-application')} className="hover:text-gold-700 transition">
                   Artist Representation Application
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('artist-login')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('artist-login')} className="hover:text-gold-700 transition">
                   Artist Studio Portal Login
                 </button>
               </li>
@@ -117,32 +117,32 @@ export const Footer: React.FC = () => {
 
           {/* Column 4: ABOUT & SERVICES */}
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-gold-400 uppercase tracking-widest border-b border-navy-800 pb-2">
+            <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-300 pb-2">
               About
             </h3>
-            <ul className="space-y-2 text-xs text-neutral-300">
+            <ul className="space-y-2 text-xs text-neutral-600 font-medium">
               <li>
-                <button onClick={() => setActivePage('about')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('about')} className="hover:text-gold-700 transition">
                   About Richbecky Gallery
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('contact-advisory')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('contact-advisory')} className="hover:text-gold-700 transition">
                   Contact Advisory
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('policies')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('policies')} className="hover:text-gold-700 transition">
                   FAQ & Inquiries
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('policies')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('policies')} className="hover:text-gold-700 transition">
                   Shipping & Logistics
                 </button>
               </li>
               <li>
-                <button onClick={() => setActivePage('policies')} className="hover:text-gold-400 transition">
+                <button onClick={() => setActivePage('policies')} className="hover:text-gold-700 transition">
                   Returns & Guarantees
                 </button>
               </li>
@@ -152,14 +152,14 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Legal Bar */}
-        <div className="pt-8 border-t border-navy-900 flex flex-col sm:flex-row items-center justify-between text-[11px] text-neutral-400">
+        <div className="pt-8 border-t border-ivory-300 flex flex-col sm:flex-row items-center justify-between text-[11px] text-neutral-500 font-medium">
           <div>
             © {new Date().getFullYear()} Richbecky Gallery. All rights reserved.
           </div>
           <div className="flex space-x-6 mt-4 sm:mt-0">
-            <button onClick={() => setActivePage('policies')} className="hover:text-neutral-200 transition">Privacy Policy</button>
-            <button onClick={() => setActivePage('policies')} className="hover:text-neutral-200 transition">Terms & Conditions</button>
-            <button onClick={() => setActivePage('admin-login')} className="hover:text-gold-400 transition text-neutral-500">
+            <button onClick={() => setActivePage('policies')} className="hover:text-navy-950 transition">Privacy Policy</button>
+            <button onClick={() => setActivePage('policies')} className="hover:text-navy-950 transition">Terms & Conditions</button>
+            <button onClick={() => setActivePage('admin-login')} className="hover:text-gold-700 transition text-neutral-500 font-semibold">
               Admin Portal
             </button>
           </div>

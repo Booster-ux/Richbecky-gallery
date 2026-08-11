@@ -156,44 +156,44 @@ export const ContactAdvisoryPage: React.FC = () => {
         </div>
 
         {/* Gallery Contact Information */}
-        <div className="lg:col-span-5 bg-navy-950 text-ivory-100 p-8 rounded-2xl border border-gold-500/30 space-y-8 shadow-gallery">
+        <div className="lg:col-span-5 bg-white text-navy-950 p-8 rounded-2xl border border-ivory-300 space-y-8 shadow-gallery">
           
           <div>
-            <span className="text-gold-400 text-xs font-bold uppercase tracking-widest">Global Curatorial Desk</span>
-            <h3 className="font-serif text-2xl font-bold text-white mt-1">Richbecky Gallery Headquarters</h3>
-            <p className="text-xs text-neutral-300 font-light mt-2 leading-relaxed">
+            <span className="text-gold-700 text-xs font-bold uppercase tracking-widest">Global Curatorial Desk</span>
+            <h3 className="font-serif text-2xl font-bold text-navy-950 mt-1">Richbecky Gallery Headquarters</h3>
+            <p className="text-xs text-neutral-600 font-light mt-2 leading-relaxed">
               Our advisory team operates across Lagos, London, and Paris, facilitating private acquisitions for international patrons.
             </p>
           </div>
 
           <div className="space-y-4 text-xs">
             <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-gold-400 flex-shrink-0 mt-0.5" />
+              <MapPin className="w-5 h-5 text-gold-700 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="text-white block">Gallery Physical Desk</strong>
-                <span className="text-neutral-300">Victoria Island, Lagos • Mayfair, London</span>
+                <strong className="text-navy-950 block font-bold">Gallery Physical Desk</strong>
+                <span className="text-neutral-600">Victoria Island, Lagos • Mayfair, London</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-gold-400 flex-shrink-0 mt-0.5" />
+              <Mail className="w-5 h-5 text-gold-700 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="text-white block">Curatorial Advisory Email</strong>
-                <span className="text-neutral-300">advisory@richbeckygallery.com</span>
+                <strong className="text-navy-950 block font-bold">Curatorial Advisory Email</strong>
+                <span className="text-neutral-600">advisory@richbeckygallery.com</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Phone className="w-5 h-5 text-gold-400 flex-shrink-0 mt-0.5" />
+              <Phone className="w-5 h-5 text-gold-700 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="text-white block">Concierge Telephone</strong>
-                <span className="text-neutral-300">+234 800 RICHBECKY / +44 20 7946 0912</span>
+                <strong className="text-navy-950 block font-bold">Concierge Telephone</strong>
+                <span className="text-neutral-600">+234 800 RICHBECKY / +44 20 7946 0912</span>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-navy-900 flex items-center gap-2 text-xs text-gold-400">
-            <ShieldCheck className="w-4 h-4 text-gold-400" />
+          <div className="pt-4 border-t border-ivory-200 flex items-center gap-2 text-xs text-gold-700 font-semibold">
+            <ShieldCheck className="w-4 h-4 text-gold-600" />
             <span>Guaranteed 24-Hour Confidential Response</span>
           </div>
 

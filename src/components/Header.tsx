@@ -67,26 +67,26 @@ export const Header: React.FC = () => {
     <header className="sticky top-0 z-40 w-full bg-ivory-100/98 backdrop-blur-md border-b border-ivory-300 transition-all duration-200 shadow-subtle">
       
       {/* Top Announcement & Currency Bar */}
-      <div className="bg-navy-950 text-ivory-100 py-2.5 px-4 sm:px-8 text-xs font-light tracking-wide flex items-center justify-between gap-4 border-b border-navy-900">
+      <div className="bg-ivory-200 text-navy-950 py-2.5 px-4 sm:px-8 text-xs font-light tracking-wide flex items-center justify-between gap-4 border-b border-ivory-300">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-gold-400 font-bold">
-            <Sparkles className="w-3.5 h-3.5" /> Certificate of Authenticity Included
+          <span className="flex items-center gap-1.5 text-gold-700 font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-gold-600" /> Certificate of Authenticity Included
           </span>
-          <span className="hidden md:inline text-navy-700">|</span>
-          <span className="hidden lg:inline text-neutral-300">Complimentary Insured Worldwide Courier Delivery</span>
+          <span className="hidden md:inline text-ivory-400">|</span>
+          <span className="hidden lg:inline text-neutral-600 font-medium">Complimentary Insured Worldwide Courier Delivery</span>
         </div>
         
         {/* Currency Selector */}
-        <div className="flex items-center gap-2 bg-navy-900 px-3 py-1 rounded border border-gold-500/30">
-          <Globe className="w-3.5 h-3.5 text-gold-400" />
-          <span className="text-xs text-neutral-300 font-medium hidden sm:inline">Currency:</span>
+        <div className="flex items-center gap-2 bg-white px-3 py-1 rounded border border-ivory-300 shadow-sm">
+          <Globe className="w-3.5 h-3.5 text-gold-700" />
+          <span className="text-xs text-neutral-600 font-medium hidden sm:inline">Currency:</span>
           <select
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value as CurrencyCode)}
-            className="bg-transparent text-gold-400 text-xs font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-navy-950 text-xs font-bold focus:outline-none cursor-pointer"
           >
             {SUPPORTED_CURRENCIES.map(curr => (
-              <option key={curr.code} value={curr.code} className="bg-navy-950 text-white">
+              <option key={curr.code} value={curr.code} className="bg-white text-navy-950">
                 {curr.code} ({curr.symbol})
               </option>
             ))}

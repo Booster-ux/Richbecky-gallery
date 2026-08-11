@@ -27,15 +27,15 @@ export const ArtistProfilePage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in space-y-12">
       
       {/* Cover Header */}
-      <div className="relative rounded-2xl overflow-hidden bg-navy-900 border border-gold-500/20 shadow-gallery">
-        <div className="h-64 sm:h-80 w-full relative bg-navy-950 p-4">
+      <div className="relative rounded-2xl overflow-hidden bg-white border border-ivory-300 shadow-gallery">
+        <div className="h-64 sm:h-80 w-full relative bg-ivory-100 p-4">
           <img
             src={getProductionImageUrl(artist.coverImage || artist.avatar, artist.name)}
             alt={artist.name}
             onError={(e) => handleImageError(e, artist.name)}
-            className="w-full h-full object-contain brightness-90"
+            className="w-full h-full object-contain"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
         </div>
 
         {/* Profile Details Container */}
@@ -46,16 +46,16 @@ export const ArtistProfilePage: React.FC = () => {
               src={getProductionImageUrl(artist.avatar, artist.name)}
               alt={artist.name}
               onError={(e) => handleImageError(e, artist.name)}
-              className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-2xl bg-white"
+              className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-gallery bg-white"
             />
             
-            <div className="text-white space-y-1">
-              <span className="text-gold-400 text-xs uppercase tracking-widest font-semibold flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" /> Represented Master Artist
+            <div className="text-navy-950 space-y-1">
+              <span className="text-gold-700 text-xs uppercase tracking-widest font-bold flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-gold-600" /> Represented Master Artist
               </span>
-              <h1 className="font-serif text-3xl sm:text-4xl font-bold">{artist.name}</h1>
-              <p className="text-xs text-neutral-300 flex items-center gap-2">
-                <Globe className="w-3.5 h-3.5 text-gold-400" /> Based in {artist.country}
+              <h1 className="font-serif text-3xl sm:text-4xl font-bold text-navy-950">{artist.name}</h1>
+              <p className="text-xs text-neutral-600 flex items-center gap-2 font-medium">
+                <Globe className="w-3.5 h-3.5 text-gold-700" /> Based in {artist.country}
               </p>
             </div>
           </div>
@@ -63,17 +63,16 @@ export const ArtistProfilePage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleFollowToggle}
-              className={`px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-sm ${
                 isFollowed
                   ? 'bg-gold-500 text-navy-950 hover:bg-gold-400'
-                  : 'bg-white/90 text-navy-900 hover:bg-white'
+                  : 'bg-navy-950 text-white hover:bg-gold-500 hover:text-navy-950'
               }`}
             >
-              <Heart className={`w-4 h-4 ${isFollowed ? 'fill-current' : ''}`} />
-              {isFollowed ? 'Following Artist' : 'Follow Artist'}
+              <Heart className={`w-4 h-4 ${isFollowed ? 'fill-navy-950' : ''}`} />
+              {isFollowed ? 'Following Artist' : 'Follow Roster'}
             </button>
           </div>
-
         </div>
       </div>
 
@@ -102,24 +101,24 @@ export const ArtistProfilePage: React.FC = () => {
         </div>
 
         {/* Right Column: Gallery Credentials */}
-        <div className="lg:col-span-4 bg-navy-900 text-ivory-100 p-6 rounded-xl border border-gold-500/30 space-y-6">
-          <h3 className="font-serif text-lg font-semibold text-gold-400">Gallery Representation</h3>
+        <div className="lg:col-span-4 bg-white text-navy-950 p-6 rounded-xl border border-ivory-300 shadow-gallery space-y-6">
+          <h3 className="font-serif text-lg font-bold text-navy-950">Gallery Representation</h3>
           
           <div className="space-y-4 text-xs">
-            <div className="flex items-center justify-between border-b border-navy-800 pb-3">
-              <span className="text-neutral-400">Representation Status</span>
-              <span className="font-bold text-white text-sm">Exclusive Gallery Roster</span>
+            <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+              <span className="text-neutral-500 font-medium">Representation Status</span>
+              <span className="font-bold text-navy-950 text-sm">Exclusive Gallery Roster</span>
             </div>
 
-            <div className="flex items-center justify-between border-b border-navy-800 pb-3">
-              <span className="text-neutral-400">Available Catalogue Works</span>
-              <span className="font-bold text-white text-sm">{artistArtworks.length} Works</span>
+            <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+              <span className="text-neutral-500 font-medium">Available Catalogue Works</span>
+              <span className="font-bold text-navy-950 text-sm">{artistArtworks.length} Works</span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-neutral-400">Authenticity Guarantee</span>
-              <span className="text-gold-400 font-semibold flex items-center gap-1">
-                <Award className="w-3.5 h-3.5" /> Verified Master
+              <span className="text-neutral-500 font-medium">Authenticity Guarantee</span>
+              <span className="text-gold-700 font-bold flex items-center gap-1">
+                <Award className="w-3.5 h-3.5 text-gold-600" /> Verified Master
               </span>
             </div>
           </div>
