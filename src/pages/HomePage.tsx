@@ -1,18 +1,15 @@
 import React from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
+import { GoldAtmosphereCanvas } from '../components/GoldAtmosphereCanvas';
 import { LOGO_URL } from '../data/mockData';
 import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
   Award,
-  Globe,
-  Compass,
-  Heart,
   BookOpen,
-  Mail,
-  CheckCircle2
+  Mail
 } from 'lucide-react';
 import { handleImageError, getProductionImageUrl } from '../services/imageService';
 
@@ -34,19 +31,23 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-16 pb-20 animate-fade-in">
       
-      {/* 1. HERO EXHIBITION SECTION — WARM WHITE / IVORY PALETTE */}
+      {/* 1. HERO EXHIBITION SECTION — CALM WARM IVORY (#F5F1E8) WITH SUBTLE GOLD ATMOSPHERE */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="bg-white text-navy-950 p-8 sm:p-14 lg:p-16 rounded-3xl border border-ivory-300 shadow-gallery relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="bg-[#F5F1E8] text-navy-950 p-8 sm:p-14 lg:p-20 rounded-3xl border border-ivory-300/90 shadow-gallery relative overflow-hidden">
+          
+          {/* Subtle Ambient Gold Particle Canvas (Non-distracting, performance-friendly) */}
+          <GoldAtmosphereCanvas />
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Editorial Header & CTAs */}
             <div className="lg:col-span-6 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold-50 text-gold-700 text-xs font-semibold tracking-wider uppercase border border-gold-300">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-50/90 text-gold-800 text-xs font-bold tracking-wider uppercase border border-gold-400/40 shadow-sm backdrop-blur-sm">
                 <Sparkles className="w-3.5 h-3.5 text-gold-600" />
                 Featured Masterwork Exhibition
               </div>
 
-              <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-navy-950">
+              <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.15] tracking-tight text-navy-950">
                 African Contemporary Masters & Fine Art
               </h1>
 
@@ -57,7 +58,7 @@ export const HomePage: React.FC = () => {
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <button
                   onClick={() => setActivePage('catalogue')}
-                  className="px-9 py-4 bg-gold-500 hover:bg-gold-400 text-navy-950 rounded-sm font-bold text-xs uppercase tracking-widest transition duration-300 shadow-xl flex items-center justify-center gap-2"
+                  className="px-9 py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-sm font-bold text-xs uppercase tracking-widest transition duration-300 shadow-xl flex items-center justify-center gap-2"
                 >
                   Explore Catalogue <ArrowRight className="w-4 h-4" />
                 </button>
@@ -67,28 +68,29 @@ export const HomePage: React.FC = () => {
                     setFilterState(prev => ({ ...prev, type: 'Original' }));
                     setActivePage('catalogue');
                   }}
-                  className="px-9 py-4 bg-ivory-100 hover:bg-ivory-200 text-navy-950 border border-ivory-300 rounded-sm font-bold text-xs uppercase tracking-widest transition"
+                  className="px-9 py-4 bg-white/90 hover:bg-white text-navy-950 border border-ivory-300 rounded-sm font-bold text-xs uppercase tracking-widest transition shadow-sm backdrop-blur-sm"
                 >
                   Original Collection
                 </button>
               </div>
             </div>
 
-            {/* Large Dominant Hero Visual */}
+            {/* Museum Exhibition Frame for Featured Masterwork */}
             <div className="lg:col-span-6 flex justify-center">
               <div
                 onClick={() => navigateToArtwork(featuredHeroArt)}
-                className="relative group cursor-pointer w-full max-w-xl rounded-2xl overflow-hidden border border-ivory-300 shadow-gallery bg-ivory-100 p-4"
+                className="relative group cursor-pointer w-full max-w-xl rounded-2xl overflow-hidden border border-gold-500/25 shadow-2xl bg-white p-4 transition duration-500 hover:shadow-gold-glow"
               >
-                <div className="w-full h-[480px] sm:h-[560px] flex items-center justify-center bg-white rounded-xl overflow-hidden border border-ivory-200 p-2">
+                <div className="w-full h-[480px] sm:h-[580px] flex items-center justify-center bg-[#FAF8F5] rounded-xl overflow-hidden border border-ivory-300/80 p-3 relative">
                   <img
                     src={getProductionImageUrl(featuredHeroArt.imageUrl, featuredHeroArt.title)}
                     alt={featuredHeroArt.title}
                     onError={(e) => handleImageError(e, featuredHeroArt.title)}
-                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </div>
-                <div className="mt-4 p-4 bg-white rounded-xl border border-ivory-200 space-y-1">
+                
+                <div className="mt-4 p-5 bg-white rounded-xl border border-ivory-200 shadow-subtle space-y-1">
                   <span className="text-gold-700 text-xs uppercase tracking-widest font-bold block">
                     Featured Masterwork • 2026
                   </span>
@@ -97,7 +99,7 @@ export const HomePage: React.FC = () => {
                     By {featuredHeroArt.artistName} • {formatPrice(featuredHeroArt.price, featuredHeroArt.currency)}
                   </p>
                   <span className="text-xs text-gold-700 font-bold underline block pt-1 group-hover:translate-x-1 transition-transform">
-                    View Masterwork Details & Provenance →
+                    View Masterwork Details & Certificate Provenance →
                   </span>
                 </div>
               </div>
@@ -197,7 +199,7 @@ export const HomePage: React.FC = () => {
         </section>
       )}
 
-      {/* 5. ARTIST SPOTLIGHT — WARM WHITE / IVORY PALETTE */}
+      {/* 5. ARTIST SPOTLIGHT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white text-navy-950 rounded-2xl overflow-hidden shadow-gallery border border-ivory-300">
           <div className="grid grid-cols-1 lg:grid-cols-12">
@@ -276,7 +278,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. JOURNAL / NEWSLETTER — WARM WHITE / IVORY PALETTE */}
+      {/* 8. JOURNAL / NEWSLETTER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-ivory-200 text-navy-950 p-10 sm:p-16 rounded-2xl border border-ivory-300 flex flex-col lg:flex-row items-center justify-between gap-10">
           <div className="space-y-4 max-w-xl">
