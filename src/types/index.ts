@@ -1,6 +1,6 @@
-export type ArtworkType = 'Original' | 'Fine Art Print';
+export type ArtworkType = 'Original' | 'Original Artwork' | 'Fine Art Print';
 
-export type ArtworkStatus = 'Approved' | 'Pending Admin Approval' | 'Rejected' | 'Draft' | 'Archived';
+export type ArtworkStatus = 'Approved' | 'Pending Admin Approval' | 'Pending Approval' | 'Rejected' | 'Draft' | 'Archived' | 'Sold' | 'Published';
 
 export type CurrencyCode = 'NGN' | 'USD' | 'GBP' | 'EUR' | 'CAD' | 'AUD';
 
@@ -70,7 +70,7 @@ export interface Artist {
   artworksCount: number;
   isFollowed?: boolean;
   commissionRate?: number; // Configurable percentage (e.g. 15%)
-  status?: 'Active' | 'Pending Verification' | 'Suspended';
+  status?: 'Active' | 'Pending Verification' | 'Suspended' | 'Rejected';
   socialLinks?: {
     website?: string;
     instagram?: string;

@@ -31,8 +31,7 @@ import {
   WishlistEntity,
   AuditRecordEntity,
   CommissionEntity,
-  CustomerAddressEntity,
-  CustomerProfile
+  CustomerAddressEntity
 } from '../backend';
 
 import {
@@ -68,7 +67,10 @@ export function mapBackendArtworkToFrontend(art: ArtworkEntity): Artwork {
     medium: art.medium,
     materials: art.materials,
     dimensions: art.dimensionsFormatted,
-    parsedDimensions: art.dimensionsParsed,
+    parsedDimensions: art.dimensionsParsed ? {
+      ...art.dimensionsParsed,
+      formatted: art.dimensionsFormatted
+    } : undefined,
     year: art.yearCreated,
     price: art.price,
     currency: art.originalCurrency,
@@ -175,7 +177,7 @@ export function mapBackendOrderToFrontend(order: OrderEntity): Order {
     total: order.total,
     displayCurrency: order.displayCurrency,
     shippingInfo: order.shippingAddress,
-    paymentMethod: order.paymentMethod,
+    paymentMethod: order.paymentMethod === 'Pending Selection' ? 'Card' : order.paymentMethod,
     status: order.status as OrderFulfillmentStatus,
     trackingNumber: order.trackingNumber
   };
@@ -433,7 +435,7 @@ export const ApiService = {
     getDashboardMetrics: () => {
       return {
         totalArtworks: dbStore.artworks.size,
-        pendingArtworks: Array.from(dbStore.artworks.values()).filter(a => a.status === 'Pending Admin Approval' || a.status === 'Pending Approval').length,
+        pendingArtworks: Array.from(dbStore.artworks.values()).filter(a => (a.status as string) === 'Pending Admin Approval' || (a.status as string) === 'Pending Approval').length,
         totalArtists: dbStore.artists.size,
         pendingArtistApplications: Array.from(dbStore.artistApplications.values()).filter(app => app.status === 'Pending').length,
         totalCustomers: dbStore.customers.size,

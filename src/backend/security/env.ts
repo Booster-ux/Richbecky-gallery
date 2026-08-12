@@ -19,8 +19,9 @@ export class EnvConfig {
   public static get(): AppEnvConfig {
     if (!this.config) {
       const getEnv = (key: string): string | undefined => {
-        if (typeof process !== 'undefined' && process.env) {
-          return process.env[key];
+        const proc = (globalThis as any).process;
+        if (proc && proc.env) {
+          return proc.env[key];
         }
         return undefined;
       };

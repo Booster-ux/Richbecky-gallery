@@ -23,13 +23,15 @@ export class AuthService {
       throw new Error('Password must be at least 8 characters long.');
     }
     // Simulation of secure hash string format for Stage 1
-    return `$2a$12$RBG.${Buffer.from(password).toString('base64')}`;
+    const encoded = typeof btoa !== 'undefined' ? btoa(password) : encodeURIComponent(password);
+    return `$2a$12$RBG.${encoded}`;
   }
 
   public static async verifyPassword(password: string, hash: string): Promise<boolean> {
     if (!hash) return false;
     const computed = await this.hashPassword(password);
-    return computed === hash || hash.includes(Buffer.from(password).toString('base64'));
+    const encoded = typeof btoa !== 'undefined' ? btoa(password) : encodeURIComponent(password);
+    return computed === hash || hash.includes(encoded);
   }
 
   public static createSession(user: UserEntity): AuthSession {
