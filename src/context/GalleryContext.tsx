@@ -23,11 +23,7 @@ import {
   UserRole
 } from '../types';
 import {
-  INITIAL_ARTWORKS,
-  ARTISTS,
   CATEGORIES,
-  MOCK_USER,
-  MOCK_ORDERS,
   MOCK_ENQUIRIES,
   MOCK_CUSTOMERS,
   MOCK_PAYOUTS,
@@ -41,6 +37,7 @@ import {
   formatRawAmount,
   detectCustomerCurrency
 } from '../services/currencyService';
+import { ApiService } from '../services/api';
 
 interface ToastState {
   message: string;
@@ -161,9 +158,21 @@ const GalleryContext = createContext<GalleryContextType | undefined>(undefined);
 
 export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activePage, setActivePage] = useState<ActivePage>('home');
-  const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(INITIAL_ARTWORKS[0]);
-  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(ARTISTS[0]);
   const [selectedArtworkForEnquiry, setSelectedArtworkForEnquiry] = useState<Artwork | null>(null);
+
+  // Initialize data via ApiService connected to backend
+  const [artworks, setArtworks] = useState<Artwork[]>(() => ApiService.artworks.getCatalog());
+  const [artists, setArtists] = useState<Artist[]>(() => ApiService.artists.getAllActive());
+  const [categories] = useState<Category[]>(CATEGORIES);
+  const [customers, setCustomers] = useState<CustomerProfile[]>(MOCK_CUSTOMERS);
+  const [enquiries, setEnquiries] = useState<Enquiry[]>(MOCK_ENQUIRIES);
+  const [payouts, setPayouts] = useState<Payout[]>(MOCK_PAYOUTS);
+  const [faqs, setFaqs] = useState<FAQItem[]>(MOCK_FAQS);
+  const [shippingRegions, setShippingRegions] = useState<ShippingRegion[]>(MOCK_SHIPPING_REGIONS);
+  const [adminNotifications, setAdminNotifications] = useState<NotificationItem[]>(MOCK_ADMIN_NOTIFICATIONS);
+
+  const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(artworks[0] || null);
+  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(artists[0] || null);
 
   const [selectedCurrency, setSelectedCurrencyState] = useState<CurrencyCode>(() => {
     const savedCurrency = localStorage.getItem('richbecky_customer_currency') as CurrencyCode | null;
@@ -175,60 +184,16 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('richbecky_customer_currency', currency);
     showToast(`Display currency changed to ${currency}`, 'info');
   };
-  
-  const [artworks, setArtworks] = useState<Artwork[]>(() => {
-    const saved = localStorage.getItem('richbecky_artworks');
-    return saved ? JSON.parse(saved) : INITIAL_ARTWORKS;
-  });
 
-  const [artists, setArtists] = useState<Artist[]>(ARTISTS);
-  const [categories] = useState<Category[]>(CATEGORIES);
-  const [customers, setCustomers] = useState<CustomerProfile[]>(MOCK_CUSTOMERS);
-  const [enquiries, setEnquiries] = useState<Enquiry[]>(MOCK_ENQUIRIES);
-  const [payouts, setPayouts] = useState<Payout[]>(MOCK_PAYOUTS);
-  const [faqs, setFaqs] = useState<FAQItem[]>(MOCK_FAQS);
-  const [shippingRegions, setShippingRegions] = useState<ShippingRegion[]>(MOCK_SHIPPING_REGIONS);
-  const [adminNotifications, setAdminNotifications] = useState<NotificationItem[]>(MOCK_ADMIN_NOTIFICATIONS);
-
-  // Authentication State
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem('richbecky_auth_active') === 'true';
-  });
-
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('richbecky_current_user');
-    return saved ? JSON.parse(saved) : MOCK_USER;
-  });
-
+  // Authentication State connected to ApiService
+  const [currentUser, setCurrentUser] = useState<User | null>(() => ApiService.auth.getCurrentUser());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!currentUser);
   const [artistApprovalStatus, setArtistApprovalStatus] = useState<ArtistApprovalStatus | null>(() => {
-    const saved = localStorage.getItem('richbecky_artist_status');
-    return (saved as ArtistApprovalStatus) || 'Approved';
+    if (currentUser && currentUser.artistApprovalStatus) return currentUser.artistApprovalStatus;
+    return null;
   });
 
-  const [artistApplications, setArtistApplications] = useState<ArtistApplication[]>(() => {
-    const saved = localStorage.getItem('richbecky_artist_applications');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'app-101',
-        fullName: 'Rebecca Esho',
-        email: 'rebecca@richbeckygallery.com',
-        phone: '+234 800 RICHBECKY',
-        country: 'Nigeria',
-        city: 'Lagos',
-        website: 'https://richbeckygallery.com',
-        instagram: '@rebeccaesho_art',
-        artistName: 'Rebecca Esho',
-        bio: 'Rebecca Esho is a celebrated contemporary African visual artist specializing in mixed media and figurative oil portraiture.',
-        artistStatement: 'My work is a prayer of remembrance and a celebration of African endurance.',
-        mediums: 'Oil, Traditional Beading & Fabric Collage on Canvas',
-        yearsActive: 8,
-        portfolioImages: ['/images/artworks/isembaye.jpg', '/images/artworks/this_is_our_way.jpg'],
-        agreedToTerms: true,
-        status: 'Approved',
-        submittedAt: '2026-08-01'
-      }
-    ];
-  });
+  const [artistApplications, setArtistApplications] = useState<ArtistApplication[]>(() => ApiService.artists.getApplications());
 
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('richbecky_cart');
@@ -236,13 +201,19 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   const [wishlist, setWishlist] = useState<WishlistItem[]>(() => {
+    if (currentUser) {
+      const dbWishlist = ApiService.wishlist.getByCustomer(currentUser.id);
+      return dbWishlist.map(w => {
+        const art = artworks.find(a => a.id === w.artworkId);
+        return { artwork: art || artworks[0], addedAt: w.createdAt };
+      });
+    }
     const saved = localStorage.getItem('richbecky_wishlist');
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  const [orders, setOrders] = useState<Order[]>(() => ApiService.orders.getAllOrders());
   const [lastPlacedOrder, setLastPlacedOrder] = useState<Order | null>(null);
-  
   const [filterState, setFilterState] = useState<FilterState>(DEFAULT_FILTER_STATE);
 
   const [toast, setToast] = useState<ToastState>({
@@ -252,38 +223,12 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   useEffect(() => {
-    localStorage.setItem('richbecky_artworks', JSON.stringify(artworks));
-  }, [artworks]);
-
-  useEffect(() => {
     localStorage.setItem('richbecky_cart', JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
     localStorage.setItem('richbecky_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
-
-  useEffect(() => {
-    localStorage.setItem('richbecky_auth_active', String(isAuthenticated));
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('richbecky_current_user', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('richbecky_current_user');
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (artistApprovalStatus) {
-      localStorage.setItem('richbecky_artist_status', artistApprovalStatus);
-    }
-  }, [artistApprovalStatus]);
-
-  useEffect(() => {
-    localStorage.setItem('richbecky_artist_applications', JSON.stringify(artistApplications));
-  }, [artistApplications]);
 
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     setToast({ message, type, visible: true });
@@ -296,151 +241,104 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setToast(prev => ({ ...prev, visible: false }));
   };
 
-  // Auth Functions
+  // Auth Functions via ApiService
   const loginCustomer = (email: string, pass: string): boolean => {
-    const user: User = {
-      id: `user-${Date.now()}`,
-      name: email.split('@')[0],
-      email,
-      role: 'customer'
-    };
-    setCurrentUser(user);
-    setIsAuthenticated(true);
-    showToast(`Welcome back, ${user.name}!`, 'success');
-    return true;
+    const res = ApiService.auth.loginCustomer(email, pass);
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setIsAuthenticated(true);
+      showToast(`Welcome back, ${res.user.name}!`, 'success');
+      return true;
+    }
+    showToast(res.message || 'Login failed', 'error');
+    return false;
   };
 
   const registerCustomer = (data: { firstName: string; lastName: string; email: string; phone: string; country: string; preferredCurrency: CurrencyCode }) => {
-    const user: User = {
-      id: `user-${Date.now()}`,
-      name: `${data.firstName} ${data.lastName}`,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      country: data.country,
-      preferredCurrency: data.preferredCurrency,
-      role: 'customer'
-    };
-    
-    // Add to customer profiles
-    const newProfile: CustomerProfile = {
-      id: `cust-${Date.now()}`,
-      name: user.name,
-      email: user.email,
-      phone: user.phone || '',
-      vipStatus: 'Collector Patron',
-      totalSpend: 0,
-      orderCount: 0,
-      wishlistCount: 0,
-      addresses: []
-    };
-
-    setCustomers(prev => [...prev, newProfile]);
-    setCurrentUser(user);
-    setIsAuthenticated(true);
-    setSelectedCurrency(data.preferredCurrency);
-    showToast(`Collector account created successfully! Welcome to Richbecky Gallery.`, 'success');
-    setActivePage('account');
+    const res = ApiService.auth.registerCustomer(data);
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setIsAuthenticated(true);
+      setSelectedCurrency(data.preferredCurrency);
+      showToast(`Collector account created successfully! Welcome to Richbecky Gallery.`, 'success');
+      setActivePage('account');
+    } else {
+      showToast(res.message || 'Registration failed', 'error');
+    }
   };
 
   const loginArtist = (email: string, pass: string): { success: boolean; message?: string } => {
-    // Search applications by email
-    const app = artistApplications.find(a => a.email.toLowerCase() === email.toLowerCase());
+    const res = ApiService.auth.loginArtist(email, pass);
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setArtistApprovalStatus(res.user.artistApprovalStatus || 'Approved');
+      setIsAuthenticated(true);
+      showToast('Artist Studio authenticated.', 'success');
+      setActivePage('artist-dashboard');
+      return { success: true };
+    }
     
+    // Check pending application by email
+    const app = artistApplications.find(a => a.email.toLowerCase() === email.toLowerCase());
     if (app) {
       if (app.status === 'Pending') {
         showToast('Your artist application is currently pending curatorial review.', 'info');
         setArtistApprovalStatus('Pending');
-        setCurrentUser({
-          id: app.id,
-          name: app.artistName,
-          email: app.email,
-          role: 'artist',
-          artistApprovalStatus: 'Pending'
-        });
+        setCurrentUser({ id: app.id, name: app.artistName, email: app.email, role: 'artist', artistApprovalStatus: 'Pending' });
         setIsAuthenticated(true);
         setActivePage('artist-status');
-        return { success: false, message: 'Your artist application is still under review.' };
+        return { success: false, message: 'Application pending review.' };
       } else if (app.status === 'Rejected') {
         showToast('Your artist application was not approved.', 'warning');
         setArtistApprovalStatus('Rejected');
-        setCurrentUser({
-          id: app.id,
-          name: app.artistName,
-          email: app.email,
-          role: 'artist',
-          artistApprovalStatus: 'Rejected'
-        });
+        setCurrentUser({ id: app.id, name: app.artistName, email: app.email, role: 'artist', artistApprovalStatus: 'Rejected' });
         setIsAuthenticated(true);
         setActivePage('artist-status');
-        return { success: false, message: 'Application rejected by gallery directors.' };
+        return { success: false, message: 'Application rejected.' };
       }
     }
 
-    // Default approved artist login
-    const user: User = {
-      id: 'artist-1',
-      name: 'Rebecca Esho',
-      email,
-      role: 'artist',
-      artistApprovalStatus: 'Approved'
-    };
-    setCurrentUser(user);
-    setArtistApprovalStatus('Approved');
-    setIsAuthenticated(true);
-    showToast('Artist Studio authenticated.', 'success');
-    setActivePage('artist-dashboard');
-    return { success: true };
+    showToast(res.message || 'Artist authentication failed', 'error');
+    return { success: false, message: res.message };
   };
 
   const loginAdmin = (email: string, pass: string): boolean => {
-    const user: User = {
-      id: 'admin-1',
-      name: 'Gallery Director',
-      email,
-      role: 'admin'
-    };
-    setCurrentUser(user);
-    setIsAuthenticated(true);
-    showToast('Authenticated into Executive Admin Governance.', 'success');
-    setActivePage('admin-dashboard');
-    return true;
+    const res = ApiService.auth.loginAdmin(email, pass);
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setIsAuthenticated(true);
+      showToast('Authenticated into Executive Admin Governance.', 'success');
+      setActivePage('admin-dashboard');
+      return true;
+    }
+    showToast(res.message || 'Admin authentication failed', 'error');
+    return false;
   };
 
   const logout = () => {
+    ApiService.auth.logout();
     setCurrentUser(null);
     setIsAuthenticated(false);
     setArtistApprovalStatus(null);
-    localStorage.removeItem('richbecky_auth_active');
-    localStorage.removeItem('richbecky_current_user');
-    localStorage.removeItem('richbecky_artist_status');
     showToast('Signed out successfully.', 'info');
     setActivePage('home');
   };
 
   const submitArtistApplication = (appData: Omit<ArtistApplication, 'id' | 'status' | 'submittedAt'>) => {
-    const newApp: ArtistApplication = {
-      ...appData,
-      id: `app-${Date.now()}`,
-      status: 'Pending',
-      submittedAt: new Date().toISOString().split('T')[0]
-    };
+    const createdApp = ApiService.artists.submitApplication(appData);
+    setArtistApplications(ApiService.artists.getApplications());
 
-    setArtistApplications(prev => [newApp, ...prev]);
-    
-    // Set current user auth state as pending artist
     const user: User = {
-      id: newApp.id,
-      name: newApp.artistName,
-      email: newApp.email,
-      phone: newApp.phone,
-      country: newApp.country,
+      id: createdApp.id,
+      name: createdApp.artistName,
+      email: createdApp.email,
+      phone: createdApp.phone,
+      country: createdApp.country,
       role: 'artist',
       artistApprovalStatus: 'Pending',
-      artistApplicationId: newApp.id
+      artistApplicationId: createdApp.id
     };
-    
+
     setCurrentUser(user);
     setIsAuthenticated(true);
     setArtistApprovalStatus('Pending');
@@ -449,29 +347,10 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const approveArtistApplication = (appId: string) => {
-    setArtistApplications(prev => prev.map(a => {
-      if (a.id === appId) {
-        // Create new artist record if not present
-        const existingArtist = artists.find(art => art.name.toLowerCase() === a.artistName.toLowerCase());
-        if (!existingArtist) {
-          const newArtist: Artist = {
-            id: `artist-${Date.now()}`,
-            name: a.artistName,
-            avatar: a.portfolioImages[0] || '/images/artworks/isembaye.jpg',
-            bio: a.bio,
-            country: a.country,
-            exhibitionsCount: 0,
-            artworksCount: 0,
-            commissionRate: 15,
-            status: 'Active',
-            socialLinks: { website: a.website, instagram: a.instagram }
-          };
-          setArtists(prevArts => [...prevArts, newArtist]);
-        }
-        return { ...a, status: 'Approved' };
-      }
-      return a;
-    }));
+    const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
+    ApiService.artists.reviewApplication(adminUser.id, adminUser.email, appId, 'Approved');
+    setArtistApplications(ApiService.artists.getApplications());
+    setArtists(ApiService.artists.getAllActive());
 
     if (currentUser && currentUser.artistApplicationId === appId) {
       setCurrentUser(prev => prev ? { ...prev, artistApprovalStatus: 'Approved' } : null);
@@ -482,12 +361,9 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const rejectArtistApplication = (appId: string, reason?: string) => {
-    setArtistApplications(prev => prev.map(a => {
-      if (a.id === appId) {
-        return { ...a, status: 'Rejected', rejectionReason: reason || 'Application does not currently align with gallery curatorial focus.' };
-      }
-      return a;
-    }));
+    const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
+    ApiService.artists.reviewApplication(adminUser.id, adminUser.email, appId, 'Rejected', undefined, reason);
+    setArtistApplications(ApiService.artists.getApplications());
 
     if (currentUser && currentUser.artistApplicationId === appId) {
       setCurrentUser(prev => prev ? { ...prev, artistApprovalStatus: 'Rejected' } : null);
@@ -533,7 +409,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (existingIndex > -1) {
         const existingItem = prevCart[existingIndex];
         
-        if (artwork.type === 'Original') {
+        if (artwork.type === 'Original' || artwork.type === 'Original Artwork') {
           showToast('Original artworks are one-of-a-kind. Maximum quantity is 1.', 'info');
           return prevCart;
         }
@@ -544,7 +420,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         showToast(`Updated "${artwork.title}" quantity in cart.`);
         return updated;
       } else {
-        const initialQty = artwork.type === 'Original' ? 1 : Math.min(requestedQty, artwork.stock);
+        const initialQty = (artwork.type === 'Original' || artwork.type === 'Original Artwork') ? 1 : Math.min(requestedQty, artwork.stock);
         showToast(`Added "${artwork.title}" to your gallery cart.`);
         return [...prevCart, { artwork, quantity: initialQty }];
       }
@@ -565,7 +441,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCart(prev =>
       prev.map(item => {
         if (item.artwork.id === artworkId) {
-          if (item.artwork.type === 'Original' && newQty > 1) {
+          if ((item.artwork.type === 'Original' || item.artwork.type === 'Original Artwork') && newQty > 1) {
             return { ...item, quantity: 1 };
           }
           const maxAllowed = Math.min(newQty, item.artwork.stock);
@@ -588,6 +464,9 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const toggleWishlist = (artwork: Artwork) => {
+    const custId = currentUser ? currentUser.id : 'c0000000-0000-0000-0000-000000000005';
+    ApiService.wishlist.toggle(custId, artwork.id);
+
     setWishlist(prev => {
       const exists = prev.some(item => item.artwork.id === artwork.id);
       if (exists) {
@@ -609,15 +488,10 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addNewArtwork = (data: Omit<Artwork, 'id' | 'createdAt' | 'status'>) => {
-    const newArt: Artwork = {
-      ...data,
-      id: `art-${Date.now()}`,
-      status: 'Pending Admin Approval',
-      createdAt: new Date().toISOString()
-    };
-
-    setArtworks(prev => [newArt, ...prev]);
-    showToast(`Artwork "${newArt.title}" submitted successfully for Admin Approval!`, 'success');
+    const actorRole = currentUser?.role === 'admin' ? 'admin' : 'artist';
+    const created = ApiService.artworks.submitArtwork(actorRole, data);
+    setArtworks(ApiService.artworks.getCatalog());
+    showToast(`Artwork "${created.title}" submitted successfully for Admin Approval!`, 'success');
   };
 
   const updateArtwork = (updatedArtwork: Artwork) => {
@@ -626,16 +500,16 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const approveArtwork = (artworkId: string) => {
-    setArtworks(prev =>
-      prev.map(art => (art.id === artworkId ? { ...art, status: 'Approved' } : art))
-    );
+    const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
+    ApiService.artworks.approveArtwork(adminUser.id, adminUser.email, artworkId);
+    setArtworks(ApiService.artworks.getCatalog());
     showToast('Artwork approved and published to the gallery catalogue!', 'success');
   };
 
   const rejectArtwork = (artworkId: string) => {
-    setArtworks(prev =>
-      prev.map(art => (art.id === artworkId ? { ...art, status: 'Rejected' } : art))
-    );
+    const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
+    ApiService.artworks.rejectArtwork(adminUser.id, adminUser.email, artworkId, 'Did not meet curatorial standards.');
+    setArtworks(ApiService.artworks.getCatalog());
     showToast('Artwork status set to Rejected.', 'warning');
   };
 
@@ -656,31 +530,28 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const placeOrder = (shippingInfo: any, paymentMethod: 'Card' | 'Bank Transfer') => {
     const subtotal = cartTotal;
     const shippingFee = subtotal > getConvertedPrice(3000, 'USD') ? 0 : getConvertedPrice(150, 'USD');
-    const total = subtotal + shippingFee;
 
-    const newOrder: Order = {
-      id: `RBG-${Math.floor(10000 + Math.random() * 90000)}`,
-      date: new Date().toISOString().split('T')[0],
-      items: [...cart],
-      subtotal,
-      shippingFee,
-      total,
+    const createdOrder = ApiService.orders.createOrder({
+      customerId: currentUser ? currentUser.id : 'c0000000-0000-0000-0000-000000000005',
       displayCurrency: selectedCurrency,
-      shippingInfo,
+      shippingFee,
+      shippingAddress: shippingInfo,
       paymentMethod,
-      status: 'Processing'
-    };
+      items: cart.map(i => ({ artworkId: i.artwork.id, quantity: i.quantity }))
+    });
 
-    setOrders(prev => [newOrder, ...prev]);
-    setLastPlacedOrder(newOrder);
+    setOrders(ApiService.orders.getAllOrders());
+    setLastPlacedOrder(createdOrder);
     clearCart();
     setActivePage('order-confirmation');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('Order confirmed! Receipt generated.', 'success');
+    showToast('Order confirmed! Development order record created.', 'success');
   };
 
   const updateOrderStatus = (orderId: string, status: OrderFulfillmentStatus) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+    const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
+    ApiService.orders.updateStatus(adminUser.id, adminUser.email, orderId, status);
+    setOrders(ApiService.orders.getAllOrders());
     showToast(`Order ${orderId} fulfillment status updated to ${status}.`, 'info');
   };
 
