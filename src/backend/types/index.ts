@@ -90,7 +90,7 @@ export interface ArtistContactInfo {
   email: string;
   phone: string;
   city?: string;
-  country: string;
+  country?: string;
 }
 
 export interface ArtistEntity {
