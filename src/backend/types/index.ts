@@ -198,13 +198,18 @@ export interface ArtworkEntity {
   isFeatured: boolean;
   isNewArrival: boolean;
   certificateIncluded: boolean;
+  certificateNumber?: string;
+  certificateDetails?: string;
   editionInfo?: string;
   editionNumber?: string;
   editionTotal?: string;
   editionType?: 'Open Edition' | 'Limited Edition';
   signatureInfo?: string;
   framingInfo?: string;
+  fineArtPrintAvailable?: boolean;
+  fineArtPrintDetails?: string;
   shippingInfoNotes?: string;
+  shippingDetails?: string;
   shippingPrepTime?: string;
   specialHandling?: string;
   slug: string;

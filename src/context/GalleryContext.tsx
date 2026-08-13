@@ -20,7 +20,8 @@ import {
   EnquiryStatus,
   ArtistApplication,
   ArtistApprovalStatus,
-  UserRole
+  UserRole,
+  ArtworkStatus
 } from '../types';
 import {
   CATEGORIES,
@@ -102,7 +103,7 @@ interface GalleryContextType {
   resetFilters: () => void;
   
   // Artist & Admin Artwork Workflows
-  addNewArtwork: (artworkData: Omit<Artwork, 'id' | 'createdAt' | 'status'>) => void;
+  addNewArtwork: (artworkData: Omit<Artwork, 'id' | 'createdAt' | 'status'> & { status?: ArtworkStatus }) => void;
   updateArtwork: (updatedArtwork: Artwork) => void;
   approveArtwork: (artworkId: string) => void;
   rejectArtwork: (artworkId: string) => void;
@@ -487,7 +488,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setFilterState(DEFAULT_FILTER_STATE);
   };
 
-  const addNewArtwork = (data: Omit<Artwork, 'id' | 'createdAt' | 'status'>) => {
+  const addNewArtwork = (data: Omit<Artwork, 'id' | 'createdAt' | 'status'> & { status?: ArtworkStatus }) => {
     const actorRole = currentUser?.role === 'admin' ? 'admin' : 'artist';
     const created = ApiService.artworks.submitArtwork(actorRole, data);
     setArtworks(ApiService.artworks.getCatalog());

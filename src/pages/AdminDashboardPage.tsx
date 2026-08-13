@@ -985,50 +985,256 @@ export const AdminDashboardPage: React.FC = () => {
 
       </main>
 
-      {/* Edit Artwork Modal */}
+      {/* Complete Admin Artwork Specification & Review Modal */}
       {editingArtwork && (
         <div className="fixed inset-0 z-50 bg-navy-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <form onSubmit={handleSaveEditedArtwork} className="bg-white max-w-xl w-full p-8 rounded-2xl space-y-4 text-xs max-h-[90vh] overflow-y-auto">
-            <h3 className="font-serif text-xl font-bold text-navy-950">Edit Artwork Specifications</h3>
-            
-            <div>
-              <label className="font-bold text-navy-950 block">Title</label>
-              <input
-                type="text"
-                value={editingArtwork.title}
-                onChange={(e) => setEditingArtwork({ ...editingArtwork, title: e.target.value })}
-                className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
-              />
+          <form onSubmit={handleSaveEditedArtwork} className="bg-white max-w-3xl w-full p-8 rounded-2xl space-y-6 text-xs max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between border-b border-ivory-300 pb-4">
+              <div>
+                <span className="text-gold-700 text-[10px] font-bold uppercase tracking-widest block">Admin Artwork Curatorial Review</span>
+                <h3 className="font-serif text-2xl font-bold text-navy-950">{editingArtwork.title}</h3>
+              </div>
+              <button type="button" onClick={() => setEditingArtwork(null)} className="text-neutral-400 hover:text-navy-950">
+                <XCircle className="w-6 h-6" />
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="font-bold text-navy-950 block">Listing Price</label>
-                <input
-                  type="number"
-                  value={editingArtwork.price}
-                  onChange={(e) => setEditingArtwork({ ...editingArtwork, price: Number(e.target.value) })}
-                  className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="aspect-[4/5] bg-ivory-100 rounded-lg overflow-hidden border border-ivory-300">
+                <img
+                  src={getProductionImageUrl(editingArtwork.imageUrl, editingArtwork.title)}
+                  alt={editingArtwork.title}
+                  onError={(e) => handleImageError(e, editingArtwork.title)}
+                  className="w-full h-full object-contain"
                 />
               </div>
-              <div>
-                <label className="font-bold text-navy-950 block">Medium</label>
-                <input
-                  type="text"
-                  value={editingArtwork.medium}
-                  onChange={(e) => setEditingArtwork({ ...editingArtwork, medium: e.target.value })}
-                  className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
-                />
+
+              <div className="sm:col-span-2 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={editingArtwork.title}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, title: e.target.value })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-semibold text-navy-950"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Artist Name</label>
+                    <input
+                      type="text"
+                      value={editingArtwork.artistName}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, artistName: e.target.value })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-semibold text-navy-950"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Artwork Type</label>
+                    <select
+                      value={editingArtwork.type}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, type: e.target.value as any })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-bold text-navy-950"
+                    >
+                      <option value="Original Artwork">Original Artwork</option>
+                      <option value="Original">Original</option>
+                      <option value="Fine Art Print">Fine Art Print</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Category</label>
+                    <input
+                      type="text"
+                      value={editingArtwork.category}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, category: e.target.value })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-semibold text-navy-950"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Year Created</label>
+                    <input
+                      type="number"
+                      value={editingArtwork.year}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, year: Number(e.target.value) })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Listing Price</label>
+                    <input
+                      type="number"
+                      value={editingArtwork.price}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, price: Number(e.target.value) })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-bold text-navy-950"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Listing Currency</label>
+                    <input
+                      type="text"
+                      value={editingArtwork.currency}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, currency: e.target.value as any })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Quantity / Stock</label>
+                    <input
+                      type="number"
+                      value={editingArtwork.stock}
+                      onChange={(e) => setEditingArtwork({ ...editingArtwork, stock: Number(e.target.value) })}
+                      className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded font-bold"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <button type="button" onClick={() => setEditingArtwork(null)} className="px-4 py-2 border rounded">
-                Cancel
-              </button>
-              <button type="submit" className="px-5 py-2 bg-navy-950 text-gold-400 font-bold rounded">
-                Save Changes
-              </button>
+            <div className="space-y-4 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Medium & Material</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.medium}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, medium: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Dimensions</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.dimensions}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, dimensions: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Description</label>
+                <textarea
+                  rows={3}
+                  value={editingArtwork.description}
+                  onChange={(e) => setEditingArtwork({ ...editingArtwork, description: e.target.value })}
+                  className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded leading-relaxed"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Artwork Story / Artist Statement</label>
+                <textarea
+                  rows={3}
+                  value={editingArtwork.artworkStory || editingArtwork.artistStatement || ''}
+                  onChange={(e) => setEditingArtwork({ ...editingArtwork, artworkStory: e.target.value })}
+                  className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded leading-relaxed"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Certificate Information & Number</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.certificateDetails || (editingArtwork.certificateIncluded ? 'Signed COA Included' : 'No COA')}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, certificateDetails: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Edition Information</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.editionInfo || ''}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, editionInfo: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Signature Information</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.signatureInfo || ''}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, signatureInfo: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Framing Information</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.framingInfo || ''}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, framingInfo: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-navy-950 block mb-1">Shipping & Handling Notes</label>
+                  <input
+                    type="text"
+                    value={editingArtwork.shippingInfoNotes || ''}
+                    onChange={(e) => setEditingArtwork({ ...editingArtwork, shippingInfoNotes: e.target.value })}
+                    className="w-full p-2.5 bg-ivory-100 border border-ivory-300 rounded"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-ivory-300">
+              <div className="flex items-center gap-2">
+                {editingArtwork.status !== 'Approved' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      approveArtwork(editingArtwork.id);
+                      setEditingArtwork(null);
+                    }}
+                    className="px-4 py-2 bg-emerald-800 text-white font-bold rounded flex items-center gap-1.5"
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Approve Artwork
+                  </button>
+                )}
+                {editingArtwork.status !== 'Rejected' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      rejectArtwork(editingArtwork.id);
+                      setEditingArtwork(null);
+                    }}
+                    className="px-4 py-2 bg-rose-100 text-rose-800 font-bold rounded flex items-center gap-1.5"
+                  >
+                    <XCircle className="w-4 h-4" /> Reject Artwork
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setEditingArtwork(null)} className="px-4 py-2 border rounded font-semibold">
+                  Cancel
+                </button>
+                <button type="submit" className="px-6 py-2 bg-navy-950 text-gold-400 font-bold rounded uppercase tracking-wider shadow">
+                  Save Changes
+                </button>
+              </div>
             </div>
           </form>
         </div>

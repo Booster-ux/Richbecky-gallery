@@ -261,40 +261,127 @@ export const ArtworkDetailsPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Physical Specifications */}
+          {/* 1. Artwork Details Section */}
           <div className="border-t border-ivory-300 pt-6 space-y-3">
-            <h3 className="text-xs font-semibold text-navy-900 uppercase tracking-widest">Artwork Specifications</h3>
+            <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-200 pb-1.5">Artwork Details</h3>
             
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="flex items-center gap-2 text-neutral-600">
-                <Layers className="w-4 h-4 text-gold-600" />
-                <span>Medium: <strong className="text-navy-900 font-medium">{selectedArtwork.medium}</strong></span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              {selectedArtwork.medium && (
+                <div className="flex items-start gap-2 text-neutral-600">
+                  <Layers className="w-4 h-4 text-gold-600 flex-shrink-0 mt-0.5" />
+                  <span>Medium: <strong className="text-navy-900 font-medium block mt-0.5">{selectedArtwork.medium}</strong></span>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2 text-neutral-600">
-                <Ruler className="w-4 h-4 text-gold-600" />
-                <span>Dimensions: <strong className="text-navy-900 font-medium">{selectedArtwork.dimensions}</strong></span>
-              </div>
+              {selectedArtwork.dimensions && (
+                <div className="flex items-start gap-2 text-neutral-600">
+                  <Ruler className="w-4 h-4 text-gold-600 flex-shrink-0 mt-0.5" />
+                  <span>Dimensions: <strong className="text-navy-900 font-medium block mt-0.5">{selectedArtwork.dimensions}</strong></span>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2 text-neutral-600">
-                <Calendar className="w-4 h-4 text-gold-600" />
-                <span>Created: <strong className="text-navy-900 font-medium">{selectedArtwork.year}</strong></span>
-              </div>
+              {selectedArtwork.year && (
+                <div className="flex items-center gap-2 text-neutral-600">
+                  <Calendar className="w-4 h-4 text-gold-600 flex-shrink-0" />
+                  <span>Year Created: <strong className="text-navy-900 font-medium">{selectedArtwork.year}</strong></span>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2 text-neutral-600">
-                <ShieldCheck className="w-4 h-4 text-gold-600" />
-                <span>Condition: <strong className="text-navy-900 font-medium">Prisite Gallery Condition</strong></span>
-              </div>
+              {selectedArtwork.type && (
+                <div className="flex items-center gap-2 text-neutral-600">
+                  <Award className="w-4 h-4 text-gold-600 flex-shrink-0" />
+                  <span>Artwork Type: <strong className="text-navy-900 font-medium">{selectedArtwork.type}</strong></span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Description & Curatorial Notes */}
-          <div className="border-t border-ivory-300 pt-6 space-y-2">
-            <h3 className="text-xs font-semibold text-navy-900 uppercase tracking-widest">Curatorial Statement</h3>
-            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-light">
-              {selectedArtwork.description}
-            </p>
-          </div>
+          {/* 2. About the Artwork Section */}
+          {(selectedArtwork.description || selectedArtwork.artworkStory || selectedArtwork.artistStatement) && (
+            <div className="border-t border-ivory-300 pt-6 space-y-3">
+              <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-200 pb-1.5">About the Artwork</h3>
+              
+              {selectedArtwork.description && (
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">Description</span>
+                  <div className="text-xs sm:text-sm text-neutral-700 leading-relaxed whitespace-pre-line font-light">
+                    {selectedArtwork.description}
+                  </div>
+                </div>
+              )}
+
+              {(selectedArtwork.artworkStory || selectedArtwork.artistStatement) && (
+                <div className="space-y-1 pt-2">
+                  <span className="text-[10px] font-bold text-gold-700 uppercase tracking-wider block">Artwork Story & Artist Statement</span>
+                  <div className="text-xs sm:text-sm text-neutral-700 leading-relaxed whitespace-pre-line bg-ivory-100 p-4 rounded-lg border border-ivory-300 italic">
+                    {selectedArtwork.artworkStory || selectedArtwork.artistStatement}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 3. Authenticity Section */}
+          {(selectedArtwork.certificateIncluded || selectedArtwork.certificateDetails || selectedArtwork.editionInfo || selectedArtwork.signatureInfo) && (
+            <div className="border-t border-ivory-300 pt-6 space-y-3">
+              <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-200 pb-1.5">Authenticity & Provenance</h3>
+
+              <div className="space-y-2 text-xs">
+                {selectedArtwork.certificateIncluded && (
+                  <div className="flex items-start gap-2 text-emerald-900 bg-emerald-50/70 p-3 rounded border border-emerald-200">
+                    <ShieldCheck className="w-4 h-4 text-emerald-700 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block font-bold">Certificate of Authenticity Included</strong>
+                      <p className="text-[11px] text-emerald-800 mt-0.5">
+                        {selectedArtwork.certificateDetails || 'Issued immediately upon acquisition and delivered with the physical artwork.'}
+                      </p>
+                      {selectedArtwork.certificateNumber && (
+                        <span className="font-mono text-[10px] text-emerald-900 font-bold block mt-1">COA Registry #: {selectedArtwork.certificateNumber}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {selectedArtwork.editionInfo && (
+                  <div className="p-3 bg-ivory-100 rounded border border-ivory-300">
+                    <span className="font-bold text-navy-950 uppercase text-[10px] block mb-0.5">Edition Specification</span>
+                    <p className="text-neutral-700 font-medium">{selectedArtwork.editionInfo}</p>
+                    {selectedArtwork.editionNumber && <p className="text-neutral-500 font-mono text-[11px] mt-0.5">Edition #: {selectedArtwork.editionNumber}</p>}
+                  </div>
+                )}
+
+                {selectedArtwork.signatureInfo && (
+                  <div className="p-3 bg-ivory-100 rounded border border-ivory-300">
+                    <span className="font-bold text-navy-950 uppercase text-[10px] block mb-0.5">Signature Details</span>
+                    <p className="text-neutral-700">{selectedArtwork.signatureInfo}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 4. Additional Information Section */}
+          {(selectedArtwork.framingInfo || selectedArtwork.shippingInfoNotes || selectedArtwork.shippingDetails) && (
+            <div className="border-t border-ivory-300 pt-6 space-y-3">
+              <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-200 pb-1.5">Framing & Shipping Details</h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {selectedArtwork.framingInfo && (
+                  <div className="p-3 bg-ivory-100 rounded border border-ivory-300">
+                    <span className="font-bold text-navy-950 uppercase text-[10px] block mb-0.5">Framing Information</span>
+                    <p className="text-neutral-700">{selectedArtwork.framingInfo}</p>
+                  </div>
+                )}
+
+                {(selectedArtwork.shippingInfoNotes || selectedArtwork.shippingDetails) && (
+                  <div className="p-3 bg-ivory-100 rounded border border-ivory-300">
+                    <span className="font-bold text-navy-950 uppercase text-[10px] block mb-0.5">Shipping & Handling</span>
+                    <p className="text-neutral-700">{selectedArtwork.shippingInfoNotes || selectedArtwork.shippingDetails}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Artist Snippet */}
           {artist && (

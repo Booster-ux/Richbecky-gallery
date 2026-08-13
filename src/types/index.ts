@@ -50,11 +50,17 @@ export interface Artwork {
   editionTotal?: string;
   editionType?: 'Open Edition' | 'Limited Edition';
   signatureInfo?: string;
+  framingInfo?: string;
   shippingInfoNotes?: string;
+  shippingDetails?: string;
   shippingPrepTime?: string;
   specialHandling?: string;
   altText?: string;
   certificateIncluded: boolean;
+  certificateNumber?: string;
+  certificateDetails?: string;
+  fineArtPrintAvailable?: boolean;
+  fineArtPrintDetails?: string;
   status: ArtworkStatus;
   createdAt: string;
 }

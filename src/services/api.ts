@@ -89,9 +89,15 @@ export function mapBackendArtworkToFrontend(art: ArtworkEntity): Artwork {
     editionTotal: art.editionTotal,
     editionType: art.editionType,
     signatureInfo: art.signatureInfo,
+    framingInfo: art.framingInfo,
     shippingInfoNotes: art.shippingInfoNotes,
+    shippingDetails: art.shippingDetails || art.shippingInfoNotes,
     specialHandling: art.specialHandling,
     certificateIncluded: art.certificateIncluded,
+    certificateNumber: art.certificateNumber,
+    certificateDetails: art.certificateDetails,
+    fineArtPrintAvailable: art.fineArtPrintAvailable,
+    fineArtPrintDetails: art.fineArtPrintDetails,
     status: art.status as any,
     createdAt: art.createdAt
   };
@@ -312,15 +318,21 @@ export const ApiService = {
         isFeatured: artworkData.isFeatured || false,
         isNewArrival: artworkData.isNewArrival || true,
         certificateIncluded: artworkData.certificateIncluded,
+        certificateNumber: artworkData.certificateNumber,
+        certificateDetails: artworkData.certificateDetails,
         editionInfo: artworkData.editionInfo,
         editionNumber: artworkData.editionNumber,
         editionTotal: artworkData.editionTotal,
         editionType: artworkData.editionType,
         signatureInfo: artworkData.signatureInfo,
+        framingInfo: artworkData.framingInfo,
+        fineArtPrintAvailable: artworkData.fineArtPrintAvailable,
+        fineArtPrintDetails: artworkData.fineArtPrintDetails,
         shippingInfoNotes: artworkData.shippingInfoNotes,
+        shippingDetails: artworkData.shippingDetails || artworkData.shippingInfoNotes,
         specialHandling: artworkData.specialHandling,
         primaryImageUrl: safePrimaryImage,
-        altText: `${artworkData.title} by ${artworkData.artistName}`
+        altText: artworkData.altText || `${artworkData.title} by ${artworkData.artistName}`
       });
 
       return mapBackendArtworkToFrontend(createdBackend);
