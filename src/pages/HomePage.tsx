@@ -35,29 +35,29 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-24 pb-24 animate-fade-in">
       
-      {/* 01 — HERO EXHIBITION SECTION: WARM IVORY GALLERY ENTRANCE WITH NATURAL LIGHT DEPTH */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
-        <div className="bg-gradient-to-br from-[#FAF8F5] via-[#F3EDE0] to-[#E9E1D0] text-navy-950 p-8 sm:p-14 lg:p-20 rounded-3xl border border-ivory-400/80 shadow-2xl relative overflow-hidden">
-          
-          {/* Subtle Abstract Architectural Arch & Geometric Linework Overlay */}
-          <div className="absolute inset-0 pointer-events-none opacity-25">
-            <svg className="w-full h-full" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="950" cy="400" r="550" stroke="url(#heroGoldGrad)" strokeWidth="1" strokeDasharray="6 12" />
-              <circle cx="950" cy="400" r="380" stroke="url(#heroGoldGrad)" strokeWidth="0.75" />
-              <path d="M-100 720 C 350 480, 750 720, 1350 420" stroke="url(#heroGoldGrad)" strokeWidth="1.2" opacity="0.7" />
-              <defs>
-                <linearGradient id="heroGoldGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#C5A059" stopOpacity="0.05" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
+      {/* 01 — HERO EXHIBITION SECTION: IMMERSIVE GALLERY ENTRANCE CANVAS */}
+      <section className="relative w-full bg-gradient-to-b from-[#FAF8F5] via-[#F4EFE6] to-[#FAF8F5] text-navy-950 pt-8 pb-16 sm:pt-14 sm:pb-24 border-b border-ivory-300/80 overflow-hidden">
+        
+        {/* Subtle Architectural Linework & Fine Gold Arcs Overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-30">
+          <svg className="w-full h-full" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="1000" cy="450" r="600" stroke="url(#heroGoldGrad)" strokeWidth="1" strokeDasharray="6 12" />
+            <circle cx="1000" cy="450" r="420" stroke="url(#heroGoldGrad)" strokeWidth="0.75" />
+            <path d="M-100 800 C 400 520, 850 800, 1500 480" stroke="url(#heroGoldGrad)" strokeWidth="1.2" opacity="0.7" />
+            <defs>
+              <linearGradient id="heroGoldGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#C5A059" stopOpacity="0.05" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
 
-          {/* Real Ambient Gold Particles & Light Motion Canvas */}
-          <GoldAtmosphereCanvas />
+        {/* Ambient Gold Particles & Light Motion Canvas */}
+        <GoldAtmosphereCanvas />
 
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Left Column: Editorial Gallery Text & CTAs */}
             <div className="lg:col-span-6 space-y-6 sm:space-y-8">
