@@ -100,8 +100,8 @@ export const AdminDashboardPage: React.FC = () => {
   const [selectedEnquiry, setSelectedEnquiry] = useState<any | null>(null);
   const [replyText, setReplyText] = useState('');
 
-  // Configurable Commission Rate state (default 15%)
-  const [defaultCommissionRate, setDefaultCommissionRate] = useState<number>(15);
+  // Configurable Commission Rate state (default 30% Richbecky Gallery / 70% Artist)
+  const [defaultCommissionRate, setDefaultCommissionRate] = useState<number>(30);
   const [calcSalePrice, setCalcSalePrice] = useState<number>(500000);
 
   // FAQ state

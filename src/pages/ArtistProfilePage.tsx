@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { ArtworkCard } from '../components/ArtworkCard';
-import { Award, Globe, Instagram, ExternalLink, Heart, Sparkles } from 'lucide-react';
+import { Award, Globe, Instagram, ExternalLink, Heart, Sparkles, Users } from 'lucide-react';
 import { handleImageError, getProductionImageUrl } from '../services/imageService';
+import { Artist } from '../types';
 
 export const ArtistProfilePage: React.FC = () => {
-  const { selectedArtist, artists, artworks, showToast } = useGallery();
+  const { selectedArtist, artists, artworks, showToast, navigateToArtist } = useGallery();
   
-  // Default to first artist if none selected
-  const artist = selectedArtist || artists[0];
+  // Currently active selected artist or default to first artist in roster
+  const [currentArtistId, setCurrentArtistId] = useState<string>(selectedArtist?.id || artists[0]?.id || 'art-sho-001');
+  
+  const artist: Artist = artists.find(a => a.id === currentArtistId) || selectedArtist || artists[0];
   const [isFollowed, setIsFollowed] = useState(artist.isFollowed || false);
 
   const artistArtworks = artworks.filter(
-    art => (art.artistId === artist.id || art.artistName === artist.name) && art.status === 'Approved'
+    art => (art.artistId === artist.id || art.artistName === artist.name) && (art.status === 'Approved' || !art.status)
   );
 
   const handleFollowToggle = () => {
@@ -26,6 +29,56 @@ export const ArtistProfilePage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in space-y-12">
       
+      {/* Dynamic Master Artists Directory Selector */}
+      <div className="bg-white p-6 rounded-2xl border border-ivory-300 shadow-subtle space-y-4">
+        <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-gold-600" />
+            <h3 className="font-serif text-sm font-bold text-navy-950 uppercase tracking-wider">
+              Represented Master Artists Directory
+            </h3>
+          </div>
+          <span className="text-xs text-neutral-500 font-medium">{artists.length} Active Masters</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {artists.map((artItem) => {
+            const count = artworks.filter(a => a.artistId === artItem.id || a.artistName === artItem.name).length;
+            const isSelected = artItem.id === artist.id;
+
+            return (
+              <button
+                key={artItem.id}
+                onClick={() => {
+                  setCurrentArtistId(artItem.id);
+                  navigateToArtist(artItem);
+                }}
+                className={`p-4 rounded-xl border text-left transition flex items-center gap-4 ${
+                  isSelected
+                    ? 'bg-navy-950 text-white border-navy-950 shadow-md ring-2 ring-gold-400/50'
+                    : 'bg-ivory-100/70 hover:bg-white text-navy-950 border-ivory-300'
+                }`}
+              >
+                <img
+                  src={getProductionImageUrl(artItem.avatar, artItem.name)}
+                  alt={artItem.name}
+                  onError={(e) => handleImageError(e, artItem.name)}
+                  className={`w-12 h-12 rounded-full object-cover border ${isSelected ? 'border-gold-400' : 'border-ivory-300'}`}
+                />
+                <div>
+                  <h4 className={`font-serif text-sm font-bold ${isSelected ? 'text-white' : 'text-navy-950'}`}>
+                    {artItem.name}
+                  </h4>
+                  <span className={`text-[11px] block ${isSelected ? 'text-gold-400' : 'text-neutral-500'}`}>
+                    {artItem.country} • {count} Artwork{count === 1 ? '' : 's'}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Cover Header */}
       <div className="relative rounded-2xl overflow-hidden bg-white border border-ivory-300 shadow-gallery">
         <div className="h-64 sm:h-80 w-full relative bg-ivory-100 p-4">
@@ -63,7 +116,7 @@ export const ArtistProfilePage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleFollowToggle}
-              className={`px-5 py-2.5 rounded text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-sm ${
+              className={`px-5 py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-sm ${
                 isFollowed
                   ? 'bg-gold-500 text-navy-950 hover:bg-gold-400'
                   : 'bg-navy-950 text-white hover:bg-gold-500 hover:text-navy-950'
@@ -80,13 +133,15 @@ export const ArtistProfilePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left Column: Biography */}
-        <div className="lg:col-span-8 bg-white p-8 rounded-xl border border-ivory-300 shadow-subtle space-y-4">
-          <h2 className="font-serif text-xl font-semibold text-navy-900">Artist Biography & Statement</h2>
-          <p className="text-sm text-neutral-600 leading-relaxed font-light">
+        <div className="lg:col-span-8 bg-white p-8 sm:p-10 rounded-2xl border border-ivory-300 shadow-subtle space-y-4">
+          <h2 className="font-serif text-xl font-bold text-navy-950 border-b border-ivory-200 pb-3">
+            Artist Biography & Curatorial Statement
+          </h2>
+          <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-light whitespace-pre-line">
             {artist.bio}
           </p>
 
-          <div className="pt-4 border-t border-ivory-200 flex flex-wrap gap-4 text-xs text-neutral-500">
+          <div className="pt-4 border-t border-ivory-200 flex flex-wrap gap-4 text-xs font-medium text-neutral-500">
             {artist.socialLinks?.website && (
               <a href={artist.socialLinks.website} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-gold-700 hover:underline">
                 <ExternalLink className="w-3.5 h-3.5" /> Official Website
@@ -101,13 +156,15 @@ export const ArtistProfilePage: React.FC = () => {
         </div>
 
         {/* Right Column: Gallery Credentials */}
-        <div className="lg:col-span-4 bg-white text-navy-950 p-6 rounded-xl border border-ivory-300 shadow-gallery space-y-6">
-          <h3 className="font-serif text-lg font-bold text-navy-950">Gallery Representation</h3>
+        <div className="lg:col-span-4 bg-white text-navy-950 p-6 sm:p-8 rounded-2xl border border-ivory-300 shadow-gallery space-y-6">
+          <h3 className="font-serif text-lg font-bold text-navy-950 border-b border-ivory-200 pb-2">
+            Gallery Representation
+          </h3>
           
           <div className="space-y-4 text-xs">
             <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
               <span className="text-neutral-500 font-medium">Representation Status</span>
-              <span className="font-bold text-navy-950 text-sm">Exclusive Gallery Roster</span>
+              <span className="font-bold text-navy-950 text-sm">Exclusive Roster</span>
             </div>
 
             <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
@@ -129,7 +186,7 @@ export const ArtistProfilePage: React.FC = () => {
       {/* Artist Works Collection Grid */}
       <div className="space-y-6 pt-4">
         <div className="flex items-center justify-between border-b border-ivory-300 pb-4">
-          <h2 className="font-serif text-2xl font-semibold text-navy-900">
+          <h2 className="font-serif text-2xl font-bold text-navy-950">
             Artworks by {artist.name} ({artistArtworks.length})
           </h2>
         </div>

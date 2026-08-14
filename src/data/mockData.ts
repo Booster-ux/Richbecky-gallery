@@ -199,7 +199,7 @@ export const ARTISTS: Artist[] = [
     exhibitionsCount: 0,
     artworksCount: 2,
     isFollowed: true,
-    commissionRate: 15,
+    commissionRate: 30,
     status: 'Active',
     socialLinks: {
       website: 'https://richbeckygallery.com',
@@ -216,7 +216,7 @@ export const ARTISTS: Artist[] = [
     exhibitionsCount: 0,
     artworksCount: 2,
     isFollowed: true,
-    commissionRate: 15,
+    commissionRate: 30,
     status: 'Active',
     socialLinks: {
       website: 'https://richbeckygallery.com',

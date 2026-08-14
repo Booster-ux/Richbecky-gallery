@@ -31,34 +31,49 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-16 pb-20 animate-fade-in">
       
-      {/* 1. HERO EXHIBITION SECTION — CALM WARM IVORY (#F5F1E8) WITH SUBTLE GOLD ATMOSPHERE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="bg-[#F5F1E8] text-navy-950 p-8 sm:p-14 lg:p-20 rounded-3xl border border-ivory-300/90 shadow-gallery relative overflow-hidden">
+      {/* 1. HERO EXHIBITION SECTION — WARM IVORY EDITORIAL CANVAS WITH SOFT GOLD ATMOSPHERE */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div className="bg-gradient-to-br from-[#FAF8F5] via-[#F3EDE0] to-[#EBE3D3] text-navy-950 p-8 sm:p-14 lg:p-20 rounded-3xl border border-ivory-400/80 shadow-2xl relative overflow-hidden">
           
-          {/* Subtle Ambient Gold Particle Canvas (Non-distracting, performance-friendly) */}
+          {/* Faint Abstract Gallery Architectural Arch Lines */}
+          <div className="absolute inset-0 pointer-events-none opacity-30">
+            <svg className="w-full h-full" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="900" cy="400" r="500" stroke="url(#goldGradient1)" strokeWidth="1" strokeDasharray="4 8" />
+              <circle cx="900" cy="400" r="350" stroke="url(#goldGradient1)" strokeWidth="0.75" />
+              <path d="M-100 700 C 300 500, 700 700, 1300 400" stroke="url(#goldGradient1)" strokeWidth="1" opacity="0.6" />
+              <defs>
+                <linearGradient id="goldGradient1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#C5A059" stopOpacity="0.05" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          {/* Subtle Ambient Gold Particle Canvas */}
           <GoldAtmosphereCanvas />
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Editorial Header & CTAs */}
             <div className="lg:col-span-6 space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-50/90 text-gold-800 text-xs font-bold tracking-wider uppercase border border-gold-400/40 shadow-sm backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 text-gold-900 text-xs font-bold tracking-wider uppercase border border-gold-500/30 shadow-sm backdrop-blur-md">
                 <Sparkles className="w-3.5 h-3.5 text-gold-600" />
-                Featured Masterwork Exhibition
+                Curated Masterwork Exhibition
               </div>
 
-              <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.15] tracking-tight text-navy-950">
+              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.12] tracking-tight text-navy-950">
                 African Contemporary Masters & Fine Art
               </h1>
 
-              <p className="text-sm sm:text-base text-neutral-600 font-light leading-relaxed max-w-xl">
+              <p className="text-sm sm:text-base text-neutral-700 font-light leading-relaxed max-w-xl">
                 Richbecky Gallery represents distinguished contemporary visual artists across Africa. Every original painting and fine art print is backed by an official signed Certificate of Authenticity and white-glove global delivery.
               </p>
 
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <button
                   onClick={() => setActivePage('catalogue')}
-                  className="px-9 py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-sm font-bold text-xs uppercase tracking-widest transition duration-300 shadow-xl flex items-center justify-center gap-2"
+                  className="px-9 py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition duration-300 shadow-xl flex items-center justify-center gap-2"
                 >
                   Explore Catalogue <ArrowRight className="w-4 h-4" />
                 </button>
@@ -68,7 +83,7 @@ export const HomePage: React.FC = () => {
                     setFilterState(prev => ({ ...prev, type: 'Original' }));
                     setActivePage('catalogue');
                   }}
-                  className="px-9 py-4 bg-white/90 hover:bg-white text-navy-950 border border-ivory-300 rounded-sm font-bold text-xs uppercase tracking-widest transition shadow-sm backdrop-blur-sm"
+                  className="px-9 py-4 bg-white/90 hover:bg-white text-navy-950 border border-ivory-400 rounded-lg font-bold text-xs uppercase tracking-widest transition shadow-sm backdrop-blur-sm"
                 >
                   Original Collection
                 </button>
@@ -79,7 +94,7 @@ export const HomePage: React.FC = () => {
             <div className="lg:col-span-6 flex justify-center">
               <div
                 onClick={() => navigateToArtwork(featuredHeroArt)}
-                className="relative group cursor-pointer w-full max-w-xl rounded-2xl overflow-hidden border border-gold-500/25 shadow-2xl bg-white p-4 transition duration-500 hover:shadow-gold-glow"
+                className="relative group cursor-pointer w-full max-w-xl rounded-2xl overflow-hidden border border-gold-500/30 shadow-2xl bg-white/95 p-4 transition duration-500 hover:shadow-gold-glow backdrop-blur-sm"
               >
                 <div className="w-full h-[480px] sm:h-[580px] flex items-center justify-center bg-[#FAF8F5] rounded-xl overflow-hidden border border-ivory-300/80 p-3 relative">
                   <img
