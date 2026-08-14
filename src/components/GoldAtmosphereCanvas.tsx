@@ -11,15 +11,6 @@ interface Particle {
   pulseSpeed: number;
 }
 
-interface FineLine {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  alpha: number;
-  speed: number;
-}
-
 export const GoldAtmosphereCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -44,8 +35,8 @@ export const GoldAtmosphereCanvas: React.FC = () => {
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Floating dust & champagne light particles
-    const particleCount = Math.min(Math.floor((width * height) / 22000), 40);
+    // High-visibility glowing champagne gold particles
+    const particleCount = Math.min(Math.floor((width * height) / 18000), 50);
     const particles: Particle[] = [];
 
     const goldColors = [
@@ -58,72 +49,60 @@ export const GoldAtmosphereCanvas: React.FC = () => {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 1.6 + 0.7,
-        alpha: Math.random() * 0.2 + 0.05,
-        targetAlpha: Math.random() * 0.28 + 0.08,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.12 - 0.04, // Ultra-slow upward float like sunlight in gallery
-        pulseSpeed: Math.random() * 0.004 + 0.0015
+        radius: Math.random() * 2.8 + 2.0, // Clearly visible 2.0px - 4.8px motes
+        alpha: Math.random() * 0.35 + 0.30, // High contrast opacity 0.30 - 0.65
+        targetAlpha: Math.random() * 0.40 + 0.35,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: -Math.abs((Math.random() * 0.4 + 0.3)), // Continuous upward float like gold dust in gallery sunlight
+        pulseSpeed: Math.random() * 0.008 + 0.003
       });
     }
 
-    // Fine gold line accents shifting position slowly
-    const lineCount = 3;
-    const lines: FineLine[] = [];
-    for (let i = 0; i < lineCount; i++) {
-      lines.push({
-        x1: Math.random() * width * 0.5,
-        y1: Math.random() * height,
-        x2: Math.random() * width + width * 0.4,
-        y2: Math.random() * height,
-        alpha: Math.random() * 0.12 + 0.03,
-        speed: (Math.random() - 0.5) * 0.001
-      });
-    }
-
-    let lightTime = 0;
+    let time = 0;
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Slow-moving natural champagne light source moving horizontally across the hero
       if (!prefersReducedMotion) {
-        lightTime += 0.003;
+        time += 0.008;
       }
-      
-      const lightX = width * (0.65 + Math.sin(lightTime) * 0.12);
-      const lightY = height * (0.45 + Math.cos(lightTime * 0.8) * 0.1);
+
+      // 1. Visible sweeping champagne light beam
+      const lightX = width * (0.55 + Math.sin(time * 0.8) * 0.25);
+      const lightY = height * (0.4 + Math.cos(time * 0.6) * 0.18);
 
       const glowGradient = ctx.createRadialGradient(
         lightX,
         lightY,
-        40,
+        30,
         lightX,
         lightY,
-        Math.max(width, height) * 0.65
+        Math.max(width, height) * 0.7
       );
-      glowGradient.addColorStop(0, 'rgba(212, 175, 55, 0.085)');
-      glowGradient.addColorStop(0.4, 'rgba(212, 175, 55, 0.03)');
+      glowGradient.addColorStop(0, 'rgba(212, 175, 55, 0.22)');
+      glowGradient.addColorStop(0.5, 'rgba(212, 175, 55, 0.08)');
       glowGradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
 
       ctx.fillStyle = glowGradient;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Render delicate gold lines
-      lines.forEach((l) => {
-        if (!prefersReducedMotion) {
-          l.alpha += l.speed;
-          if (l.alpha > 0.15 || l.alpha < 0.02) l.speed = -l.speed;
-        }
+      // 2. Animated undulating fine gold arcs/lines
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < 3; i++) {
         ctx.beginPath();
-        ctx.moveTo(l.x1, l.y1);
-        ctx.lineTo(l.x2, l.y2);
-        ctx.strokeStyle = `rgba(212, 175, 55, ${l.alpha})`;
-        ctx.lineWidth = 0.75;
-        ctx.stroke();
-      });
+        const offsetY = (i + 1) * (height / 4);
+        ctx.moveTo(0, offsetY);
 
-      // 3. Render floating gallery light dust particles
+        for (let x = 0; x <= width; x += 30) {
+          const waveY = offsetY + Math.sin(time + x * 0.005 + i) * 25;
+          ctx.lineTo(x, waveY);
+        }
+
+        ctx.strokeStyle = `rgba(212, 175, 55, ${0.18 + i * 0.05})`;
+        ctx.stroke();
+      }
+
+      // 3. Render continuously moving gold light particles
       particles.forEach((p, idx) => {
         if (!prefersReducedMotion) {
           p.x += p.vx;
@@ -131,11 +110,13 @@ export const GoldAtmosphereCanvas: React.FC = () => {
 
           if (p.x < 0) p.x = width;
           if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
+          if (p.y < 0) {
+            p.y = height;
+            p.x = Math.random() * width;
+          }
 
           p.alpha += p.pulseSpeed;
-          if (p.alpha > p.targetAlpha || p.alpha < 0.04) {
+          if (p.alpha > 0.75 || p.alpha < 0.25) {
             p.pulseSpeed = -p.pulseSpeed;
           }
         }
@@ -144,8 +125,8 @@ export const GoldAtmosphereCanvas: React.FC = () => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${color}, ${p.alpha})`;
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = 'rgba(212, 175, 55, 0.25)';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(212, 175, 55, 0.65)';
         ctx.fill();
       });
 
