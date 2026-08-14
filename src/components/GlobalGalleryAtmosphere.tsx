@@ -8,7 +8,7 @@ interface AtmosphereProps {
 export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Admin pages use no decorative background atmosphere
+  // Admin views use no decorative background atmosphere
   if (activePage === 'admin-dashboard' || activePage === 'admin-login') {
     return null;
   }
@@ -34,40 +34,30 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Page-specific particle density, speed, and contrast configuration
+    // Page-tailored visual line opacity and speed config
     const getIntensity = (page: ActivePage) => {
       switch (page) {
         case 'home':
-          return { particleCount: 35, lightSpeed: 0.005, lineAlpha: 0.22, baseAlpha: 0.35 };
+          return { lineAlpha: 0.42, lightAlpha: 0.18, speed: 0.005 };
         case 'catalogue':
-          return { particleCount: 25, lightSpeed: 0.003, lineAlpha: 0.18, baseAlpha: 0.28 };
+          return { lineAlpha: 0.32, lightAlpha: 0.12, speed: 0.003 };
         case 'artwork-detail':
-          return { particleCount: 18, lightSpeed: 0.002, lineAlpha: 0.14, baseAlpha: 0.22 };
+          return { lineAlpha: 0.25, lightAlpha: 0.09, speed: 0.002 };
         case 'artist-profile':
         case 'artist-landing':
-          return { particleCount: 28, lightSpeed: 0.004, lineAlpha: 0.20, baseAlpha: 0.30 };
+          return { lineAlpha: 0.38, lightAlpha: 0.15, speed: 0.004 };
         case 'about':
         case 'journal':
-          return { particleCount: 22, lightSpeed: 0.003, lineAlpha: 0.16, baseAlpha: 0.25 };
+          return { lineAlpha: 0.35, lightAlpha: 0.14, speed: 0.003 };
         case 'contact-advisory':
         case 'policies':
-          return { particleCount: 18, lightSpeed: 0.002, lineAlpha: 0.15, baseAlpha: 0.22 };
+          return { lineAlpha: 0.28, lightAlpha: 0.10, speed: 0.002 };
         default: // cart, checkout, account, wishlist, login
-          return { particleCount: 12, lightSpeed: 0.0015, lineAlpha: 0.10, baseAlpha: 0.18 };
+          return { lineAlpha: 0.18, lightAlpha: 0.06, speed: 0.0015 };
       }
     };
 
     const config = getIntensity(activePage);
-
-    // High-visibility floating champagne gold light dust particles
-    const particles = Array.from({ length: config.particleCount }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      radius: Math.random() * 2.2 + 1.8, // 1.8px - 4.0px clearly visible motes
-      alpha: Math.random() * 0.3 + config.baseAlpha,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: -Math.abs(Math.random() * 0.3 + 0.2) // Upward drift
-    }));
 
     let time = 0;
 
@@ -75,58 +65,72 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
       ctx.clearRect(0, 0, width, height);
 
       if (!prefersReducedMotion) {
-        time += config.lightSpeed;
+        time += config.speed;
       }
 
-      // 1. Slow-moving champagne-gold light source (20–40s cycle)
-      const glowX = width * (0.5 + Math.sin(time * 0.6) * 0.35);
-      const glowY = height * (0.4 + Math.cos(time * 0.5) * 0.25);
+      // 1. Moving Radial Champagne Spotlight Beam
+      const lightX = width * (0.5 + Math.sin(time * 0.5) * 0.35);
+      const lightY = height * (0.4 + Math.cos(time * 0.4) * 0.25);
 
       const lightGlow = ctx.createRadialGradient(
-        glowX,
-        glowY,
+        lightX,
+        lightY,
         40,
-        glowX,
-        glowY,
+        lightX,
+        lightY,
         Math.max(width, height) * 0.75
       );
-      lightGlow.addColorStop(0, 'rgba(212, 175, 55, 0.15)');
-      lightGlow.addColorStop(0.5, 'rgba(212, 175, 55, 0.05)');
+      lightGlow.addColorStop(0, `rgba(212, 175, 55, ${config.lightAlpha})`);
+      lightGlow.addColorStop(0.5, `rgba(212, 175, 55, ${config.lightAlpha * 0.3})`);
       lightGlow.addColorStop(1, 'rgba(212, 175, 55, 0)');
 
       ctx.fillStyle = lightGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Fine gold architectural arcs / linework
-      ctx.beginPath();
-      const arcX = width * (0.8 + Math.sin(time * 0.3) * 0.08);
-      const arcY = height * (0.3 + Math.cos(time * 0.3) * 0.08);
-      ctx.arc(arcX, arcY, 350, 0, Math.PI * 0.85);
-      ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha})`;
-      ctx.lineWidth = 1.0;
-      ctx.stroke();
+      // 2. Section-Tailored Flowing Champagne Gold Lines & Arcs
+      ctx.lineWidth = 1.6;
 
-      // 3. Floating champagne light dust motes
-      particles.forEach((p) => {
-        if (!prefersReducedMotion) {
-          p.x += p.vx;
-          p.y += p.vy;
-
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) {
-            p.y = height;
-            p.x = Math.random() * width;
-          }
-        }
-
+      if (activePage === 'home' || activePage === 'artist-profile') {
+        // Large Flowing Bezier Arcs
+        ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-        ctx.fill();
-      });
+        const startY = height * (0.3 + Math.sin(time) * 0.05);
+        const endY = height * (0.7 + Math.cos(time) * 0.05);
+        ctx.moveTo(-100, startY);
+        ctx.bezierCurveTo(width * 0.35, height * 0.1, width * 0.65, height * 0.9, width + 100, endY);
+        ctx.stroke();
+
+        // Architectural Traveling Arc
+        ctx.beginPath();
+        const arcX = width * (0.8 + Math.sin(time * 0.4) * 0.08);
+        const arcY = height * (0.4 + Math.cos(time * 0.3) * 0.08);
+        ctx.arc(arcX, arcY, 360, Math.PI * 0.1, Math.PI * 0.95);
+        ctx.strokeStyle = `rgba(197, 160, 89, ${config.lineAlpha * 0.8})`;
+        ctx.stroke();
+      } else if (activePage === 'catalogue' || activePage === 'artwork-detail') {
+        // Fine Horizontal Contour Waves
+        for (let i = 0; i < 2; i++) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha * (1 - i * 0.3)})`;
+          const basePos = height * (0.35 + i * 0.3);
+          ctx.moveTo(0, basePos);
+          for (let x = 0; x <= width; x += 40) {
+            const y = basePos + Math.sin(time + x * 0.004 + i) * 20;
+            ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      } else {
+        // Soft Translucent Shape & Line Morphs (About, Journal, Contact)
+        ctx.save();
+        ctx.translate(width * 0.5, height * 0.5);
+        ctx.rotate(time * 0.15);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, width * 0.35, height * 0.25, Math.PI / 6, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha * 0.7})`;
+        ctx.stroke();
+        ctx.restore();
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -142,7 +146,7 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-90 transition-opacity duration-1000"
+      className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-95 transition-opacity duration-1000"
       aria-hidden="true"
     />
   );
