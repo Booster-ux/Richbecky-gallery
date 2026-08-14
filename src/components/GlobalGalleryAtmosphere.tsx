@@ -15,17 +15,14 @@ interface Particle {
   color: string;
 }
 
-interface ShortLineSegment {
+interface AbstractShape {
   x: number;
   y: number;
-  length: number;
+  radiusX: number;
+  radiusY: number;
   angle: number;
   rotationSpeed: number;
-  alpha: number;
-  vx: number;
-  vy: number;
   color: string;
-  strokeWidth: number;
 }
 
 export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage }) => {
@@ -59,60 +56,57 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
 
     // Dual-Tone Palette: Deep Navy (#0F2537) & Champagne Gold (#D4AF37)
     const colorPalette = [
-      '15, 37, 55',    // Deep Navy Blue (High Contrast against Ivory)
       '212, 175, 55',  // Champagne Gold
+      '15, 37, 55',    // Deep Navy Blue Accent
       '197, 160, 89',  // Warm Muted Gold
       '15, 37, 55'     // Deep Navy Blue Accent
     ];
 
-    // Page-tailored element density configuration
+    // Page-tailored particle & shape density config (NO LINES)
     const getIntensity = (page: ActivePage) => {
       switch (page) {
         case 'home':
-          return { dotCount: 22, lineCount: 16, alphaMult: 1.0, speed: 0.006 };
+          return { dotCount: 26, shapeCount: 3, alphaMult: 1.0, speed: 0.005 };
         case 'catalogue':
-          return { dotCount: 16, lineCount: 10, alphaMult: 0.85, speed: 0.004 };
+          return { dotCount: 18, shapeCount: 2, alphaMult: 0.8, speed: 0.003 };
         case 'artwork-detail':
-          return { dotCount: 12, lineCount: 8, alphaMult: 0.75, speed: 0.003 };
+          return { dotCount: 14, shapeCount: 1, alphaMult: 0.7, speed: 0.002 };
         case 'artist-profile':
         case 'artist-landing':
-          return { dotCount: 18, lineCount: 12, alphaMult: 0.95, speed: 0.005 };
+          return { dotCount: 22, shapeCount: 2, alphaMult: 0.9, speed: 0.004 };
         case 'about':
         case 'journal':
-          return { dotCount: 14, lineCount: 10, alphaMult: 0.85, speed: 0.004 };
+          return { dotCount: 16, shapeCount: 2, alphaMult: 0.8, speed: 0.003 };
         case 'contact-advisory':
         case 'policies':
-          return { dotCount: 12, lineCount: 8, alphaMult: 0.75, speed: 0.003 };
+          return { dotCount: 14, shapeCount: 1, alphaMult: 0.7, speed: 0.002 };
         default: // cart, checkout, account, wishlist, login
-          return { dotCount: 8, lineCount: 5, alphaMult: 0.55, speed: 0.002 };
+          return { dotCount: 8, shapeCount: 1, alphaMult: 0.5, speed: 0.0015 };
       }
     };
 
     const config = getIntensity(activePage);
 
-    // Polka-dot particles in Navy & Gold
+    // Polka-dot light particles (NO LINES)
     const particles: Particle[] = Array.from({ length: config.dotCount }, (_, i) => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      radius: Math.random() * 2.2 + 2.8, // 2.8px - 5.0px
+      radius: Math.random() * 2.2 + 2.6, // 2.6px - 4.8px
       alpha: (Math.random() * 0.3 + 0.35) * config.alphaMult,
       vx: (Math.random() - 0.5) * 0.4,
-      vy: -Math.abs(Math.random() * 0.4 + 0.2),
+      vy: -Math.abs(Math.random() * 0.35 + 0.15),
       color: colorPalette[i % colorPalette.length]
     }));
 
-    // Short line segments in Navy & Gold
-    const lineSegments: ShortLineSegment[] = Array.from({ length: config.lineCount }, (_, i) => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      length: Math.random() * 35 + 25, // 25px - 60px length
-      angle: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.006,
-      alpha: (Math.random() * 0.3 + 0.38) * config.alphaMult,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35,
-      color: colorPalette[(i + 1) % colorPalette.length],
-      strokeWidth: Math.random() * 0.6 + 1.8 // 1.8px - 2.4px
+    // Soft blurred abstract shapes (NO LINES)
+    const abstractShapes: AbstractShape[] = Array.from({ length: config.shapeCount }, (_, i) => ({
+      x: width * (0.25 + i * 0.35),
+      y: height * (0.3 + i * 0.25),
+      radiusX: 200 + i * 40,
+      radiusY: 130 + i * 30,
+      angle: (i * Math.PI) / 3,
+      rotationSpeed: (i % 2 === 0 ? 1 : -1) * 0.0012,
+      color: colorPalette[i % colorPalette.length]
     }));
 
     let time = 0;
@@ -143,7 +137,30 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
       ctx.fillStyle = lightGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // Render 1: Navy & Gold Polka-Dot Particles
+      // Render 1: Soft-Blurred Abstract Organic Shapes (NO LINES)
+      abstractShapes.forEach((shape) => {
+        if (!prefersReducedMotion) {
+          shape.angle += shape.rotationSpeed;
+        }
+
+        ctx.save();
+        ctx.translate(shape.x, shape.y);
+        ctx.rotate(shape.angle);
+
+        const shapeGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, Math.max(shape.radiusX, shape.radiusY));
+        const alpha = (shape.color.startsWith('15') ? 0.05 : 0.08) * config.alphaMult;
+        shapeGrad.addColorStop(0, `rgba(${shape.color}, ${alpha})`);
+        shapeGrad.addColorStop(0.7, `rgba(${shape.color}, ${alpha * 0.3})`);
+        shapeGrad.addColorStop(1, `rgba(${shape.color}, 0)`);
+
+        ctx.beginPath();
+        ctx.ellipse(0, 0, shape.radiusX, shape.radiusY, 0, 0, Math.PI * 2);
+        ctx.fillStyle = shapeGrad;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Render 2: Soft Polka-Dot Light Particles (NO LINES)
       particles.forEach((p) => {
         if (!prefersReducedMotion) {
           p.x += p.vx;
@@ -163,33 +180,6 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
         ctx.shadowBlur = p.color.startsWith('15') ? 4 : 6;
         ctx.shadowColor = `rgba(${p.color}, 0.4)`;
         ctx.fill();
-      });
-
-      // Render 2: High-Contrast Navy & Gold Short Fine Line Segments
-      lineSegments.forEach((seg) => {
-        if (!prefersReducedMotion) {
-          seg.x += seg.vx;
-          seg.y += seg.vy;
-          seg.angle += seg.rotationSpeed;
-
-          if (seg.x < -35) seg.x = width + 35;
-          if (seg.x > width + 35) seg.x = -35;
-          if (seg.y < -35) seg.y = height + 35;
-          if (seg.y > height + 35) seg.y = -35;
-        }
-
-        const halfLen = seg.length / 2;
-        const x1 = seg.x - Math.cos(seg.angle) * halfLen;
-        const y1 = seg.y - Math.sin(seg.angle) * halfLen;
-        const x2 = seg.x + Math.cos(seg.angle) * halfLen;
-        const y2 = seg.y + Math.sin(seg.angle) * halfLen;
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(${seg.color}, ${seg.alpha})`;
-        ctx.lineWidth = seg.strokeWidth;
-        ctx.stroke();
       });
 
       animationFrameId = requestAnimationFrame(render);

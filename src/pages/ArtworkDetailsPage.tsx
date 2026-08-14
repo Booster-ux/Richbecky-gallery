@@ -482,6 +482,8 @@ export const ArtworkDetailsPage: React.FC = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         imageUrl={galleryImages[activeImageIndex]}
+        images={galleryImages}
+        initialIndex={activeImageIndex}
         title={selectedArtwork.title}
         artistName={selectedArtwork.artistName}
       />
