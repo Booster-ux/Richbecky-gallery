@@ -5,6 +5,26 @@ interface AtmosphereProps {
   activePage: ActivePage;
 }
 
+interface Particle {
+  x: number;
+  y: number;
+  radius: number;
+  alpha: number;
+  vx: number;
+  vy: number;
+}
+
+interface ShortLineSegment {
+  x: number;
+  y: number;
+  length: number;
+  angle: number;
+  rotationSpeed: number;
+  alpha: number;
+  vx: number;
+  vy: number;
+}
+
 export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -34,30 +54,52 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Page-tailored visual line opacity and speed config
+    // Page-tailored element density configuration
     const getIntensity = (page: ActivePage) => {
       switch (page) {
         case 'home':
-          return { lineAlpha: 0.42, lightAlpha: 0.18, speed: 0.005 };
+          return { dotCount: 18, lineCount: 12, alphaMult: 1.0, speed: 0.005 };
         case 'catalogue':
-          return { lineAlpha: 0.32, lightAlpha: 0.12, speed: 0.003 };
+          return { dotCount: 14, lineCount: 8, alphaMult: 0.8, speed: 0.003 };
         case 'artwork-detail':
-          return { lineAlpha: 0.25, lightAlpha: 0.09, speed: 0.002 };
+          return { dotCount: 10, lineCount: 6, alphaMult: 0.65, speed: 0.002 };
         case 'artist-profile':
         case 'artist-landing':
-          return { lineAlpha: 0.38, lightAlpha: 0.15, speed: 0.004 };
+          return { dotCount: 16, lineCount: 10, alphaMult: 0.9, speed: 0.004 };
         case 'about':
         case 'journal':
-          return { lineAlpha: 0.35, lightAlpha: 0.14, speed: 0.003 };
+          return { dotCount: 12, lineCount: 8, alphaMult: 0.8, speed: 0.003 };
         case 'contact-advisory':
         case 'policies':
-          return { lineAlpha: 0.28, lightAlpha: 0.10, speed: 0.002 };
+          return { dotCount: 10, lineCount: 6, alphaMult: 0.7, speed: 0.002 };
         default: // cart, checkout, account, wishlist, login
-          return { lineAlpha: 0.18, lightAlpha: 0.06, speed: 0.0015 };
+          return { dotCount: 6, lineCount: 4, alphaMult: 0.5, speed: 0.0015 };
       }
     };
 
     const config = getIntensity(activePage);
+
+    // Polka-dot particles
+    const particles: Particle[] = Array.from({ length: config.dotCount }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 1.6 + 1.8,
+      alpha: (Math.random() * 0.25 + 0.25) * config.alphaMult,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -Math.abs(Math.random() * 0.25 + 0.1)
+    }));
+
+    // Short line segments
+    const lineSegments: ShortLineSegment[] = Array.from({ length: config.lineCount }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      length: Math.random() * 18 + 14,
+      angle: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.003,
+      alpha: (Math.random() * 0.3 + 0.2) * config.alphaMult,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: (Math.random() - 0.5) * 0.2
+    }));
 
     let time = 0;
 
@@ -68,7 +110,7 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
         time += config.speed;
       }
 
-      // 1. Moving Radial Champagne Spotlight Beam
+      // Soft Moving Radial Champagne Spotlight
       const lightX = width * (0.5 + Math.sin(time * 0.5) * 0.35);
       const lightY = height * (0.4 + Math.cos(time * 0.4) * 0.25);
 
@@ -80,57 +122,61 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
         lightY,
         Math.max(width, height) * 0.75
       );
-      lightGlow.addColorStop(0, `rgba(212, 175, 55, ${config.lightAlpha})`);
-      lightGlow.addColorStop(0.5, `rgba(212, 175, 55, ${config.lightAlpha * 0.3})`);
+      lightGlow.addColorStop(0, `rgba(212, 175, 55, ${0.15 * config.alphaMult})`);
+      lightGlow.addColorStop(0.5, `rgba(212, 175, 55, ${0.04 * config.alphaMult})`);
       lightGlow.addColorStop(1, 'rgba(212, 175, 55, 0)');
 
       ctx.fillStyle = lightGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Section-Tailored Flowing Champagne Gold Lines & Arcs
-      ctx.lineWidth = 1.6;
+      // Render 1: Polka-Dot Particles
+      particles.forEach((p) => {
+        if (!prefersReducedMotion) {
+          p.x += p.vx;
+          p.y += p.vy;
 
-      if (activePage === 'home' || activePage === 'artist-profile') {
-        // Large Flowing Bezier Arcs
-        ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha})`;
-        ctx.beginPath();
-        const startY = height * (0.3 + Math.sin(time) * 0.05);
-        const endY = height * (0.7 + Math.cos(time) * 0.05);
-        ctx.moveTo(-100, startY);
-        ctx.bezierCurveTo(width * 0.35, height * 0.1, width * 0.65, height * 0.9, width + 100, endY);
-        ctx.stroke();
-
-        // Architectural Traveling Arc
-        ctx.beginPath();
-        const arcX = width * (0.8 + Math.sin(time * 0.4) * 0.08);
-        const arcY = height * (0.4 + Math.cos(time * 0.3) * 0.08);
-        ctx.arc(arcX, arcY, 360, Math.PI * 0.1, Math.PI * 0.95);
-        ctx.strokeStyle = `rgba(197, 160, 89, ${config.lineAlpha * 0.8})`;
-        ctx.stroke();
-      } else if (activePage === 'catalogue' || activePage === 'artwork-detail') {
-        // Fine Horizontal Contour Waves
-        for (let i = 0; i < 2; i++) {
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha * (1 - i * 0.3)})`;
-          const basePos = height * (0.35 + i * 0.3);
-          ctx.moveTo(0, basePos);
-          for (let x = 0; x <= width; x += 40) {
-            const y = basePos + Math.sin(time + x * 0.004 + i) * 20;
-            ctx.lineTo(x, y);
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) {
+            p.y = height;
+            p.x = Math.random() * width;
           }
-          ctx.stroke();
         }
-      } else {
-        // Soft Translucent Shape & Line Morphs (About, Journal, Contact)
-        ctx.save();
-        ctx.translate(width * 0.5, height * 0.5);
-        ctx.rotate(time * 0.15);
+
         ctx.beginPath();
-        ctx.ellipse(0, 0, width * 0.35, height * 0.25, Math.PI / 6, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(212, 175, 55, ${config.lineAlpha * 0.7})`;
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha})`;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
+        ctx.fill();
+      });
+
+      // Render 2: Short Fine Gold Line Segments
+      lineSegments.forEach((seg) => {
+        if (!prefersReducedMotion) {
+          seg.x += seg.vx;
+          seg.y += seg.vy;
+          seg.angle += seg.rotationSpeed;
+
+          if (seg.x < -30) seg.x = width + 30;
+          if (seg.x > width + 30) seg.x = -30;
+          if (seg.y < -30) seg.y = height + 30;
+          if (seg.y > height + 30) seg.y = -30;
+        }
+
+        const halfLen = seg.length / 2;
+        const x1 = seg.x - Math.cos(seg.angle) * halfLen;
+        const y1 = seg.y - Math.sin(seg.angle) * halfLen;
+        const x2 = seg.x + Math.cos(seg.angle) * halfLen;
+        const y2 = seg.y + Math.sin(seg.angle) * halfLen;
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = `rgba(212, 175, 55, ${seg.alpha})`;
+        ctx.lineWidth = 1.3;
         ctx.stroke();
-        ctx.restore();
-      }
+      });
 
       animationFrameId = requestAnimationFrame(render);
     };
