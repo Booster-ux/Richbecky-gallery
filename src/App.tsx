@@ -35,6 +35,8 @@ import { AddArtworkPage } from './pages/AddArtworkPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 
+import { GlobalGalleryAtmosphere } from './components/GlobalGalleryAtmosphere';
+
 const AppContent: React.FC = () => {
   const { activePage, isAuthenticated, currentUser, artistApprovalStatus } = useGallery();
 
@@ -105,9 +107,10 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-ivory-100 text-neutral-800 selection:bg-gold-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-ivory-100 text-neutral-800 selection:bg-gold-500 selection:text-white relative overflow-x-hidden">
+      <GlobalGalleryAtmosphere activePage={activePage} />
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {renderActivePage()}
       </main>
       <Footer />
