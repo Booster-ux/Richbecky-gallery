@@ -12,6 +12,7 @@ interface Particle {
   alpha: number;
   vx: number;
   vy: number;
+  color: string;
 }
 
 interface ShortLineSegment {
@@ -23,6 +24,8 @@ interface ShortLineSegment {
   alpha: number;
   vx: number;
   vy: number;
+  color: string;
+  strokeWidth: number;
 }
 
 export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage }) => {
@@ -54,51 +57,62 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // Dual-Tone Palette: Deep Navy (#0F2537) & Champagne Gold (#D4AF37)
+    const colorPalette = [
+      '15, 37, 55',    // Deep Navy Blue (High Contrast against Ivory)
+      '212, 175, 55',  // Champagne Gold
+      '197, 160, 89',  // Warm Muted Gold
+      '15, 37, 55'     // Deep Navy Blue Accent
+    ];
+
     // Page-tailored element density configuration
     const getIntensity = (page: ActivePage) => {
       switch (page) {
         case 'home':
-          return { dotCount: 18, lineCount: 12, alphaMult: 1.0, speed: 0.005 };
+          return { dotCount: 22, lineCount: 16, alphaMult: 1.0, speed: 0.006 };
         case 'catalogue':
-          return { dotCount: 14, lineCount: 8, alphaMult: 0.8, speed: 0.003 };
+          return { dotCount: 16, lineCount: 10, alphaMult: 0.85, speed: 0.004 };
         case 'artwork-detail':
-          return { dotCount: 10, lineCount: 6, alphaMult: 0.65, speed: 0.002 };
+          return { dotCount: 12, lineCount: 8, alphaMult: 0.75, speed: 0.003 };
         case 'artist-profile':
         case 'artist-landing':
-          return { dotCount: 16, lineCount: 10, alphaMult: 0.9, speed: 0.004 };
+          return { dotCount: 18, lineCount: 12, alphaMult: 0.95, speed: 0.005 };
         case 'about':
         case 'journal':
-          return { dotCount: 12, lineCount: 8, alphaMult: 0.8, speed: 0.003 };
+          return { dotCount: 14, lineCount: 10, alphaMult: 0.85, speed: 0.004 };
         case 'contact-advisory':
         case 'policies':
-          return { dotCount: 10, lineCount: 6, alphaMult: 0.7, speed: 0.002 };
+          return { dotCount: 12, lineCount: 8, alphaMult: 0.75, speed: 0.003 };
         default: // cart, checkout, account, wishlist, login
-          return { dotCount: 6, lineCount: 4, alphaMult: 0.5, speed: 0.0015 };
+          return { dotCount: 8, lineCount: 5, alphaMult: 0.55, speed: 0.002 };
       }
     };
 
     const config = getIntensity(activePage);
 
-    // Polka-dot particles
-    const particles: Particle[] = Array.from({ length: config.dotCount }, () => ({
+    // Polka-dot particles in Navy & Gold
+    const particles: Particle[] = Array.from({ length: config.dotCount }, (_, i) => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      radius: Math.random() * 1.6 + 1.8,
-      alpha: (Math.random() * 0.25 + 0.25) * config.alphaMult,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: -Math.abs(Math.random() * 0.25 + 0.1)
+      radius: Math.random() * 2.2 + 2.8, // 2.8px - 5.0px
+      alpha: (Math.random() * 0.3 + 0.35) * config.alphaMult,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -Math.abs(Math.random() * 0.4 + 0.2),
+      color: colorPalette[i % colorPalette.length]
     }));
 
-    // Short line segments
-    const lineSegments: ShortLineSegment[] = Array.from({ length: config.lineCount }, () => ({
+    // Short line segments in Navy & Gold
+    const lineSegments: ShortLineSegment[] = Array.from({ length: config.lineCount }, (_, i) => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      length: Math.random() * 18 + 14,
+      length: Math.random() * 35 + 25, // 25px - 60px length
       angle: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.003,
-      alpha: (Math.random() * 0.3 + 0.2) * config.alphaMult,
-      vx: (Math.random() - 0.5) * 0.2,
-      vy: (Math.random() - 0.5) * 0.2
+      rotationSpeed: (Math.random() - 0.5) * 0.006,
+      alpha: (Math.random() * 0.3 + 0.38) * config.alphaMult,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      color: colorPalette[(i + 1) % colorPalette.length],
+      strokeWidth: Math.random() * 0.6 + 1.8 // 1.8px - 2.4px
     }));
 
     let time = 0;
@@ -122,14 +136,14 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
         lightY,
         Math.max(width, height) * 0.75
       );
-      lightGlow.addColorStop(0, `rgba(212, 175, 55, ${0.15 * config.alphaMult})`);
-      lightGlow.addColorStop(0.5, `rgba(212, 175, 55, ${0.04 * config.alphaMult})`);
+      lightGlow.addColorStop(0, `rgba(212, 175, 55, ${0.18 * config.alphaMult})`);
+      lightGlow.addColorStop(0.5, `rgba(212, 175, 55, ${0.05 * config.alphaMult})`);
       lightGlow.addColorStop(1, 'rgba(212, 175, 55, 0)');
 
       ctx.fillStyle = lightGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // Render 1: Polka-Dot Particles
+      // Render 1: Navy & Gold Polka-Dot Particles
       particles.forEach((p) => {
         if (!prefersReducedMotion) {
           p.x += p.vx;
@@ -145,23 +159,23 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha})`;
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
+        ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+        ctx.shadowBlur = p.color.startsWith('15') ? 4 : 6;
+        ctx.shadowColor = `rgba(${p.color}, 0.4)`;
         ctx.fill();
       });
 
-      // Render 2: Short Fine Gold Line Segments
+      // Render 2: High-Contrast Navy & Gold Short Fine Line Segments
       lineSegments.forEach((seg) => {
         if (!prefersReducedMotion) {
           seg.x += seg.vx;
           seg.y += seg.vy;
           seg.angle += seg.rotationSpeed;
 
-          if (seg.x < -30) seg.x = width + 30;
-          if (seg.x > width + 30) seg.x = -30;
-          if (seg.y < -30) seg.y = height + 30;
-          if (seg.y > height + 30) seg.y = -30;
+          if (seg.x < -35) seg.x = width + 35;
+          if (seg.x > width + 35) seg.x = -35;
+          if (seg.y < -35) seg.y = height + 35;
+          if (seg.y > height + 35) seg.y = -35;
         }
 
         const halfLen = seg.length / 2;
@@ -173,8 +187,8 @@ export const GlobalGalleryAtmosphere: React.FC<AtmosphereProps> = ({ activePage 
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(212, 175, 55, ${seg.alpha})`;
-        ctx.lineWidth = 1.3;
+        ctx.strokeStyle = `rgba(${seg.color}, ${seg.alpha})`;
+        ctx.lineWidth = seg.strokeWidth;
         ctx.stroke();
       });
 

@@ -5,10 +5,10 @@ interface Particle {
   y: number;
   radius: number;
   alpha: number;
-  targetAlpha: number;
   vx: number;
   vy: number;
   pulseSpeed: number;
+  color: string;
 }
 
 interface ShortLineSegment {
@@ -18,10 +18,11 @@ interface ShortLineSegment {
   angle: number;
   rotationSpeed: number;
   alpha: number;
-  targetAlpha: number;
   vx: number;
   vy: number;
   pulseSpeed: number;
+  color: string;
+  strokeWidth: number;
 }
 
 interface SmallArcMark {
@@ -34,6 +35,7 @@ interface SmallArcMark {
   vx: number;
   vy: number;
   rotationSpeed: number;
+  color: string;
 }
 
 export const GoldAtmosphereCanvas: React.FC = () => {
@@ -60,55 +62,62 @@ export const GoldAtmosphereCanvas: React.FC = () => {
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // 1. Polka-Dot Champagne Gold Particles (20 items)
-    const particleCount = 20;
-    const particles: Particle[] = [];
-    const goldColors = ['212, 175, 55', '197, 160, 89', '230, 202, 101'];
+    // High-Contrast Dual-Tone Palette: Deep Navy (#0F2537) & Champagne Gold (#D4AF37)
+    const colorPalette = [
+      '15, 37, 55',    // Deep Navy Blue (High Contrast on Ivory)
+      '212, 175, 55',  // Champagne Gold
+      '197, 160, 89',  // Muted Warm Gold
+      '15, 37, 55',    // Deep Navy Blue Accent
+      '230, 202, 101'  // Light Gold
+    ];
 
-    for (let i = 0; i < particleCount; i++) {
+    // 1. High-Contrast Polka-Dot Particles (25 items)
+    const particles: Particle[] = [];
+    for (let i = 0; i < 25; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 1.8 + 2.0, // 2.0px - 3.8px dots
-        alpha: Math.random() * 0.3 + 0.3,
-        targetAlpha: Math.random() * 0.3 + 0.35,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: -Math.abs(Math.random() * 0.35 + 0.15),
-        pulseSpeed: Math.random() * 0.006 + 0.002
+        radius: Math.random() * 2.5 + 3.0, // 3.0px - 5.5px
+        alpha: Math.random() * 0.3 + 0.40, // 0.40 - 0.70 high contrast
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: -Math.abs(Math.random() * 0.5 + 0.3),
+        pulseSpeed: Math.random() * 0.008 + 0.003,
+        color: colorPalette[i % colorPalette.length]
       });
     }
 
-    // 2. Short Fine Gold Line Segments (15 items, length 15px - 35px)
-    const lineSegmentCount = 15;
+    // 2. High-Contrast Short Line Segments (20 items, length 25px - 65px)
     const lineSegments: ShortLineSegment[] = [];
-    for (let i = 0; i < lineSegmentCount; i++) {
+    for (let i = 0; i < 20; i++) {
       lineSegments.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        length: Math.random() * 20 + 15,
+        length: Math.random() * 40 + 25, // 25px - 65px length
         angle: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.004,
-        alpha: Math.random() * 0.35 + 0.25,
-        targetAlpha: Math.random() * 0.35 + 0.3,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25 - 0.05,
-        pulseSpeed: Math.random() * 0.005 + 0.002
+        rotationSpeed: (Math.random() - 0.5) * 0.008, // Clearly observable rotation
+        alpha: Math.random() * 0.3 + 0.45, // 0.45 - 0.75 opacity
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5 - 0.1,
+        pulseSpeed: Math.random() * 0.008 + 0.003,
+        color: colorPalette[(i + 1) % colorPalette.length],
+        strokeWidth: Math.random() * 0.8 + 1.8 // 1.8px - 2.6px stroke width
       });
     }
 
-    // 3. Small Curved Stroke Marks (6 items, radius 12px - 24px)
+    // 3. Small Curved Stroke Marks (10 items, radius 18px - 35px)
     const arcMarks: SmallArcMark[] = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 10; i++) {
       arcMarks.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 12 + 12,
+        radius: Math.random() * 17 + 18,
         startAngle: Math.random() * Math.PI,
-        endAngle: Math.random() * Math.PI + Math.PI * 0.4,
-        alpha: Math.random() * 0.3 + 0.25,
-        vx: (Math.random() - 0.5) * 0.2,
-        vy: (Math.random() - 0.5) * 0.2,
-        rotationSpeed: (Math.random() - 0.5) * 0.003
+        endAngle: Math.random() * Math.PI + Math.PI * 0.45,
+        alpha: Math.random() * 0.3 + 0.40,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        rotationSpeed: (Math.random() - 0.5) * 0.006,
+        color: colorPalette[(i + 2) % colorPalette.length]
       });
     }
 
@@ -118,30 +127,30 @@ export const GoldAtmosphereCanvas: React.FC = () => {
       ctx.clearRect(0, 0, width, height);
 
       if (!prefersReducedMotion) {
-        lightTime += 0.006;
+        lightTime += 0.008;
       }
 
-      // Soft Sweeping Champagne Light Beam
+      // Sweeping Radial Champagne Spotlight
       const lightX = width * (0.55 + Math.sin(lightTime * 0.7) * 0.25);
       const lightY = height * (0.45 + Math.cos(lightTime * 0.5) * 0.18);
 
       const glowGradient = ctx.createRadialGradient(
         lightX,
         lightY,
-        30,
+        40,
         lightX,
         lightY,
         Math.max(width, height) * 0.7
       );
-      glowGradient.addColorStop(0, 'rgba(212, 175, 55, 0.18)');
-      glowGradient.addColorStop(0.5, 'rgba(212, 175, 55, 0.05)');
+      glowGradient.addColorStop(0, 'rgba(212, 175, 55, 0.25)');
+      glowGradient.addColorStop(0.5, 'rgba(212, 175, 55, 0.08)');
       glowGradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
 
       ctx.fillStyle = glowGradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Render 1: Polka-Dot Gold Particles
-      particles.forEach((p, idx) => {
+      // Render 1: Polka-Dot Particles (Navy & Gold)
+      particles.forEach((p) => {
         if (!prefersReducedMotion) {
           p.x += p.vx;
           p.y += p.vy;
@@ -154,34 +163,33 @@ export const GoldAtmosphereCanvas: React.FC = () => {
           }
 
           p.alpha += p.pulseSpeed;
-          if (p.alpha > 0.65 || p.alpha < 0.25) {
+          if (p.alpha > 0.75 || p.alpha < 0.35) {
             p.pulseSpeed = -p.pulseSpeed;
           }
         }
 
-        const color = goldColors[idx % goldColors.length];
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${color}, ${p.alpha})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
+        ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+        ctx.shadowBlur = p.color.startsWith('15') ? 4 : 8;
+        ctx.shadowColor = `rgba(${p.color}, 0.5)`;
         ctx.fill();
       });
 
-      // Render 2: Short Fine Gold Line Segments
+      // Render 2: High-Contrast Short Fine Line Segments (Navy & Gold)
       lineSegments.forEach((seg) => {
         if (!prefersReducedMotion) {
           seg.x += seg.vx;
           seg.y += seg.vy;
           seg.angle += seg.rotationSpeed;
 
-          if (seg.x < -30) seg.x = width + 30;
-          if (seg.x > width + 30) seg.x = -30;
-          if (seg.y < -30) seg.y = height + 30;
-          if (seg.y > height + 30) seg.y = -30;
+          if (seg.x < -40) seg.x = width + 40;
+          if (seg.x > width + 40) seg.x = -40;
+          if (seg.y < -40) seg.y = height + 40;
+          if (seg.y > height + 40) seg.y = -40;
 
           seg.alpha += seg.pulseSpeed;
-          if (seg.alpha > 0.65 || seg.alpha < 0.2) {
+          if (seg.alpha > 0.78 || seg.alpha < 0.35) {
             seg.pulseSpeed = -seg.pulseSpeed;
           }
         }
@@ -195,12 +203,12 @@ export const GoldAtmosphereCanvas: React.FC = () => {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(212, 175, 55, ${seg.alpha})`;
-        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = `rgba(${seg.color}, ${seg.alpha})`;
+        ctx.lineWidth = seg.strokeWidth;
         ctx.stroke();
       });
 
-      // Render 3: Small Curved Stroke Marks
+      // Render 3: Small Curved Arc Marks (Navy & Gold)
       arcMarks.forEach((arc) => {
         if (!prefersReducedMotion) {
           arc.x += arc.vx;
@@ -208,16 +216,16 @@ export const GoldAtmosphereCanvas: React.FC = () => {
           arc.startAngle += arc.rotationSpeed;
           arc.endAngle += arc.rotationSpeed;
 
-          if (arc.x < 0) arc.x = width;
-          if (arc.x > width) arc.x = 0;
-          if (arc.y < 0) arc.y = height;
-          if (arc.y > height) arc.y = 0;
+          if (arc.x < -20) arc.x = width + 20;
+          if (arc.x > width + 20) arc.x = -20;
+          if (arc.y < -20) arc.y = height + 20;
+          if (arc.y > height + 20) arc.y = -20;
         }
 
         ctx.beginPath();
         ctx.arc(arc.x, arc.y, arc.radius, arc.startAngle, arc.endAngle);
-        ctx.strokeStyle = `rgba(197, 160, 89, ${arc.alpha})`;
-        ctx.lineWidth = 1.3;
+        ctx.strokeStyle = `rgba(${arc.color}, ${arc.alpha})`;
+        ctx.lineWidth = 2.0;
         ctx.stroke();
       });
 
