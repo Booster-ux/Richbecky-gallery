@@ -24,10 +24,21 @@ export const ImageModal: React.FC<ImageModalProps> = ({
   const imageList = images && images.length > 0 ? images : [imageUrl];
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
+  const previousFocusedElement = React.useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
   }, [initialIndex, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusedElement.current = document.activeElement as HTMLElement;
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
+    } else if (previousFocusedElement.current) {
+      previousFocusedElement.current.focus();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -35,6 +46,23 @@ export const ImageModal: React.FC<ImageModalProps> = ({
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') handlePrev();
       if (e.key === 'ArrowRight') handleNext();
+
+      if (e.key === 'Tab') {
+        const focusable = document.querySelectorAll<HTMLElement>(
+          '#image-lightbox-modal button, #image-lightbox-modal [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -69,6 +97,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
 
   return (
     <div
+      id="image-lightbox-modal"
       className="fixed inset-0 z-50 bg-navy-950/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-8 animate-fade-in select-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -84,6 +113,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         </div>
 
         <button
+          ref={closeButtonRef}
           onClick={onClose}
           className="p-3 rounded-full bg-white/10 hover:bg-gold-500 hover:text-navy-950 text-white border border-white/20 transition shadow-lg flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider"
           aria-label="Close Lightbox"

@@ -294,6 +294,9 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 text-navy-950 hover:text-gold-600 focus:outline-none"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-menu"
+              aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -304,7 +307,7 @@ export const Header: React.FC = () => {
 
       {/* Clean Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-ivory-100 border-b border-ivory-300 px-6 py-6 space-y-6 animate-fade-in shadow-xl">
+        <div id="mobile-navigation-menu" className="lg:hidden bg-ivory-100 border-b border-ivory-300 px-6 py-6 space-y-6 animate-fade-in shadow-xl">
           
           {/* Mobile Search */}
           <form onSubmit={handleSearchSubmit} className="relative">

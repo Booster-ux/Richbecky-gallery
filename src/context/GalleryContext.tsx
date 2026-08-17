@@ -158,11 +158,42 @@ const DEFAULT_FILTER_STATE: FilterState = {
 const GalleryContext = createContext<GalleryContextType | undefined>(undefined);
 
 export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activePage, setActivePage] = useState<ActivePage>('home');
+  const getInitialPageFromPath = (): ActivePage => {
+    if (typeof window === 'undefined') return 'home';
+    const path = window.location.pathname.replace(/^\//, '').trim();
+    if (!path || path === '') return 'home';
+    const validPages: ActivePage[] = [
+      'home', 'catalogue', 'artwork-detail', 'artist-profile', 'cart', 'checkout',
+      'wishlist', 'about', 'journal', 'contact-advisory', 'policies', 'order-confirmation',
+      'login', 'register', 'account', 'artist-landing', 'artist-register', 'artist-application',
+      'artist-status', 'artist-login', 'artist-dashboard', 'add-artwork', 'admin-login', 'admin-dashboard'
+    ];
+    if (validPages.includes(path as ActivePage)) {
+      return path as ActivePage;
+    }
+    return 'home';
+  };
+
+  const [activePage, setActivePageState] = useState<ActivePage>(getInitialPageFromPath);
+
+  const setActivePage = (page: ActivePage) => {
+    setActivePageState(page);
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', page === 'home' ? '/' : `/${page}`);
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActivePageState(getInitialPageFromPath());
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   const [selectedArtworkForEnquiry, setSelectedArtworkForEnquiry] = useState<Artwork | null>(null);
 
   // Initialize data via ApiService connected to backend
-  const [artworks, setArtworks] = useState<Artwork[]>(() => ApiService.artworks.getCatalog());
+  const [artworks, setArtworks] = useState<Artwork[]>(() => ApiService.artworks.getAllForAdmin());
   const [artists, setArtists] = useState<Artist[]>(() => ApiService.artists.getAllActive());
   const [categories] = useState<Category[]>(CATEGORIES);
   const [customers, setCustomers] = useState<CustomerProfile[]>(MOCK_CUSTOMERS);
@@ -247,6 +278,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const res = ApiService.auth.loginCustomer(email, pass);
     if (res.success && res.user) {
       setCurrentUser(res.user);
+      localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setIsAuthenticated(true);
       showToast(`Welcome back, ${res.user.name}!`, 'success');
       return true;
@@ -259,6 +291,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const res = ApiService.auth.registerCustomer(data);
     if (res.success && res.user) {
       setCurrentUser(res.user);
+      localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setIsAuthenticated(true);
       setSelectedCurrency(data.preferredCurrency);
       showToast(`Collector account created successfully! Welcome to Richbecky Gallery.`, 'success');
@@ -272,6 +305,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const res = ApiService.auth.loginArtist(email, pass);
     if (res.success && res.user) {
       setCurrentUser(res.user);
+      localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setArtistApprovalStatus(res.user.artistApprovalStatus || 'Approved');
       setIsAuthenticated(true);
       showToast('Artist Studio authenticated.', 'success');
@@ -285,14 +319,18 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (app.status === 'Pending') {
         showToast('Your artist application is currently pending curatorial review.', 'info');
         setArtistApprovalStatus('Pending');
-        setCurrentUser({ id: app.id, name: app.artistName, email: app.email, role: 'artist', artistApprovalStatus: 'Pending' });
+        const pendingUser: User = { id: app.id, name: app.artistName, email: app.email, role: 'artist', artistApprovalStatus: 'Pending' };
+        setCurrentUser(pendingUser);
+        localStorage.setItem('rbg_auth_user', JSON.stringify(pendingUser));
         setIsAuthenticated(true);
         setActivePage('artist-status');
         return { success: false, message: 'Application pending review.' };
       } else if (app.status === 'Rejected') {
         showToast('Your artist application was not approved.', 'warning');
         setArtistApprovalStatus('Rejected');
-        setCurrentUser({ id: app.id, name: app.artistName, email: app.email, role: 'artist', artistApprovalStatus: 'Rejected' });
+        const rejectedUser: User = { id: app.id, name: app.artistName, email: app.email, role: 'artist', artistApprovalStatus: 'Rejected' };
+        setCurrentUser(rejectedUser);
+        localStorage.setItem('rbg_auth_user', JSON.stringify(rejectedUser));
         setIsAuthenticated(true);
         setActivePage('artist-status');
         return { success: false, message: 'Application rejected.' };
@@ -307,6 +345,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const res = ApiService.auth.loginAdmin(email, pass);
     if (res.success && res.user) {
       setCurrentUser(res.user);
+      localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setIsAuthenticated(true);
       showToast('Authenticated into Executive Admin Governance.', 'success');
       setActivePage('admin-dashboard');
@@ -491,7 +530,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addNewArtwork = (data: Omit<Artwork, 'id' | 'createdAt' | 'status'> & { status?: ArtworkStatus }) => {
     const actorRole = currentUser?.role === 'admin' ? 'admin' : 'artist';
     const created = ApiService.artworks.submitArtwork(actorRole, data);
-    setArtworks(ApiService.artworks.getCatalog());
+    setArtworks(ApiService.artworks.getAllForAdmin());
     showToast(`Artwork "${created.title}" submitted successfully for Admin Approval!`, 'success');
   };
 
@@ -503,14 +542,14 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const approveArtwork = (artworkId: string) => {
     const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
     ApiService.artworks.approveArtwork(adminUser.id, adminUser.email, artworkId);
-    setArtworks(ApiService.artworks.getCatalog());
+    setArtworks(ApiService.artworks.getAllForAdmin());
     showToast('Artwork approved and published to the gallery catalogue!', 'success');
   };
 
   const rejectArtwork = (artworkId: string) => {
     const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
     ApiService.artworks.rejectArtwork(adminUser.id, adminUser.email, artworkId, 'Did not meet curatorial standards.');
-    setArtworks(ApiService.artworks.getCatalog());
+    setArtworks(ApiService.artworks.getAllForAdmin());
     showToast('Artwork status set to Rejected.', 'warning');
   };
 

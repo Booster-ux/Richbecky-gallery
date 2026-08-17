@@ -11,6 +11,7 @@ import {
   ArtistSocialLinks
 } from '../types';
 import { dbStore } from '../db';
+import { UserModel } from './User.model';
 
 export class ArtistModel {
   public static findAll(): ArtistEntity[] {
@@ -67,6 +68,7 @@ export class ArtistModel {
     };
 
     dbStore.artists.set(newArtist.id, newArtist);
+    dbStore.persistState();
     return newArtist;
   }
 
@@ -84,6 +86,7 @@ export class ArtistModel {
       }
     }
     artist.updatedAt = new Date().toISOString();
+    dbStore.persistState();
     return artist;
   }
 }
@@ -106,6 +109,7 @@ export class ArtistApplicationModel {
     };
 
     dbStore.artistApplications.set(newApp.id, newApp);
+    dbStore.persistState();
     return newApp;
   }
 
@@ -127,18 +131,37 @@ export class ArtistApplicationModel {
     if (notes) app.adminNotes = notes;
     if (rejectionReason) app.rejectionReason = rejectionReason;
 
-    // If approved, sync status to corresponding Artist record if exists
-    if (app.userId) {
-      const artist = ArtistModel.findByUserId(app.userId);
-      if (artist) {
-        ArtistModel.updateStatus(
-          artist.id,
-          action === 'Approved' ? 'Active' : 'Rejected',
-          action
-        );
+    // If approved, sync/create corresponding User and Artist records
+    if (action === 'Approved') {
+      let user = UserModel.findByEmail(app.email);
+      if (!user) {
+        user = UserModel.create({
+          email: app.email,
+          firstName: app.fullName.split(' ')[0] || app.artistName,
+          lastName: app.fullName.split(' ').slice(1).join(' ') || 'Artist',
+          role: 'artist'
+        });
+        app.userId = user.id;
+      }
+      let artist = ArtistModel.findByUserId(user.id);
+      if (!artist) {
+        artist = ArtistModel.create({
+          userId: user.id,
+          fullName: app.artistName || app.fullName,
+          biography: app.bio,
+          artistStatement: app.artistStatement || '',
+          profileImage: '',
+          country: app.country,
+          contactInfo: { email: app.email, phone: app.phone, country: app.country },
+          socialLinks: {}
+        });
+        ArtistModel.updateStatus(artist.id, 'Active', 'Approved');
+      } else {
+        ArtistModel.updateStatus(artist.id, 'Active', 'Approved');
       }
     }
 
+    dbStore.persistState();
     return app;
   }
 }

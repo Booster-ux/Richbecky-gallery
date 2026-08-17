@@ -107,7 +107,7 @@ export interface ArtistEntity {
   website?: string;
   exhibitionsCount: number;
   artworksCount: number;
-  commissionRate: number; // e.g. 15.0 for 15% gallery commission
+  commissionRate: number; // e.g. 30.0 for 30% gallery commission
   status: ArtistStatusType;
   approvalStatus: ApplicationStatusType;
   registrationDate: string;

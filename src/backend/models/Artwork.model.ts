@@ -110,6 +110,7 @@ export class ArtworkModel {
       lastUpdated: new Date().toISOString()
     });
 
+    dbStore.persistState();
     return newArtwork;
   }
 
@@ -124,6 +125,7 @@ export class ArtworkModel {
       art.publishedAt = new Date().toISOString();
     }
     art.updatedAt = new Date().toISOString();
+    dbStore.persistState();
     return art;
   }
 
@@ -158,6 +160,7 @@ export class ArtworkModel {
       inv.lastUpdated = new Date().toISOString();
     }
 
+    dbStore.persistState();
     return art;
   }
 }

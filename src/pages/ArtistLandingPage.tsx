@@ -51,9 +51,9 @@ export const ArtistLandingPage: React.FC = () => {
 
         <div className="bg-white p-8 rounded-2xl border border-ivory-300 shadow-subtle space-y-3">
           <Layers className="w-8 h-8 text-gold-600" />
-          <h3 className="font-serif text-lg font-bold text-navy-950">15% Standard Commission</h3>
+          <h3 className="font-serif text-lg font-bold text-navy-950">30% Gallery Commission</h3>
           <p className="text-xs text-neutral-600 font-light leading-relaxed">
-            Artists retain 85% of net artwork listing prices with transparent financial ledger tracking and bank wire payouts.
+            Artists retain 70% of net artwork listing prices with transparent financial ledger tracking and bank wire payouts.
           </p>
         </div>
 

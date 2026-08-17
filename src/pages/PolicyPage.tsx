@@ -1,11 +1,33 @@
 import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
 import { LOGO_URL } from '../data/mockData';
-import { HelpCircle, Truck, RefreshCw, Shield, FileText } from 'lucide-react';
+import { HelpCircle, Truck, RefreshCw, Shield, FileText, Search, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const PolicyPage: React.FC = () => {
-  const { faqs, shippingRegions, setActivePage } = useGallery();
+  const { faqs, shippingRegions } = useGallery();
   const [activeTab, setActiveTab] = useState<'faqs' | 'shipping' | 'returns' | 'privacy' | 'terms'>('faqs');
+  
+  // FAQ Filter & Accordion State
+  const [faqSearch, setFaqSearch] = useState('');
+  const [selectedFaqCategory, setSelectedFaqCategory] = useState<string>('All');
+  const [openFaqIds, setOpenFaqIds] = useState<string[]>([]);
+
+  const faqCategories = ['All', 'Purchasing', 'Shipping', 'Authenticity', 'Original Artworks', 'Fine Art Prints', 'Artists', 'Orders', 'Advisory'];
+
+  const filteredFaqs = faqs.filter(f => {
+    const matchesCategory = selectedFaqCategory === 'All' || f.category.toLowerCase() === selectedFaqCategory.toLowerCase();
+    const matchesSearch = !faqSearch.trim() ||
+      f.question.toLowerCase().includes(faqSearch.toLowerCase()) ||
+      f.answer.toLowerCase().includes(faqSearch.toLowerCase()) ||
+      f.category.toLowerCase().includes(faqSearch.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const toggleFaq = (id: string) => {
+    setOpenFaqIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in space-y-12">
@@ -46,15 +68,76 @@ export const PolicyPage: React.FC = () => {
         {/* FAQS TAB */}
         {activeTab === 'faqs' && (
           <div className="space-y-6">
-            <h2 className="font-serif text-2xl font-bold text-navy-950 border-b border-ivory-200 pb-3">Frequently Asked Questions</h2>
-            <div className="space-y-4">
-              {faqs.map(f => (
-                <div key={f.id} className="p-5 bg-ivory-100 rounded-xl border border-ivory-300 space-y-2">
-                  <span className="text-gold-700 font-bold uppercase text-[10px]">{f.category}</span>
-                  <h3 className="font-serif text-base font-bold text-navy-950">{f.question}</h3>
-                  <p className="text-neutral-700">{f.answer}</p>
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-2xl font-bold text-navy-950">Frequently Asked Questions</h2>
+              
+              {/* FAQ Search Bar */}
+              <div className="relative max-w-xs w-full">
+                <input
+                  type="text"
+                  value={faqSearch}
+                  onChange={(e) => setFaqSearch(e.target.value)}
+                  placeholder="Search FAQ questions..."
+                  className="w-full bg-ivory-100 border border-ivory-300 rounded-full py-2 pl-9 pr-4 text-xs text-navy-950 focus:outline-none focus:border-gold-500"
+                />
+                <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
+              </div>
+            </div>
+
+            {/* Category Filter Chips */}
+            <div className="flex flex-wrap gap-2 text-xs font-semibold">
+              {faqCategories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedFaqCategory(cat)}
+                  className={`px-3.5 py-1.5 rounded-full transition ${
+                    selectedFaqCategory === cat
+                      ? 'bg-navy-950 text-gold-400 font-bold shadow-sm'
+                      : 'bg-ivory-200 text-navy-900 hover:bg-ivory-300'
+                  }`}
+                >
+                  {cat}
+                </button>
               ))}
+            </div>
+
+            {/* Accessible FAQ Accordions */}
+            <div className="space-y-3 pt-2">
+              {filteredFaqs.length > 0 ? (
+                filteredFaqs.map(f => {
+                  const isOpen = openFaqIds.includes(f.id);
+                  const contentId = `faq-answer-${f.id}`;
+                  return (
+                    <div key={f.id} className="bg-ivory-100/70 rounded-xl border border-ivory-300 overflow-hidden transition-all duration-300">
+                      <button
+                        onClick={() => toggleFaq(f.id)}
+                        className="w-full p-5 text-left flex items-center justify-between gap-4 focus:outline-none hover:bg-ivory-200/50 transition"
+                        aria-expanded={isOpen}
+                        aria-controls={contentId}
+                      >
+                        <div className="space-y-1">
+                          <span className="text-gold-700 font-bold uppercase text-[10px] tracking-wider block">{f.category}</span>
+                          <h3 className="font-serif text-base font-bold text-navy-950">{f.question}</h3>
+                        </div>
+                        {isOpen ? (
+                          <ChevronUp className="w-5 h-5 text-navy-950 flex-shrink-0" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-neutral-400 flex-shrink-0" />
+                        )}
+                      </button>
+                      {isOpen && (
+                        <div id={contentId} className="px-5 pb-5 pt-1 text-neutral-700 leading-relaxed animate-fade-in border-t border-ivory-200/60">
+                          <p>{f.answer}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-8 text-center text-neutral-500 bg-ivory-100 rounded-xl border border-ivory-300">
+                  <p>No FAQ items found matching "{faqSearch}". Try adjusting your search term or category filter.</p>
+                </div>
+              )}
             </div>
           </div>
         )}

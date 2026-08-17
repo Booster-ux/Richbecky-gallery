@@ -12,6 +12,7 @@ interface ArtworkCardProps {
 export const ArtworkCard: React.FC<ArtworkCardProps> = ({ artwork, showWishlist = true }) => {
   const { navigateToArtwork, addToCart, toggleWishlist, isInWishlist, formatPrice } = useGallery();
   const inWishlist = isInWishlist(artwork.id);
+  const [imageLoaded, setImageLoaded] = React.useState(false);
 
   return (
     <div className="group relative bg-white rounded-lg border border-ivory-300 shadow-subtle hover:shadow-2xl transition-all duration-500 flex flex-col overflow-hidden">
@@ -21,11 +22,24 @@ export const ArtworkCard: React.FC<ArtworkCardProps> = ({ artwork, showWishlist 
         className="relative aspect-[4/5] w-full overflow-hidden bg-ivory-200 flex items-center justify-center p-3 cursor-pointer"
         onClick={() => navigateToArtwork(artwork)}
       >
+        {/* Warm Ivory Skeleton Loader */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-ivory-300 animate-pulse flex items-center justify-center">
+            <span className="text-[11px] font-serif text-neutral-400 tracking-wider">Richbecky Fine Art</span>
+          </div>
+        )}
+
         <img
           src={getProductionImageUrl(artwork.imageUrl, artwork.title)}
           alt={artwork.title}
-          onError={(e) => handleImageError(e, artwork.title)}
-          className="w-full h-full object-contain object-center transition-transform duration-700 ease-out group-hover:scale-105"
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            setImageLoaded(true);
+            handleImageError(e, artwork.title);
+          }}
+          className={`w-full h-full object-contain object-center transition-all duration-700 ease-out group-hover:scale-105 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           loading="lazy"
         />
 

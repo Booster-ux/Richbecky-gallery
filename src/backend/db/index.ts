@@ -53,9 +53,64 @@ export class DatabaseMemoryStore {
 
   constructor() {
     this.seedDefaults();
+    this.restoreState();
+  }
+
+  public persistState(): void {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem('rbg_db_users', JSON.stringify(Array.from(this.users.entries())));
+      localStorage.setItem('rbg_db_artists', JSON.stringify(Array.from(this.artists.entries())));
+      localStorage.setItem('rbg_db_applications', JSON.stringify(Array.from(this.artistApplications.entries())));
+      localStorage.setItem('rbg_db_artworks', JSON.stringify(Array.from(this.artworks.entries())));
+    } catch (e) {
+      // Ignore storage errors
+    }
+  }
+
+  public restoreState(): void {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const u = localStorage.getItem('rbg_db_users');
+      if (u) {
+        const entries = JSON.parse(u);
+        entries.forEach(([k, v]: [string, any]) => this.users.set(k, v));
+      }
+      const a = localStorage.getItem('rbg_db_artists');
+      if (a) {
+        const entries = JSON.parse(a);
+        entries.forEach(([k, v]: [string, any]) => this.artists.set(k, v));
+      }
+      const app = localStorage.getItem('rbg_db_applications');
+      if (app) {
+        const entries = JSON.parse(app);
+        entries.forEach(([k, v]: [string, any]) => this.artistApplications.set(k, v));
+      }
+      const art = localStorage.getItem('rbg_db_artworks');
+      if (art) {
+        const entries = JSON.parse(art);
+        entries.forEach(([k, v]: [string, any]) => this.artworks.set(k, v));
+      }
+    } catch (e) {
+      // Fallback to seed defaults
+    }
   }
 
   private seedDefaults(): void {
+    // Seed Admin User
+    const adminUser: UserEntity = {
+      id: 'u0000000-0000-0000-0000-000000000001',
+      email: 'admin@richbeckygallery.com',
+      firstName: 'Executive',
+      lastName: 'Director',
+      role: 'admin',
+      status: 'active',
+      passwordHash: '$2a$12$RBG.YWRtaW4xMjM=',
+      createdAt: '2026-08-01T00:00:00Z',
+      updatedAt: '2026-08-01T00:00:00Z'
+    };
+    this.users.set(adminUser.id, adminUser);
+
     // Seed Real Artists
     const artist1: ArtistEntity = {
       id: 'a0000000-0000-0000-0000-000000000001',

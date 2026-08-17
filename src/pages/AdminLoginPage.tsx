@@ -11,12 +11,7 @@ export const AdminLoginPage: React.FC = () => {
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      loginAdmin(email, password);
-    }, 600);
+    loginAdmin(email, password);
   };
 
   return (

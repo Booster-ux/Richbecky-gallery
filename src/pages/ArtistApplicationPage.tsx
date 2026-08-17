@@ -169,7 +169,7 @@ export const ArtistApplicationPage: React.FC = () => {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Rebecca Esho"
+                  placeholder="e.g. Rebecca Esho (Legal Name)"
                   className="w-full p-3 bg-ivory-100 border border-ivory-300 rounded text-navy-950"
                 />
               </div>
@@ -264,7 +264,7 @@ export const ArtistApplicationPage: React.FC = () => {
                   required
                   value={artistName}
                   onChange={(e) => setArtistName(e.target.value)}
-                  placeholder="Rebecca Esho"
+                  placeholder="e.g. Rebecca Esho (Studio Name)"
                   className="w-full p-3 bg-ivory-100 border border-ivory-300 rounded text-navy-950"
                 />
               </div>
@@ -408,7 +408,7 @@ export const ArtistApplicationPage: React.FC = () => {
 
             <div className="p-4 bg-ivory-100 rounded-xl border border-ivory-300 space-y-2 text-neutral-700 leading-relaxed font-light">
               <span className="font-bold text-navy-950 block uppercase text-[11px]">Artist Representation Guidelines Summary</span>
-              <p>• Standard gallery commission rate is 15% on completed artwork sales.</p>
+              <p>• Standard gallery commission rate is 30% Richbecky Gallery / 70% Artist on completed artwork sales.</p>
               <p>• Artworks must be authentic original creations signed by the artist.</p>
               <p>• Submissions undergo curatorial review before portal access is granted.</p>
             </div>

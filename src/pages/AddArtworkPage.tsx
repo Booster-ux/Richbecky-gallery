@@ -298,6 +298,7 @@ export const AddArtworkPage: React.FC = () => {
                 min={0}
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
+                placeholder="e.g. 250000"
                 className="w-full bg-ivory-100 border border-ivory-300 rounded p-3 text-sm font-bold text-navy-950"
               />
             </div>

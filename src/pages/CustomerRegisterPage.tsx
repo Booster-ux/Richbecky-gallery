@@ -31,8 +31,8 @@ export const CustomerRegisterPage: React.FC = () => {
       return;
     }
 
-    if (!email.trim() || !email.includes('@')) {
-      setErrorMsg('Please enter a valid email address.');
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setErrorMsg('Please enter a valid email address (e.g. collector@artgallery.com).');
       return;
     }
 

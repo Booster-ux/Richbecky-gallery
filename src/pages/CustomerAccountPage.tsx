@@ -304,7 +304,21 @@ export const CustomerAccountPage: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-neutral-500">No saved artworks in wishlist.</p>
+                <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-3">
+                  <div className="w-12 h-12 bg-ivory-200 text-gold-600 rounded-full flex items-center justify-center mx-auto">
+                    <Heart className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-serif text-base font-bold text-navy-950">Your Saved Wishlist is Empty</h4>
+                  <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                    Save your favorite masterworks by clicking the heart icon on any artwork card.
+                  </p>
+                  <button
+                    onClick={() => setActivePage('catalogue')}
+                    className="px-6 py-2.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded text-xs font-bold uppercase tracking-wider transition shadow-sm"
+                  >
+                    Explore Catalogue Collection
+                  </button>
+                </div>
               )}
             </div>
           )}

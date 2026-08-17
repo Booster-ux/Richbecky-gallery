@@ -49,7 +49,7 @@ export class CommissionBackendService {
     return CommissionModel.findByArtistId(artistId);
   }
 
-  public static calculateCommissionBreakdown(saleAmount: number, commissionRate: number = 15.0): {
+  public static calculateCommissionBreakdown(saleAmount: number, commissionRate: number = 30.0): {
     artistShare: number;
     galleryShare: number;
   } {

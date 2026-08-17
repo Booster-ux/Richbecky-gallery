@@ -49,6 +49,7 @@ export class UserModel {
     };
 
     dbStore.users.set(newUser.id, newUser);
+    dbStore.persistState();
     return newUser;
   }
 

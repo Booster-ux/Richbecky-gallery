@@ -91,6 +91,8 @@ export const AdminDashboardPage: React.FC = () => {
   const [artSearch, setArtSearch] = useState('');
   const [selectedArtworks, setSelectedArtworks] = useState<string[]>([]);
   const [editingArtwork, setEditingArtwork] = useState<Artwork | null>(null);
+  const [rejectingArtwork, setRejectingArtwork] = useState<Artwork | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   // Order Management state
   const [orderStatusFilter, setOrderStatusFilter] = useState<'All' | OrderFulfillmentStatus>('All');
@@ -407,9 +409,15 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Mobile Scroll Indicator */}
+            <div className="md:hidden text-[11px] text-neutral-500 mb-2 flex items-center justify-between px-1">
+              <span>Artwork Management</span>
+              <span className="font-semibold text-gold-700">Scroll horizontally →</span>
+            </div>
+
             {/* Artworks Data Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto border border-ivory-300 rounded-lg">
+              <table className="w-full text-left text-xs min-w-[700px]">
                 <thead className="bg-ivory-200 text-navy-950 font-bold uppercase tracking-wider border-b border-ivory-300">
                   <tr>
                     <th className="p-3">
@@ -471,9 +479,14 @@ export const AdminDashboardPage: React.FC = () => {
                           <Star className="w-4 h-4" />
                         </button>
                         {art.status === 'Pending Admin Approval' && (
-                          <button onClick={() => approveArtwork(art.id)} className="px-2.5 py-1 bg-emerald-800 text-white rounded font-bold text-[10px]">
-                            Approve
-                          </button>
+                          <div className="inline-flex items-center gap-1">
+                            <button onClick={() => approveArtwork(art.id)} className="px-2.5 py-1 bg-emerald-800 text-white rounded font-bold text-[10px]">
+                              Approve
+                            </button>
+                            <button onClick={() => setRejectingArtwork(art)} className="px-2.5 py-1 bg-rose-800 text-white rounded font-bold text-[10px]">
+                              Reject
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -1237,6 +1250,48 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Rejection Confirmation Modal */}
+      {rejectingArtwork && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-ivory-100 border border-ivory-300 rounded-lg max-w-md w-full p-6 shadow-2xl space-y-4">
+            <h3 className="font-serif text-lg font-bold text-navy-950">Reject Artwork Submission?</h3>
+            <p className="text-xs text-neutral-600">
+              Are you sure you want to reject <span className="font-bold text-navy-950">"{rejectingArtwork.title}"</span> by {rejectingArtwork.artistName}? Rejected artworks remain hidden from the public gallery catalogue.
+            </p>
+            <div>
+              <label className="block text-xs font-bold text-navy-950 mb-1">Reason for Rejection (Optional)</label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="e.g. Image resolution does not meet curatorial standards..."
+                className="w-full bg-white border border-ivory-300 rounded p-2.5 text-xs text-navy-950 focus:outline-none focus:border-gold-500"
+                rows={3}
+              />
+            </div>
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-ivory-300">
+              <button
+                type="button"
+                onClick={() => { setRejectingArtwork(null); setRejectionReason(''); }}
+                className="px-4 py-2 bg-ivory-200 text-navy-950 hover:bg-ivory-300 rounded text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  rejectArtwork(rejectingArtwork.id);
+                  setRejectingArtwork(null);
+                  setRejectionReason('');
+                }}
+                className="px-4 py-2 bg-rose-800 text-white hover:bg-rose-900 rounded text-xs font-bold shadow"
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
