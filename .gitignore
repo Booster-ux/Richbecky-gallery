@@ -21,6 +21,9 @@ test-results/
 blob-report/
 playwright/.cache/
 
+# Scratch temporary scripts
+scratch/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

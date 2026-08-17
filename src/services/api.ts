@@ -50,6 +50,7 @@ import {
 } from '../types';
 
 import { getProductionImageUrl } from './imageService';
+import { SupabaseService } from './supabaseService';
 
 // =============================================================================
 // BACKEND TO FRONTEND DATA MAPPERS
@@ -303,7 +304,7 @@ export const ApiService = {
         artworkStory: artworkData.artworkStory,
         artistStatement: artworkData.artistStatement,
         artworkType: artworkData.type,
-        categoryId: 'cat00000-0000-0000-0000-000000000001',
+        categoryId: 'c0000000-0000-0000-0000-000000000001',
         categoryNameSnapshot: artworkData.category,
         medium: artworkData.medium,
         materials: artworkData.materials,
@@ -335,16 +336,21 @@ export const ApiService = {
         altText: artworkData.altText || `${artworkData.title} by ${artworkData.artistName}`
       });
 
+      // Async sync to live Supabase DB
+      SupabaseService.saveArtwork(createdBackend).catch(console.error);
+
       return mapBackendArtworkToFrontend(createdBackend);
     },
 
     approveArtwork: (adminUserId: string, adminEmail: string, artworkId: string): Artwork => {
       const updated = ArtworkBackendService.approveArtwork(adminUserId, adminEmail, artworkId);
+      SupabaseService.updateArtworkStatus(artworkId, 'Approved').catch(console.error);
       return mapBackendArtworkToFrontend(updated);
     },
 
     rejectArtwork: (adminUserId: string, adminEmail: string, artworkId: string, reason: string): Artwork => {
       const updated = ArtworkBackendService.rejectArtwork(adminUserId, adminEmail, artworkId, reason);
+      SupabaseService.updateArtworkStatus(artworkId, 'Rejected').catch(console.error);
       return mapBackendArtworkToFrontend(updated);
     }
   },
@@ -386,11 +392,15 @@ export const ApiService = {
     },
 
     submitApplication: (appData: Omit<ArtistApplication, 'id' | 'status' | 'submittedAt'>): ArtistApplicationEntity => {
-      return ArtistBackendService.submitApplication(appData);
+      const created = ArtistBackendService.submitApplication(appData);
+      SupabaseService.saveArtistApplication(created).catch(console.error);
+      return created;
     },
 
     reviewApplication: (adminUserId: string, adminEmail: string, appId: string, action: 'Approved' | 'Rejected', notes?: string, reason?: string) => {
-      return ArtistBackendService.reviewApplication(adminUserId, adminEmail, appId, action, notes, reason);
+      const result = ArtistBackendService.reviewApplication(adminUserId, adminEmail, appId, action, notes, reason);
+      SupabaseService.updateArtistApplicationStatus(appId, action, reason).catch(console.error);
+      return result;
     }
   },
 
