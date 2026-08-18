@@ -10,9 +10,11 @@ export const SupportDashboardPage: React.FC = () => {
   const {
     orders,
     enquiries,
+    supportTickets,
     artistApplications,
     updateOrderStatus,
     updateEnquiryStatus,
+    updateTicketStatus,
     currentUser,
     logout,
     showToast,
@@ -20,11 +22,22 @@ export const SupportDashboardPage: React.FC = () => {
     selectedCurrency
   } = useGallery();
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'enquiries' | 'applications'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'enquiries' | 'applications'>('orders');
   const [orderFilter, setOrderFilter] = useState<'All' | OrderFulfillmentStatus>('All');
   const [orderSearch, setOrderSearch] = useState('');
   const [selectedEnquiry, setSelectedEnquiry] = useState<any | null>(null);
   const [replyNotes, setReplyNotes] = useState('');
+
+  // Ticket management state
+  const [ticketStatusFilter, setTicketStatusFilter] = useState<'All' | 'Open' | 'Under Investigation' | 'Resolved'>('All');
+  const [resolvingTicketId, setResolvingTicketId] = useState<string | null>(null);
+  const [ticketResolutionNote, setTicketResolutionNote] = useState('');
+
+  // Filtered tickets
+  let filteredTickets = supportTickets;
+  if (ticketStatusFilter !== 'All') {
+    filteredTickets = filteredTickets.filter(t => t.status === ticketStatusFilter);
+  }
 
   // Filtered orders
   let filteredOrders = orders;
@@ -39,6 +52,12 @@ export const SupportDashboardPage: React.FC = () => {
       o.shippingInfo.country.toLowerCase().includes(q)
     );
   }
+
+  const handleResolveTicket = (ticketId: string) => {
+    updateTicketStatus(ticketId, 'Resolved', ticketResolutionNote || 'Resolved by Support Staff.');
+    setResolvingTicketId(null);
+    setTicketResolutionNote('');
+  };
 
   const handleResolveEnquiry = (enquiryId: string) => {
     updateEnquiryStatus(enquiryId, 'Resolved', replyNotes || 'Resolved by Support Staff');
@@ -73,7 +92,7 @@ export const SupportDashboardPage: React.FC = () => {
       </div>
 
       {/* Quick Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white p-6 rounded-2xl border border-ivory-300 shadow-subtle flex items-center gap-4">
           <div className="p-3 bg-blue-50 rounded-xl text-blue-700">
             <ShoppingBag className="w-6 h-6" />
@@ -81,6 +100,16 @@ export const SupportDashboardPage: React.FC = () => {
           <div>
             <p className="text-2xl font-serif font-bold text-navy-950">{orders.length}</p>
             <p className="text-xs text-neutral-500 font-light">Active Collector Orders</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl border border-ivory-300 shadow-subtle flex items-center gap-4">
+          <div className="p-3 bg-rose-50 rounded-xl text-rose-700">
+            <LifeBuoy className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-2xl font-serif font-bold text-navy-950">{supportTickets.filter(t => t.status !== 'Resolved').length}</p>
+            <p className="text-xs text-neutral-500 font-light">Open Support Tickets</p>
           </div>
         </div>
 
@@ -106,16 +135,22 @@ export const SupportDashboardPage: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-ivory-300 space-x-6 text-sm font-medium">
+      <div className="flex border-b border-ivory-300 space-x-6 text-sm font-medium overflow-x-auto">
         <button
           onClick={() => setActiveTab('orders')}
-          className={`pb-3 border-b-2 transition ${activeTab === 'orders' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition ${activeTab === 'orders' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
         >
           Order Fulfillment Board ({orders.length})
         </button>
         <button
+          onClick={() => setActiveTab('tickets')}
+          className={`pb-3 border-b-2 whitespace-nowrap transition ${activeTab === 'tickets' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
+        >
+          Support Tickets & Disputes ({supportTickets.length})
+        </button>
+        <button
           onClick={() => setActiveTab('enquiries')}
-          className={`pb-3 border-b-2 transition ${activeTab === 'enquiries' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
+          className={`pb-3 border-b-2 whitespace-nowrap transition ${activeTab === 'enquiries' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
         >
           Collector Advisory Requests ({enquiries.length})
         </button>
@@ -201,6 +236,126 @@ export const SupportDashboardPage: React.FC = () => {
             ) : (
               <div className="p-12 text-center text-xs text-neutral-500">
                 No orders match the current filter.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab Contents: Support Tickets & Disputes */}
+      {activeTab === 'tickets' && (
+        <div className="space-y-6">
+          {/* Status Filter */}
+          <div className="flex flex-wrap gap-2 text-xs font-bold uppercase">
+            {(['All', 'Open', 'Under Investigation', 'Resolved'] as const).map(st => (
+              <button
+                key={st}
+                onClick={() => setTicketStatusFilter(st)}
+                className={`px-3.5 py-1.5 rounded-xl transition ${
+                  ticketStatusFilter === st ? 'bg-navy-950 text-white' : 'bg-ivory-200 text-navy-900 hover:bg-ivory-300'
+                }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            {filteredTickets.length > 0 ? (
+              filteredTickets.map(ticket => (
+                <div key={ticket.id} className="p-6 bg-white rounded-2xl border border-ivory-300 shadow-subtle space-y-4 text-xs">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ivory-200 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-navy-950 text-sm">{ticket.id}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                        ticket.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' :
+                        ticket.status === 'Under Investigation' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {ticket.status}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                        ticket.priority === 'Urgent' ? 'bg-rose-100 text-rose-800' :
+                        ticket.priority === 'Curatorial Escalation' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        Priority: {ticket.priority}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] bg-gold-100 text-gold-900 font-bold uppercase">
+                        Role: {ticket.userRole}
+                      </span>
+                    </div>
+
+                    <span className="text-neutral-400 text-[11px]">{new Date(ticket.createdAt).toLocaleString()}</span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-gold-700 font-bold uppercase text-[10px] tracking-wider">{ticket.category}</span>
+                    <h3 className="font-serif text-base font-bold text-navy-950">{ticket.subject}</h3>
+                    <p className="text-neutral-600">Submitted by: <strong className="text-navy-950">{ticket.userName}</strong> ({ticket.userEmail}) {ticket.orderId && `• Associated Order: ${ticket.orderId}`}</p>
+                    <p className="text-neutral-700 bg-ivory-100 p-3.5 rounded-xl mt-2 leading-relaxed">{ticket.description}</p>
+                  </div>
+
+                  {ticket.resolutionNotes && (
+                    <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-950 space-y-1">
+                      <span className="font-bold flex items-center gap-1 text-[11px] text-emerald-800">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Staff Resolution Notes:
+                      </span>
+                      <p className="text-xs text-neutral-700">{ticket.resolutionNotes}</p>
+                    </div>
+                  )}
+
+                  {/* Actions & Status Updates */}
+                  <div className="pt-2 border-t border-ivory-200 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-neutral-500">Status Transition:</span>
+                      <select
+                        value={ticket.status}
+                        onChange={e => updateTicketStatus(ticket.id, e.target.value as any)}
+                        className="bg-ivory-200 text-navy-950 font-bold px-3 py-1 rounded-lg text-xs border border-ivory-300"
+                      >
+                        <option value="Open">Open</option>
+                        <option value="Under Investigation">Under Investigation</option>
+                        <option value="Resolved">Resolved</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {resolvingTicketId === ticket.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            placeholder="Add resolution explanation..."
+                            value={ticketResolutionNote}
+                            onChange={e => setTicketResolutionNote(e.target.value)}
+                            className="p-1.5 border border-ivory-300 rounded-lg text-xs w-64"
+                          />
+                          <button
+                            onClick={() => handleResolveTicket(ticket.id)}
+                            className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg font-bold"
+                          >
+                            Save Note
+                          </button>
+                          <button
+                            onClick={() => setResolvingTicketId(null)}
+                            className="px-2 py-1.5 border rounded-lg text-neutral-500"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setResolvingTicketId(ticket.id)}
+                          className="px-4 py-1.5 bg-navy-950 text-white rounded-xl font-bold hover:bg-gold-500 hover:text-navy-950 transition"
+                        >
+                          + Add Curatorial Resolution Note
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-12 text-center bg-white rounded-2xl border border-ivory-300 text-neutral-500 text-xs">
+                No support tickets found matching the active filter.
               </div>
             )}
           </div>

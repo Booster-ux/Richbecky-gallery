@@ -21,7 +21,11 @@ import {
   ArtistApplication,
   ArtistApprovalStatus,
   UserRole,
-  ArtworkStatus
+  ArtworkStatus,
+  SupportTicket,
+  TicketStatus,
+  TicketCategory,
+  TicketPriority
 } from '../types';
 import {
   CATEGORIES,
@@ -30,7 +34,8 @@ import {
   MOCK_PAYOUTS,
   MOCK_FAQS,
   MOCK_SHIPPING_REGIONS,
-  MOCK_ADMIN_NOTIFICATIONS
+  MOCK_ADMIN_NOTIFICATIONS,
+  MOCK_SUPPORT_TICKETS
 } from '../data/mockData';
 import {
   convertPrice,
@@ -122,6 +127,11 @@ interface GalleryContextType {
   updateEnquiryStatus: (enquiryId: string, status: EnquiryStatus, replyNotes?: string) => void;
   selectedArtworkForEnquiry: Artwork | null;
   setSelectedArtworkForEnquiry: (artwork: Artwork | null) => void;
+
+  // Support Tickets & Disputes
+  supportTickets: SupportTicket[];
+  createSupportTicket: (ticketData: Omit<SupportTicket, 'id' | 'createdAt' | 'status'>) => void;
+  updateTicketStatus: (ticketId: string, status: TicketStatus, notes?: string) => void;
 
   // Domain Models
   customers: CustomerProfile[];
@@ -662,6 +672,52 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     showToast('Shipping region settings updated.', 'info');
   };
 
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>(() => {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('rbg_support_tickets');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return MOCK_SUPPORT_TICKETS;
+        }
+      }
+    }
+    return MOCK_SUPPORT_TICKETS;
+  });
+
+  const createSupportTicket = (ticketData: Omit<SupportTicket, 'id' | 'createdAt' | 'status'>) => {
+    const newTicket: SupportTicket = {
+      ...ticketData,
+      id: `TCK-${Math.floor(1000 + Math.random() * 9000)}`,
+      createdAt: new Date().toISOString(),
+      status: 'Open'
+    };
+    setSupportTickets(prev => {
+      const updated = [newTicket, ...prev];
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('rbg_support_tickets', JSON.stringify(updated));
+      }
+      return updated;
+    });
+    showToast(`Support Ticket #${newTicket.id} lodged successfully. Curatorial support notified.`, 'success');
+  };
+
+  const updateTicketStatus = (ticketId: string, status: TicketStatus, notes?: string) => {
+    setSupportTickets(prev => {
+      const updated = prev.map(t =>
+        t.id === ticketId
+          ? { ...t, status, resolutionNotes: notes || t.resolutionNotes, updatedAt: new Date().toISOString() }
+          : t
+      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('rbg_support_tickets', JSON.stringify(updated));
+      }
+      return updated;
+    });
+    showToast(`Ticket #${ticketId} status set to ${status}.`, 'info');
+  };
+
   const markNotificationRead = (id: string) => {
     setAdminNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
@@ -723,6 +779,9 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateEnquiryStatus,
         selectedArtworkForEnquiry,
         setSelectedArtworkForEnquiry,
+        supportTickets,
+        createSupportTicket,
+        updateTicketStatus,
         customers,
         payouts,
         updatePayoutStatus,

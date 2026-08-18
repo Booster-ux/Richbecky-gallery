@@ -149,6 +149,35 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Column 5: CONCIERGE & ORDER TRACKING */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-navy-950 uppercase tracking-widest border-b border-ivory-300 pb-2">
+              Concierge & Tracking
+            </h3>
+            <ul className="space-y-2 text-xs text-neutral-600 font-medium">
+              <li>
+                <button onClick={() => setActivePage('contact-advisory')} className="hover:text-gold-700 transition">
+                  Collector Support Desk
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setActivePage('account')} className="hover:text-gold-700 transition">
+                  Track My Acquisitions
+                </button>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/2348000000000?text=Hello%20Richbecky%20Gallery%20Curator,%20I%20would%20like%20to%20inquire%20about%20an%20artwork%20acquisition."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
+                >
+                  WhatsApp Advisory →
+                </a>
+              </li>
+            </ul>
+          </div>
+
         </div>
 
         {/* Bottom Legal Bar */}

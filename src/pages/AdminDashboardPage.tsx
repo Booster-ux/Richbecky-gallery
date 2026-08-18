@@ -40,6 +40,7 @@ export const AdminDashboardPage: React.FC = () => {
     orders,
     customers,
     enquiries,
+    supportTickets,
     payouts,
     faqs,
     shippingRegions,
@@ -54,6 +55,7 @@ export const AdminDashboardPage: React.FC = () => {
     updateArtwork,
     updateOrderStatus,
     updateEnquiryStatus,
+    updateTicketStatus,
     updatePayoutStatus,
     addFAQ,
     updateFAQ,
@@ -98,7 +100,8 @@ export const AdminDashboardPage: React.FC = () => {
   const [orderStatusFilter, setOrderStatusFilter] = useState<'All' | OrderFulfillmentStatus>('All');
   const [viewingOrder, setViewingOrder] = useState<any | null>(null);
 
-  // Enquiry state
+  // Enquiry & Support Ticket state
+  const [enquirySubTab, setEnquirySubTab] = useState<'enquiries' | 'tickets'>('enquiries');
   const [selectedEnquiry, setSelectedEnquiry] = useState<any | null>(null);
   const [replyText, setReplyText] = useState('');
 
@@ -201,7 +204,7 @@ export const AdminDashboardPage: React.FC = () => {
               { id: 'customers', label: 'Customers', icon: UserCheck },
               { id: 'payments', label: 'Payments & Commissions', icon: DollarSign },
               { id: 'payouts', label: 'Artist Payouts', icon: CreditCard },
-              { id: 'enquiries', label: 'Enquiries & Advisory', icon: MessageSquare, badge: newEnquiriesCount },
+              { id: 'enquiries', label: 'Enquiries & Support Desk', icon: MessageSquare, badge: newEnquiriesCount + supportTickets.filter(t => t.status !== 'Resolved').length },
               { id: 'categories', label: 'Categories & Collections', icon: Layers },
               { id: 'content', label: 'Content Management', icon: FileText },
               { id: 'faqs', label: 'FAQ Management', icon: HelpCircle },
@@ -817,55 +820,146 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
         )}
 
-        {/* SECTION 8: ENQUIRIES */}
+        {/* SECTION 8: ENQUIRIES & SUPPORT TICKETS */}
         {activeSection === 'enquiries' && (
           <div className="space-y-6 bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle">
-            <h2 className="font-serif text-xl font-bold text-navy-950">Collector Advisory & Enquiries Inbox</h2>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-navy-950">Inquiries, Disputes & Concierge Center</h2>
+                <p className="text-xs text-neutral-500">Monitor curatorial advisory requests and manage customer/artist support tickets</p>
+              </div>
 
-            {enquiries.length > 0 ? (
-              <div className="space-y-4 text-xs">
-                {enquiries.map(e => (
-                  <div key={e.id} className="border border-ivory-300 rounded-xl p-5 space-y-3">
-                    <div className="flex items-center justify-between border-b border-ivory-200 pb-2">
+              <div className="flex gap-2 text-xs font-bold uppercase">
+                <button
+                  onClick={() => setEnquirySubTab('enquiries')}
+                  className={`px-4 py-2 rounded-xl transition ${
+                    enquirySubTab === 'enquiries' ? 'bg-navy-950 text-gold-400 shadow' : 'bg-ivory-200 text-navy-900 hover:bg-ivory-300'
+                  }`}
+                >
+                  Advisory Requests ({enquiries.length})
+                </button>
+                <button
+                  onClick={() => setEnquirySubTab('tickets')}
+                  className={`px-4 py-2 rounded-xl transition ${
+                    enquirySubTab === 'tickets' ? 'bg-navy-950 text-gold-400 shadow' : 'bg-ivory-200 text-navy-900 hover:bg-ivory-300'
+                  }`}
+                >
+                  Support Tickets ({supportTickets.length})
+                </button>
+              </div>
+            </div>
+
+            {enquirySubTab === 'enquiries' && (
+              enquiries.length > 0 ? (
+                <div className="space-y-4 text-xs">
+                  {enquiries.map(e => (
+                    <div key={e.id} className="border border-ivory-300 rounded-xl p-5 space-y-3">
+                      <div className="flex items-center justify-between border-b border-ivory-200 pb-2">
+                        <div>
+                          <span className="font-bold text-navy-950 text-sm">{e.customerName}</span>
+                          <span className="text-neutral-400 ml-2">({e.customerEmail})</span>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded font-bold uppercase text-[10px] ${
+                          e.status === 'New' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                        }`}>
+                          {e.status}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1">
+                        <span className="text-gold-700 font-bold uppercase text-[11px] block">{e.enquiryType}</span>
+                        {e.artworkTitle && <p className="text-neutral-500">Artwork Reference: <strong className="text-navy-950">{e.artworkTitle}</strong></p>}
+                        <p className="text-neutral-700 bg-ivory-100 p-3 rounded">{e.message}</p>
+                      </div>
+
+                      {e.replyNotes && (
+                        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-900">
+                          <strong>Curatorial Notes:</strong> {e.replyNotes}
+                        </div>
+                      )}
+
+                      <div className="pt-2 flex gap-2">
+                        <button onClick={() => updateEnquiryStatus(e.id, 'Resolved')} className="px-3 py-1.5 bg-emerald-800 text-white font-bold rounded">
+                          Mark Resolved
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                  <MessageSquare className="w-8 h-8 text-neutral-400 mx-auto" />
+                  <h4 className="font-serif text-base font-bold text-navy-950">No Advisory Enquiries Received Yet</h4>
+                  <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                    Private curatorial and artwork inquiries submitted by site visitors will arrive here.
+                  </p>
+                </div>
+              )
+            )}
+
+            {enquirySubTab === 'tickets' && (
+              supportTickets.length > 0 ? (
+                <div className="space-y-4 text-xs">
+                  {supportTickets.map(ticket => (
+                    <div key={ticket.id} className="border border-ivory-300 rounded-xl p-5 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ivory-200 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-navy-950 text-sm">{ticket.id}</span>
+                          <span className={`px-2.5 py-0.5 rounded font-bold uppercase text-[10px] ${
+                            ticket.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' :
+                            ticket.status === 'Under Investigation' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {ticket.status}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-bold uppercase text-[10px]">
+                            {ticket.priority}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-gold-100 text-gold-900 font-bold uppercase text-[10px]">
+                            {ticket.userRole}
+                          </span>
+                        </div>
+                        <span className="text-neutral-400">{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                      </div>
+
                       <div>
-                        <span className="font-bold text-navy-950 text-sm">{e.customerName}</span>
-                        <span className="text-neutral-400 ml-2">({e.customerEmail})</span>
+                        <span className="text-gold-700 font-bold uppercase text-[10px] block">{ticket.category}</span>
+                        <h4 className="font-serif text-sm font-bold text-navy-950">{ticket.subject}</h4>
+                        <p className="text-neutral-500">From: {ticket.userName} ({ticket.userEmail}) {ticket.orderId && `• Order: ${ticket.orderId}`}</p>
+                        <p className="text-neutral-700 bg-ivory-100 p-3 rounded-lg mt-1">{ticket.description}</p>
                       </div>
-                      <span className={`px-2.5 py-0.5 rounded font-bold uppercase text-[10px] ${
-                        e.status === 'New' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                      }`}>
-                        {e.status}
-                      </span>
-                    </div>
 
-                    <div className="space-y-1">
-                      <span className="text-gold-700 font-bold uppercase text-[11px] block">{e.enquiryType}</span>
-                      {e.artworkTitle && <p className="text-neutral-500">Artwork Reference: <strong className="text-navy-950">{e.artworkTitle}</strong></p>}
-                      <p className="text-neutral-700 bg-ivory-100 p-3 rounded">{e.message}</p>
-                    </div>
+                      {ticket.resolutionNotes && (
+                        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-950">
+                          <strong>Resolution Response:</strong> {ticket.resolutionNotes}
+                        </div>
+                      )}
 
-                    {e.replyNotes && (
-                      <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-emerald-900">
-                        <strong>Curatorial Notes:</strong> {e.replyNotes}
+                      <div className="pt-2 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-neutral-500 font-bold">Status:</span>
+                          <select
+                            value={ticket.status}
+                            onChange={e => updateTicketStatus(ticket.id, e.target.value as any)}
+                            className="bg-ivory-200 text-navy-950 font-bold px-2.5 py-1 rounded border border-ivory-300"
+                          >
+                            <option value="Open">Open</option>
+                            <option value="Under Investigation">Under Investigation</option>
+                            <option value="Resolved">Resolved</option>
+                          </select>
+                        </div>
                       </div>
-                    )}
-
-                    <div className="pt-2 flex gap-2">
-                      <button onClick={() => updateEnquiryStatus(e.id, 'Resolved')} className="px-3 py-1.5 bg-emerald-800 text-white font-bold rounded">
-                        Mark Resolved
-                      </button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
-                <MessageSquare className="w-8 h-8 text-neutral-400 mx-auto" />
-                <h4 className="font-serif text-base font-bold text-navy-950">No Advisory Enquiries Received Yet</h4>
-                <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
-                  Private curatorial and artwork inquiries submitted by site visitors will arrive here.
-                </p>
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-12 text-center bg-ivory-100/50 rounded-xl border border-ivory-300 space-y-2">
+                  <LifeBuoy className="w-8 h-8 text-neutral-400 mx-auto" />
+                  <h4 className="font-serif text-base font-bold text-navy-950">No Support Tickets Lodged</h4>
+                  <p className="text-xs text-neutral-500 font-light max-w-sm mx-auto">
+                    Customer dispute claims, framing requests, and artist payout inquiries will appear here.
+                  </p>
+                </div>
+              )
             )}
           </div>
         )}

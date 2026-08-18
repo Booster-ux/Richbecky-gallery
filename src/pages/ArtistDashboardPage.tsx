@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { useGallery } from '../context/GalleryContext';
 import {
   PlusCircle,
   Clock,
@@ -17,13 +15,25 @@ import {
   Layers,
   Sparkles,
   Calculator,
-  Package
+  Package,
+  LifeBuoy,
+  Send
 } from 'lucide-react';
 import { getProductionImageUrl, handleImageError } from '../services/imageService';
-import { CurrencyCode } from '../types';
+import { CurrencyCode, TicketCategory, TicketPriority } from '../types';
 
 export const ArtistDashboardPage: React.FC = () => {
-  const { artworks, setActivePage, navigateToArtwork, formatOriginalPrice, showToast, payouts } = useGallery();
+  const {
+    artworks,
+    setActivePage,
+    navigateToArtwork,
+    formatOriginalPrice,
+    showToast,
+    payouts,
+    currentUser,
+    supportTickets,
+    createSupportTicket
+  } = useGallery();
   
   type ArtistTab =
     | 'overview'
@@ -33,6 +43,7 @@ export const ArtistDashboardPage: React.FC = () => {
     | 'calculator'
     | 'payouts'
     | 'orders'
+    | 'support'
     | 'profile'
     | 'notifications'
     | 'settings';
@@ -42,10 +53,45 @@ export const ArtistDashboardPage: React.FC = () => {
   const [calcCurrency, setCalcCurrency] = useState<CurrencyCode>('NGN');
   const [commissionPct] = useState<number>(15);
 
+  // Artist Ticket Form State
+  const [artistTicketCategory, setArtistTicketCategory] = useState<TicketCategory>('Artist Payout Query');
+  const [artistTicketPriority, setArtistTicketPriority] = useState<TicketPriority>('Standard');
+  const [artistTicketSubject, setArtistTicketSubject] = useState<string>('');
+  const [artistTicketDesc, setArtistTicketDesc] = useState<string>('');
+  const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
+
   const artistWorks = artworks;
   const pendingCount = artistWorks.filter(a => a.status === 'Pending Admin Approval').length;
   const approvedCount = artistWorks.filter(a => a.status === 'Approved').length;
   const rejectedCount = artistWorks.filter(a => a.status === 'Rejected').length;
+
+  const artistTickets = supportTickets.filter(
+    t => t.userRole === 'artist' || (currentUser && t.userId === currentUser.id)
+  );
+
+  const handleArtistTicketSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!artistTicketSubject.trim() || !artistTicketDesc.trim()) {
+      showToast('Please provide a subject and detailed description.', 'warning');
+      return;
+    }
+    setIsSubmittingTicket(true);
+    setTimeout(() => {
+      createSupportTicket({
+        userId: currentUser?.id,
+        userRole: 'artist',
+        userName: currentUser?.name || 'Represented Studio Artist',
+        userEmail: currentUser?.email || 'artist@richbeckygallery.com',
+        category: artistTicketCategory,
+        priority: artistTicketPriority,
+        subject: artistTicketSubject,
+        description: artistTicketDesc
+      });
+      setArtistTicketSubject('');
+      setArtistTicketDesc('');
+      setIsSubmittingTicket(false);
+    }, 400);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in space-y-8">
@@ -104,6 +150,7 @@ export const ArtistDashboardPage: React.FC = () => {
             { id: 'calculator', label: 'Commission Calculator', icon: Calculator },
             { id: 'payouts', label: 'Payouts', icon: CreditCard },
             { id: 'orders', label: 'Orders', icon: Package },
+            { id: 'support', label: 'Artist Helpdesk', icon: LifeBuoy },
             { id: 'profile', label: 'Studio Profile', icon: User },
             { id: 'notifications', label: 'Notifications', icon: Bell },
             { id: 'settings', label: 'Settings', icon: Settings }
@@ -244,6 +291,129 @@ export const ArtistDashboardPage: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: ARTIST HELPDESK */}
+      {activeTab === 'support' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 sm:p-8 rounded-xl border border-ivory-300 shadow-subtle space-y-6">
+            <div className="border-b border-ivory-200 pb-3">
+              <h2 className="font-serif text-lg font-bold text-navy-950">Artist Studio Support & Inquiry Desk</h2>
+              <p className="text-xs text-neutral-500 font-light">
+                Submit an official inquiry to the gallery director regarding commission payouts, curatorial feedback, or exhibition schedules.
+              </p>
+            </div>
+
+            {/* Lodge New Ticket Form */}
+            <form onSubmit={handleArtistTicketSubmit} className="bg-ivory-50 p-5 rounded-xl border border-ivory-300 space-y-4 text-xs">
+              <div className="flex items-center gap-2 text-navy-950 font-bold">
+                <LifeBuoy className="w-4 h-4 text-gold-600" />
+                <span>Submit a Direct Studio Inquiry</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-bold text-navy-900 block mb-1">Inquiry Nature *</label>
+                  <select
+                    value={artistTicketCategory}
+                    onChange={e => setArtistTicketCategory(e.target.value as TicketCategory)}
+                    className="w-full p-2.5 bg-white border border-ivory-300 rounded-xl font-semibold text-navy-950"
+                  >
+                    <option value="Artist Payout Query">Artist Payout Query</option>
+                    <option value="Artist Commission Clarification">Artist Commission Clarification</option>
+                    <option value="Artwork Review Appeal">Artwork Review / Curatorial Feedback Appeal</option>
+                    <option value="General Support">General Studio Support</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-navy-900 block mb-1">Priority Level *</label>
+                  <select
+                    value={artistTicketPriority}
+                    onChange={e => setArtistTicketPriority(e.target.value as TicketPriority)}
+                    className="w-full p-2.5 bg-white border border-ivory-300 rounded-xl font-semibold text-navy-950"
+                  >
+                    <option value="Standard">Standard</option>
+                    <option value="Urgent">Urgent (Payout Settlement)</option>
+                    <option value="Curatorial Escalation">Curatorial Director Escalation</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-900 block mb-1">Subject *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Bank wire settlement inquiry for ISEMBAYE acquisition..."
+                  value={artistTicketSubject}
+                  onChange={e => setArtistTicketSubject(e.target.value)}
+                  className="w-full p-2.5 bg-white border border-ivory-300 rounded-xl"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-900 block mb-1">Detailed Inquiry *</label>
+                <textarea
+                  required
+                  placeholder="Provide full details and any relevant artwork or order references..."
+                  value={artistTicketDesc}
+                  onChange={e => setArtistTicketDesc(e.target.value)}
+                  className="w-full p-3 bg-white border border-ivory-300 rounded-xl h-24"
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSubmittingTicket}
+                  className="px-5 py-2.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{isSubmittingTicket ? 'Transmitting...' : 'Send Inquiry to Curatorial Director'}</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Artist Ticket History */}
+            <div className="space-y-4">
+              <h3 className="font-serif text-sm font-bold text-navy-950">
+                Your Studio Inquiry Records ({artistTickets.length})
+              </h3>
+
+              {artistTickets.length > 0 ? (
+                <div className="space-y-3">
+                  {artistTickets.map(t => (
+                    <div key={t.id} className="p-4 border border-ivory-300 rounded-xl space-y-2 text-xs">
+                      <div className="flex justify-between items-center border-b border-ivory-200 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-navy-950">{t.id}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            t.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' :
+                            t.status === 'Under Investigation' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {t.status}
+                          </span>
+                        </div>
+                        <span className="text-neutral-400 text-[10px]">{new Date(t.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <span className="text-gold-700 font-bold uppercase text-[10px] block">{t.category}</span>
+                      <h4 className="font-bold text-navy-950">{t.subject}</h4>
+                      <p className="text-neutral-700 bg-ivory-100 p-2.5 rounded-lg">{t.description}</p>
+                      {t.resolutionNotes && (
+                        <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950">
+                          <strong>Curatorial Direct Response:</strong> {t.resolutionNotes}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-neutral-500 text-xs py-4 text-center">No open studio inquiries recorded.</p>
+              )}
+            </div>
           </div>
         </div>
       )}

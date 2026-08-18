@@ -229,6 +229,38 @@ export interface Enquiry {
   replyNotes?: string;
 }
 
+export type TicketCategory =
+  | 'Order & Delivery Issue'
+  | 'Damaged Artwork Claim'
+  | 'Custom Framing Dispute'
+  | 'Certificate of Authenticity Request'
+  | 'Artist Payout Query'
+  | 'Artist Commission Clarification'
+  | 'Artwork Review Appeal'
+  | 'General Support';
+
+export type TicketPriority = 'Standard' | 'Urgent' | 'Curatorial Escalation';
+export type TicketStatus = 'Open' | 'Under Investigation' | 'Resolved';
+
+export interface SupportTicket {
+  id: string;
+  userId?: string;
+  userRole: 'customer' | 'artist' | 'guest';
+  userName: string;
+  userEmail: string;
+  userPhone?: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  orderId?: string;
+  artworkTitle?: string;
+  subject: string;
+  description: string;
+  createdAt: string;
+  status: TicketStatus;
+  resolutionNotes?: string;
+  updatedAt?: string;
+}
+
 export interface Payout {
   id: string;
   artistId: string;

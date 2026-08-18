@@ -9,7 +9,8 @@ import {
   Payout,
   FAQItem,
   ShippingRegion,
-  NotificationItem
+  NotificationItem,
+  SupportTicket
 } from '../types';
 
 export const LOGO_URL = '/logo.svg';
@@ -283,6 +284,7 @@ export const MOCK_ORDERS: Order[] = [];
 export const MOCK_ENQUIRIES: Enquiry[] = [];
 export const MOCK_PAYOUTS: Payout[] = [];
 export const MOCK_ADMIN_NOTIFICATIONS: NotificationItem[] = [];
+export const MOCK_SUPPORT_TICKETS: SupportTicket[] = [];
 
 export const MOCK_FAQS: FAQItem[] = [
   {
