@@ -11,7 +11,7 @@ import { CurrencyCode, ArtworkType, ArtworkStatus } from '../../types';
 // 1. USER & AUTHENTICATION TYPES
 // ==========================================
 
-export type SystemUserRole = 'customer' | 'artist' | 'admin';
+export type SystemUserRole = 'customer' | 'artist' | 'admin' | 'owner_content' | 'admin_support' | 'web_developer';
 export type UserStatus = 'active' | 'pending' | 'suspended';
 
 export interface UserEntity {

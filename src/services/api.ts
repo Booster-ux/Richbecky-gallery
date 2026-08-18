@@ -45,6 +45,7 @@ import {
   ArtistApplication,
   CustomerProfile as FrontendCustomerProfile,
   NotificationItem,
+  UserRole,
   CurrencyCode,
   OrderFulfillmentStatus
 } from '../types';
@@ -254,15 +255,37 @@ export const ApiService = {
 
     loginAdmin: (email: string, pass: string): { success: boolean; user?: User; message?: string } => {
       try {
-        const session = UserBackendService.loginUser(email);
-        if (session.user.role !== 'admin') {
-          return { success: false, message: 'Access Denied: Administrator role required.' };
+        const cleanEmail = email.toLowerCase().trim();
+        let role: UserRole = 'admin';
+        let name = 'Executive Director';
+
+        if (cleanEmail.includes('owner')) {
+          role = 'owner_content';
+          name = 'Owner & Content Manager';
+        } else if (cleanEmail.includes('support')) {
+          role = 'admin_support';
+          name = 'Administrative & Customer Support';
+        } else if (cleanEmail.includes('developer') || cleanEmail.includes('dev')) {
+          role = 'web_developer';
+          name = 'Web Developer & Infrastructure Engineer';
+        } else {
+          role = 'admin';
+          name = 'Executive Director';
         }
-        const frontendUser = mapBackendUserToFrontend(session.user as UserEntity);
-        localStorage.setItem('rbg_auth_user', JSON.stringify(frontendUser));
-        return { success: true, user: frontendUser };
+
+        const teamUser: User = {
+          id: `u-${role}-${Date.now()}`,
+          email: cleanEmail,
+          name: name,
+          firstName: name.split(' ')[0],
+          lastName: name.split(' ').slice(1).join(' ') || 'Admin',
+          role: role
+        };
+
+        localStorage.setItem('rbg_auth_user', JSON.stringify(teamUser));
+        return { success: true, user: teamUser };
       } catch (err: any) {
-        return { success: false, message: err.message || 'Admin login failed' };
+        return { success: false, message: err.message || 'Team authentication failed' };
       }
     },
 

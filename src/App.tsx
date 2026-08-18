@@ -31,9 +31,12 @@ import { ArtistLoginPage } from './pages/ArtistLoginPage';
 import { ArtistDashboardPage } from './pages/ArtistDashboardPage';
 import { AddArtworkPage } from './pages/AddArtworkPage';
 
-// Admin Governance
+// Admin Governance & Team Portals
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { OwnerDashboardPage } from './pages/dashboards/OwnerDashboard';
+import { SupportDashboardPage } from './pages/dashboards/SupportDashboard';
+import { DeveloperDashboardPage } from './pages/dashboards/DeveloperDashboard';
 
 import { GlobalGalleryAtmosphere } from './components/GlobalGalleryAtmosphere';
 
@@ -94,11 +97,14 @@ const AppContent: React.FC = () => {
         if (!isAuthenticated || currentUser?.role !== 'artist') return <ArtistLoginPage />;
         return <AddArtworkPage />;
 
-      // Admin Governance
+      // Admin & Team Governance Portals
       case 'admin-login':
         return <AdminLoginPage />;
       case 'admin-dashboard':
-        if (!isAuthenticated || currentUser?.role !== 'admin') return <AdminLoginPage />;
+        if (!isAuthenticated || !currentUser || currentUser.role === 'customer' || currentUser.role === 'artist') return <AdminLoginPage />;
+        if (currentUser.role === 'web_developer') return <DeveloperDashboardPage />;
+        if (currentUser.role === 'admin_support') return <SupportDashboardPage />;
+        if (currentUser.role === 'owner_content') return <OwnerDashboardPage />;
         return <AdminDashboardPage />;
 
       default:

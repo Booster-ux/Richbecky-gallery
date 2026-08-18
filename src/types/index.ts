@@ -94,7 +94,7 @@ export interface WishlistItem {
   addedAt: string;
 }
 
-export type UserRole = 'customer' | 'artist' | 'admin';
+export type UserRole = 'customer' | 'artist' | 'admin' | 'owner_content' | 'admin_support' | 'web_developer';
 export type ArtistApprovalStatus = 'Pending' | 'Approved' | 'Rejected';
 
 export interface User {

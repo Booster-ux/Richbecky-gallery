@@ -50,6 +50,31 @@ const ROLE_PERMISSIONS: Record<SystemUserRole, Set<PermissionAction>> = {
     'commission:view_own',
     'commission:manage_all',
     'audit:view'
+  ]),
+  owner_content: new Set([
+    'artwork:create',
+    'artwork:edit_own',
+    'artwork:approve',
+    'artwork:publish',
+    'artwork:delete',
+    'application:submit',
+    'application:review',
+    'order:create',
+    'order:view_own',
+    'order:manage_all',
+    'commission:view_own',
+    'commission:manage_all',
+    'audit:view'
+  ]),
+  admin_support: new Set([
+    'application:review',
+    'order:create',
+    'order:view_own',
+    'order:manage_all',
+    'audit:view'
+  ]),
+  web_developer: new Set([
+    'audit:view'
   ])
 };
 
