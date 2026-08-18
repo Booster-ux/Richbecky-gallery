@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useGallery } from '../../context/GalleryContext';
 import {
   Headphones, ShoppingBag, MessageSquare, Users, PackageCheck,
-  Search, CheckCircle2, Truck, RefreshCw, Send, Mail
+  Search, CheckCircle2, Truck, RefreshCw, Send, Mail, LifeBuoy
 } from 'lucide-react';
 import { OrderFulfillmentStatus } from '../../types';
 

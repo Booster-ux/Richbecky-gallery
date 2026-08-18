@@ -28,7 +28,8 @@ import {
   Star,
   Download,
   Send,
-  AlertCircle
+  AlertCircle,
+  LifeBuoy
 } from 'lucide-react';
 import { Artwork, OrderFulfillmentStatus, EnquiryStatus, Payout, FAQItem, ShippingRegion } from '../types';
 import { getProductionImageUrl, handleImageError } from '../services/imageService';

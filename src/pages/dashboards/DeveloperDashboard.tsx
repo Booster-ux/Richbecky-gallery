@@ -24,14 +24,14 @@ export const DeveloperDashboardPage: React.FC = () => {
       if (data && data.length > 0) {
         setAuditLogs(data);
       } else if (dbStore && dbStore.auditRecords && dbStore.auditRecords.length > 0) {
-        setAuditLogs(dbStore.auditRecords.map(r => ({
+        setAuditLogs(dbStore.auditRecords.map((r: any) => ({
           id: r.id,
           timestamp: r.timestamp,
-          actor_email: r.actor_id || 'system@richbeckygallery.com',
-          actor_role: 'system_admin',
+          actor_email: r.actorEmail || r.actorId || 'system@richbeckygallery.com',
+          actor_role: r.actorRole || 'system_admin',
           action: r.action,
-          affected_entity: r.entity,
-          affected_entity_id: r.entity_id
+          affected_entity: r.affectedEntity || 'System',
+          affected_entity_id: r.affectedEntityId || 'N/A'
         })));
       } else {
         // Provide standard system startup logs

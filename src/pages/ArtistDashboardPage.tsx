@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+import { useGallery } from '../context/GalleryContext';
 import {
   PlusCircle,
   Clock,
@@ -20,7 +22,7 @@ import {
   Send
 } from 'lucide-react';
 import { getProductionImageUrl, handleImageError } from '../services/imageService';
-import { CurrencyCode, TicketCategory, TicketPriority } from '../types';
+import { CurrencyCode, TicketCategory, TicketPriority, Artwork, Payout, SupportTicket } from '../types';
 
 export const ArtistDashboardPage: React.FC = () => {
   const {
@@ -60,13 +62,13 @@ export const ArtistDashboardPage: React.FC = () => {
   const [artistTicketDesc, setArtistTicketDesc] = useState<string>('');
   const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
 
-  const artistWorks = artworks;
-  const pendingCount = artistWorks.filter(a => a.status === 'Pending Admin Approval').length;
-  const approvedCount = artistWorks.filter(a => a.status === 'Approved').length;
-  const rejectedCount = artistWorks.filter(a => a.status === 'Rejected').length;
+  const artistWorks: Artwork[] = artworks;
+  const pendingCount = artistWorks.filter((a: Artwork) => a.status === 'Pending Admin Approval').length;
+  const approvedCount = artistWorks.filter((a: Artwork) => a.status === 'Approved').length;
+  const rejectedCount = artistWorks.filter((a: Artwork) => a.status === 'Rejected').length;
 
-  const artistTickets = supportTickets.filter(
-    t => t.userRole === 'artist' || (currentUser && t.userId === currentUser.id)
+  const artistTickets: SupportTicket[] = supportTickets.filter(
+    (t: SupportTicket) => t.userRole === 'artist' || (currentUser && t.userId === currentUser.id)
   );
 
   const handleArtistTicketSubmit = (e: React.FormEvent) => {
