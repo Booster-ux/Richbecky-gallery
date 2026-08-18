@@ -160,8 +160,30 @@ const GalleryContext = createContext<GalleryContextType | undefined>(undefined);
 export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const getInitialPageFromPath = (): ActivePage => {
     if (typeof window === 'undefined') return 'home';
-    const path = window.location.pathname.replace(/^\//, '').trim();
+    const path = window.location.pathname.replace(/^\//, '').trim().toLowerCase();
     if (!path || path === '') return 'home';
+
+    // Route alias mapping for friendly deep-links & portal buttons
+    const routeAliases: Record<string, ActivePage> = {
+      'admin': 'admin-login',
+      'admin/login': 'admin-login',
+      'admin-portal': 'admin-login',
+      'admin/dashboard': 'admin-dashboard',
+      'admin-dashboard': 'admin-dashboard',
+      'admin-login': 'admin-login',
+      'artist/apply': 'artist-application',
+      'artist/login': 'artist-login',
+      'artist/dashboard': 'artist-dashboard',
+      'artist-portal': 'artist-landing',
+      'login': 'login',
+      'register': 'register',
+      'account': 'account'
+    };
+
+    if (routeAliases[path]) {
+      return routeAliases[path];
+    }
+
     const validPages: ActivePage[] = [
       'home', 'catalogue', 'artwork-detail', 'artist-profile', 'cart', 'checkout',
       'wishlist', 'about', 'journal', 'contact-advisory', 'policies', 'order-confirmation',
