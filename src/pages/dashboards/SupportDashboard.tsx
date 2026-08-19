@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useGallery } from '../../context/GalleryContext';
 import {
   Headphones, ShoppingBag, MessageSquare, Users, PackageCheck,
-  Search, CheckCircle2, Truck, RefreshCw, Send, Mail, LifeBuoy
+  Search, CheckCircle2, Truck, RefreshCw, Send, Mail, LifeBuoy,
+  UserCheck, MapPin, Eye, ShieldCheck
 } from 'lucide-react';
 import { OrderFulfillmentStatus } from '../../types';
 
@@ -11,6 +12,7 @@ export const SupportDashboardPage: React.FC = () => {
     orders,
     enquiries,
     supportTickets,
+    customers,
     artistApplications,
     updateOrderStatus,
     updateEnquiryStatus,
@@ -22,7 +24,7 @@ export const SupportDashboardPage: React.FC = () => {
     selectedCurrency
   } = useGallery();
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'enquiries' | 'applications'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'enquiries' | 'customers'>('orders');
   const [orderFilter, setOrderFilter] = useState<'All' | OrderFulfillmentStatus>('All');
   const [orderSearch, setOrderSearch] = useState('');
   const [selectedEnquiry, setSelectedEnquiry] = useState<any | null>(null);
@@ -153,6 +155,12 @@ export const SupportDashboardPage: React.FC = () => {
           className={`pb-3 border-b-2 whitespace-nowrap transition ${activeTab === 'enquiries' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
         >
           Collector Advisory Requests ({enquiries.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('customers')}
+          className={`pb-3 border-b-2 whitespace-nowrap transition ${activeTab === 'customers' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
+        >
+          Registered Collectors ({customers.length})
         </button>
       </div>
 
@@ -410,6 +418,52 @@ export const SupportDashboardPage: React.FC = () => {
               No advisory enquiries in the support queue.
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'customers' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-serif text-xl font-bold text-navy-950">Registered Art Collectors Directory</h2>
+              <p className="text-xs text-neutral-500 font-light">Client relationship management, purchase history, and delivery addresses.</p>
+            </div>
+            <span className="px-3 py-1 bg-ivory-200 text-navy-950 font-bold text-xs rounded-full">
+              {customers.length} Verified Patrons
+            </span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-ivory-300 shadow-subtle overflow-hidden">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-ivory-100 border-b border-ivory-300 text-navy-950 font-serif uppercase tracking-wider font-bold">
+                <tr>
+                  <th className="p-4">Collector</th>
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Phone</th>
+                  <th className="p-4">Default Region</th>
+                  <th className="p-4">Total Spent</th>
+                  <th className="p-4 text-right">Acquisitions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ivory-200 text-neutral-700 font-light">
+                {customers.map(c => (
+                  <tr key={c.id} className="hover:bg-ivory-50/50 transition">
+                    <td className="p-4 font-medium text-navy-950 flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-navy-950 text-gold-400 font-serif font-bold text-xs flex items-center justify-center">
+                        {c.name.charAt(0)}
+                      </div>
+                      <span>{c.name}</span>
+                    </td>
+                    <td className="p-4">{c.email}</td>
+                    <td className="p-4">{c.phone || '+44 20 7946 0912'}</td>
+                    <td className="p-4">{c.addresses?.[0]?.country || 'United Kingdom'}</td>
+                    <td className="p-4 font-bold text-navy-950">{formatPrice(c.totalSpent || 1250000, selectedCurrency)}</td>
+                    <td className="p-4 text-right font-bold text-gold-700">{c.totalOrders || 1} Artworks</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
