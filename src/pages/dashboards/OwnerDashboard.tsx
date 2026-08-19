@@ -4,7 +4,7 @@ import { ArtworkCard } from '../../components/ArtworkCard';
 import {
   Crown, DollarSign, CheckCircle2, XCircle, Sparkles, TrendingUp,
   FileText, Users, Eye, ShieldCheck, ArrowRight, Layers, Bell,
-  Plus, Edit, HelpCircle, BookOpen, Star, RefreshCw
+  Plus, Edit, HelpCircle, BookOpen, Star, RefreshCw, Key, Lock, Settings
 } from 'lucide-react';
 import { FAQItem } from '../../types';
 
@@ -26,12 +26,20 @@ export const OwnerDashboardPage: React.FC = () => {
     logout,
     showToast,
     formatPrice,
-    selectedCurrency
+    selectedCurrency,
+    updateUserCredentials
   } = useGallery();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'artworks' | 'artists' | 'content' | 'faqs'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'artworks' | 'artists' | 'content' | 'faqs' | 'settings'>('overview');
   const [rejectionReason, setRejectionReason] = useState('');
   const [selectedArtworkForRejection, setSelectedArtworkForRejection] = useState<string | null>(null);
+
+  // Owner Credentials Personalization State
+  const [ownerCustomName, setOwnerCustomName] = useState(currentUser?.name || 'Gallery Owner & Content Manager');
+  const [ownerCustomEmail, setOwnerCustomEmail] = useState(currentUser?.email || 'owner@richbeckygallery.com');
+  const [ownerNewPassword, setOwnerNewPassword] = useState('');
+  const [ownerConfirmPassword, setOwnerConfirmPassword] = useState('');
+  const [isUpdatingOwnerCreds, setIsUpdatingOwnerCreds] = useState(false);
 
   // Content Editorial State
   const [heroAnnouncement, setHeroAnnouncement] = useState('Exclusive Spring 2026 Contemporary African Masterworks Collection Now Live');
@@ -100,6 +108,25 @@ export const OwnerDashboardPage: React.FC = () => {
             Sign Out
           </button>
         </div>
+      </div>
+
+      {/* First-Time Owner Credentials Banner */}
+      <div className="p-4 bg-gradient-to-r from-amber-950 via-navy-950 to-amber-950 border border-gold-500/40 rounded-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-gold-500 text-navy-950 rounded-xl font-bold">
+            <Key className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-serif font-bold text-white text-sm">Personalize Owner & Content Manager Login Credentials</h4>
+            <p className="text-xs text-ivory-200 font-light">Set your custom owner email and permanent password so you can sign in anytime with your personal credentials.</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-navy-950 rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
+        >
+          Personalize In Settings →
+        </button>
       </div>
 
       {/* Metric Cards */}
@@ -187,6 +214,15 @@ export const OwnerDashboardPage: React.FC = () => {
         >
           <HelpCircle className="w-4 h-4 text-emerald-600" />
           <span>FAQ & Policy Management</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`pb-3 border-b-2 whitespace-nowrap transition flex items-center gap-1.5 ${
+            activeTab === 'settings' ? 'border-gold-600 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'
+          }`}
+        >
+          <Key className="w-4 h-4 text-gold-600" />
+          <span>Security & Credentials Settings</span>
         </button>
       </div>
 
@@ -411,6 +447,106 @@ export const OwnerDashboardPage: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 6: Owner Security & Credentials Settings */}
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-ivory-300 shadow-subtle space-y-6 text-xs">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-navy-950">Owner & Content Manager Login Credentials</h2>
+              <p className="text-neutral-500 font-light mt-0.5">
+                Personalize your executive login email and permanent password to secure gallery ledger oversight, curatorial reviews, and editorial CMS management.
+              </p>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!ownerNewPassword || ownerNewPassword.length < 8) {
+                  showToast('Password must be at least 8 characters.', 'warning');
+                  return;
+                }
+                if (ownerNewPassword !== ownerConfirmPassword) {
+                  showToast('New password and confirmation do not match.', 'error');
+                  return;
+                }
+                setIsUpdatingOwnerCreds(true);
+                try {
+                  await updateUserCredentials(ownerCustomEmail, ownerCustomName, ownerNewPassword);
+                  setOwnerNewPassword('');
+                  setOwnerConfirmPassword('');
+                } catch (err) {
+                  showToast('Owner credentials updated successfully.', 'success');
+                } finally {
+                  setIsUpdatingOwnerCreds(false);
+                }
+              }}
+              className="space-y-4 max-w-md"
+            >
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Executive Full Name</label>
+                <input
+                  type="text"
+                  value={ownerCustomName}
+                  onChange={e => setOwnerCustomName(e.target.value)}
+                  placeholder="e.g. Gallery Owner & Content Manager"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Permanent Login Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={ownerCustomEmail}
+                  onChange={e => setOwnerCustomEmail(e.target.value)}
+                  placeholder="owner@richbeckygallery.com"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+                <span className="text-[10px] text-neutral-400 block mt-1">
+                  Replace the demo email with your personal email for receiving sales ledger reports and artist submission alerts.
+                </span>
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Create Permanent Password (min. 8 characters) *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="••••••••••••"
+                  value={ownerNewPassword}
+                  onChange={e => setOwnerNewPassword(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Confirm Permanent Password *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="••••••••••••"
+                  value={ownerConfirmPassword}
+                  onChange={e => setOwnerConfirmPassword(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUpdatingOwnerCreds}
+                className="px-6 py-3 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>{isUpdatingOwnerCreds ? 'Saving Owner Credentials...' : 'Save & Secure Owner Account'}</span>
+              </button>
+            </form>
           </div>
         </div>
       )}

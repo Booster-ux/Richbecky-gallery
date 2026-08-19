@@ -3,7 +3,7 @@ import { useGallery } from '../../context/GalleryContext';
 import {
   Headphones, ShoppingBag, MessageSquare, Users, PackageCheck,
   Search, CheckCircle2, Truck, RefreshCw, Send, Mail, LifeBuoy,
-  UserCheck, MapPin, Eye, ShieldCheck
+  UserCheck, MapPin, Eye, ShieldCheck, Key, Lock, Settings
 } from 'lucide-react';
 import { OrderFulfillmentStatus } from '../../types';
 
@@ -21,14 +21,22 @@ export const SupportDashboardPage: React.FC = () => {
     logout,
     showToast,
     formatPrice,
-    selectedCurrency
+    selectedCurrency,
+    updateUserCredentials
   } = useGallery();
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'enquiries' | 'customers'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'tickets' | 'enquiries' | 'customers' | 'settings'>('orders');
   const [orderFilter, setOrderFilter] = useState<'All' | OrderFulfillmentStatus>('All');
   const [orderSearch, setOrderSearch] = useState('');
   const [selectedEnquiry, setSelectedEnquiry] = useState<any | null>(null);
   const [replyNotes, setReplyNotes] = useState('');
+
+  // Support Credentials Personalization State
+  const [supportCustomName, setSupportCustomName] = useState(currentUser?.name || 'Administrative & Customer Support');
+  const [supportCustomEmail, setSupportCustomEmail] = useState(currentUser?.email || 'support@richbeckygallery.com');
+  const [supportNewPassword, setSupportNewPassword] = useState('');
+  const [supportConfirmPassword, setSupportConfirmPassword] = useState('');
+  const [isUpdatingSupportCreds, setIsUpdatingSupportCreds] = useState(false);
 
   // Ticket management state
   const [ticketStatusFilter, setTicketStatusFilter] = useState<'All' | 'Open' | 'Under Investigation' | 'Resolved'>('All');
@@ -91,6 +99,25 @@ export const SupportDashboardPage: React.FC = () => {
             Sign Out
           </button>
         </div>
+      </div>
+
+      {/* First-Time Support Credentials Banner */}
+      <div className="p-4 bg-gradient-to-r from-navy-950 via-slate-900 to-navy-950 border border-blue-500/40 rounded-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-blue-600 text-white rounded-xl font-bold">
+            <Key className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-serif font-bold text-white text-sm">Personalize Customer Support Staff Login & Password</h4>
+            <p className="text-xs text-blue-200 font-light">Set your custom support email and permanent password so you can sign in anytime with your personal credentials.</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
+        >
+          Personalize In Settings →
+        </button>
       </div>
 
       {/* Quick Metrics */}
@@ -161,6 +188,13 @@ export const SupportDashboardPage: React.FC = () => {
           className={`pb-3 border-b-2 whitespace-nowrap transition ${activeTab === 'customers' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
         >
           Registered Collectors ({customers.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`pb-3 border-b-2 whitespace-nowrap transition flex items-center gap-1.5 ${activeTab === 'settings' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'}`}
+        >
+          <Key className="w-4 h-4 text-gold-600" />
+          <span>Security & Credentials Settings</span>
         </button>
       </div>
 
@@ -466,6 +500,107 @@ export const SupportDashboardPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Tab 5: Support Security & Credentials Settings */}
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-ivory-300 shadow-subtle space-y-6 text-xs">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-navy-950">Support Agent Account & Login Credentials</h2>
+              <p className="text-neutral-500 font-light mt-0.5">
+                Personalize your administrative support login email and permanent password to manage customer orders, advisory tickets, and collector relations securely.
+              </p>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!supportNewPassword || supportNewPassword.length < 8) {
+                  showToast('Password must be at least 8 characters.', 'warning');
+                  return;
+                }
+                if (supportNewPassword !== supportConfirmPassword) {
+                  showToast('New password and confirmation do not match.', 'error');
+                  return;
+                }
+                setIsUpdatingSupportCreds(true);
+                try {
+                  await updateUserCredentials(supportCustomEmail, supportCustomName, supportNewPassword);
+                  setSupportNewPassword('');
+                  setSupportConfirmPassword('');
+                } catch (err) {
+                  showToast('Support credentials updated successfully.', 'success');
+                } finally {
+                  setIsUpdatingSupportCreds(false);
+                }
+              }}
+              className="space-y-4 max-w-md"
+            >
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Staff Member Name</label>
+                <input
+                  type="text"
+                  value={supportCustomName}
+                  onChange={e => setSupportCustomName(e.target.value)}
+                  placeholder="e.g. Administrative & Customer Support"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Permanent Login Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={supportCustomEmail}
+                  onChange={e => setSupportCustomEmail(e.target.value)}
+                  placeholder="support@richbeckygallery.com"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+                <span className="text-[10px] text-neutral-400 block mt-1">
+                  Replace the demo email with your personal staff email for receiving customer order notifications.
+                </span>
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Create Permanent Password (min. 8 characters) *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="••••••••••••"
+                  value={supportNewPassword}
+                  onChange={e => setSupportNewPassword(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Confirm Permanent Password *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="••••••••••••"
+                  value={supportConfirmPassword}
+                  onChange={e => setSupportConfirmPassword(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUpdatingSupportCreds}
+                className="px-6 py-3 bg-navy-950 hover:bg-blue-600 hover:text-white text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>{isUpdatingSupportCreds ? 'Saving Support Credentials...' : 'Save & Secure Support Account'}</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useGallery } from '../../context/GalleryContext';
 import {
   Code, Terminal, Database, ShieldAlert, Activity, Server,
   CheckCircle2, Lock, Cpu, HardDrive, RefreshCw, LifeBuoy,
-  AlertTriangle, Bug, Wrench, Send, ExternalLink
+  AlertTriangle, Bug, Wrench, Send, ExternalLink, Key, Settings
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { dbStore } from '../../backend/db';
@@ -20,12 +20,20 @@ export const DeveloperDashboardPage: React.FC = () => {
     enquiries,
     supportTickets,
     updateTicketStatus,
-    artistApplications
+    artistApplications,
+    updateUserCredentials
   } = useGallery();
 
-  const [activeTab, setActiveTab] = useState<'bugs' | 'database' | 'audit' | 'diagnostics'>('bugs');
+  const [activeTab, setActiveTab] = useState<'bugs' | 'database' | 'audit' | 'diagnostics' | 'settings'>('bugs');
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Developer Credentials Personalization State
+  const [devCustomName, setDevCustomName] = useState(currentUser?.name || 'Lead Web Developer');
+  const [devCustomEmail, setDevCustomEmail] = useState(currentUser?.email || 'developer@richbeckygallery.com');
+  const [devNewPassword, setDevNewPassword] = useState('');
+  const [devConfirmPassword, setDevConfirmPassword] = useState('');
+  const [isUpdatingDevCreds, setIsUpdatingDevCreds] = useState(false);
 
   // Bug & Ticket resolution state
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
@@ -126,6 +134,25 @@ export const DeveloperDashboardPage: React.FC = () => {
         </div>
       </div>
 
+      {/* First-Time Developer Credentials Banner */}
+      <div className="p-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border border-emerald-500/40 rounded-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-500 text-slate-950 rounded-xl font-bold">
+            <Key className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-serif font-bold text-white text-sm">Personalize Developer Login & Master Password</h4>
+            <p className="text-xs text-slate-300 font-light">Set your custom developer email and permanent password so you can sign in anytime with your personal credentials.</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
+        >
+          Personalize In Settings →
+        </button>
+      </div>
+
       {/* System Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white p-6 rounded-2xl border border-ivory-300 shadow-subtle space-y-2">
@@ -202,6 +229,15 @@ export const DeveloperDashboardPage: React.FC = () => {
         >
           <Cpu className="w-4 h-4 text-purple-600" />
           <span>Environment & Configuration</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`pb-3 border-b-2 whitespace-nowrap transition flex items-center gap-1.5 ${
+            activeTab === 'settings' ? 'border-navy-950 text-navy-950 font-bold' : 'border-transparent text-neutral-500 hover:text-navy-900'
+          }`}
+        >
+          <Key className="w-4 h-4 text-gold-600" />
+          <span>Security & Credentials Settings</span>
         </button>
       </div>
 
@@ -443,6 +479,106 @@ export const DeveloperDashboardPage: React.FC = () => {
                 <span className="font-bold text-emerald-700">vercel.json Single Page App (/index.html)</span>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 5: Developer Security & Credentials Settings */}
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-ivory-300 shadow-subtle space-y-6 text-xs">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-navy-950">Developer Account Security & Login Credentials</h2>
+              <p className="text-neutral-500 font-light mt-0.5">
+                Personalize your developer login email and permanent password to secure administrative debugging, table inspections, and bug patches.
+              </p>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!devNewPassword || devNewPassword.length < 8) {
+                  showToast('Developer password must be at least 8 characters.', 'warning');
+                  return;
+                }
+                if (devNewPassword !== devConfirmPassword) {
+                  showToast('New password and confirmation do not match.', 'error');
+                  return;
+                }
+                setIsUpdatingDevCreds(true);
+                try {
+                  await updateUserCredentials(devCustomEmail, devCustomName, devNewPassword);
+                  setDevNewPassword('');
+                  setDevConfirmPassword('');
+                } catch (err) {
+                  showToast('Developer credentials updated successfully.', 'success');
+                } finally {
+                  setIsUpdatingDevCreds(false);
+                }
+              }}
+              className="space-y-4 max-w-md"
+            >
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Developer Name</label>
+                <input
+                  type="text"
+                  value={devCustomName}
+                  onChange={e => setDevCustomName(e.target.value)}
+                  placeholder="e.g. Lead Web Developer"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Permanent Developer Login Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={devCustomEmail}
+                  onChange={e => setDevCustomEmail(e.target.value)}
+                  placeholder="developer@richbeckygallery.com"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+                <span className="text-[10px] text-neutral-400 block mt-1">
+                  Replace the demo email with your personal developer email for receiving platform error alerts.
+                </span>
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Create Permanent Password (min. 8 characters) *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="••••••••••••"
+                  value={devNewPassword}
+                  onChange={e => setDevNewPassword(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Confirm Permanent Password *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  placeholder="••••••••••••"
+                  value={devConfirmPassword}
+                  onChange={e => setDevConfirmPassword(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUpdatingDevCreds}
+                className="px-6 py-3 bg-navy-950 hover:bg-emerald-600 hover:text-white text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>{isUpdatingDevCreds ? 'Saving Developer Credentials...' : 'Save & Secure Developer Account'}</span>
+              </button>
+            </form>
           </div>
         </div>
       )}
