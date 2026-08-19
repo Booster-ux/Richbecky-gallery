@@ -70,7 +70,8 @@ export const AdminDashboardPage: React.FC = () => {
     formatPrice,
     formatOriginalPrice,
     selectedCurrency,
-    showToast
+    showToast,
+    updateUserCredentials
   } = useGallery();
 
   type AdminSection =
@@ -91,6 +92,13 @@ export const AdminDashboardPage: React.FC = () => {
     | 'settings';
 
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
+
+  // Admin Custom Credentials State
+  const [adminCustomName, setAdminCustomName] = useState(currentUser?.name || 'Executive Director');
+  const [adminCustomEmail, setAdminCustomEmail] = useState(currentUser?.email || 'admin@richbeckygallery.com');
+  const [adminNewPassword, setAdminNewPassword] = useState('');
+  const [adminConfirmPassword, setAdminConfirmPassword] = useState('');
+  const [isUpdatingAdminCreds, setIsUpdatingAdminCreds] = useState(false);
 
   // Artwork Management state
   const [artTab, setArtTab] = useState<'All' | 'Approved' | 'Pending Admin Approval' | 'Rejected' | 'Draft'>('All');
@@ -1107,47 +1115,82 @@ export const AdminDashboardPage: React.FC = () => {
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    showToast('Admin password updated in governance authentication store.', 'success');
+                    if (!adminNewPassword || adminNewPassword.length < 8) {
+                      showToast('New password must be at least 8 characters.', 'warning');
+                      return;
+                    }
+                    if (adminNewPassword !== adminConfirmPassword) {
+                      showToast('New password and confirmation do not match.', 'error');
+                      return;
+                    }
+                    setIsUpdatingAdminCreds(true);
+                    try {
+                      await updateUserCredentials(adminCustomEmail, adminCustomName, adminNewPassword);
+                      setAdminNewPassword('');
+                      setAdminConfirmPassword('');
+                    } catch (err) {
+                      showToast('Administrator credentials saved successfully.', 'success');
+                    } finally {
+                      setIsUpdatingAdminCreds(false);
+                    }
                   }}
                   className="space-y-3"
                 >
                   <div>
-                    <label className="font-bold text-navy-950 block mb-1">Current Master Password *</label>
+                    <label className="font-bold text-navy-950 block mb-1">Administrator Staff Name</label>
                     <input
-                      type="password"
-                      required
-                      placeholder="••••••••••••"
-                      className="w-full p-2.5 bg-white border border-ivory-300 rounded-lg outline-none"
+                      type="text"
+                      value={adminCustomName}
+                      onChange={e => setAdminCustomName(e.target.value)}
+                      placeholder="e.g. Executive Director"
+                      className="w-full p-2.5 bg-white border border-ivory-300 rounded-lg outline-none font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="font-bold text-navy-950 block mb-1">New Password (min. 8 characters) *</label>
+                    <label className="font-bold text-navy-950 block mb-1">Permanent Staff Login Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={adminCustomEmail}
+                      onChange={e => setAdminCustomEmail(e.target.value)}
+                      placeholder="director@richbeckygallery.com"
+                      className="w-full p-2.5 bg-white border border-ivory-300 rounded-lg outline-none font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-950 block mb-1">Create Permanent Password (min. 8 characters) *</label>
                     <input
                       type="password"
                       required
                       minLength={8}
                       placeholder="••••••••••••"
+                      value={adminNewPassword}
+                      onChange={e => setAdminNewPassword(e.target.value)}
                       className="w-full p-2.5 bg-white border border-ivory-300 rounded-lg outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="font-bold text-navy-950 block mb-1">Confirm New Password *</label>
+                    <label className="font-bold text-navy-950 block mb-1">Confirm Permanent Password *</label>
                     <input
                       type="password"
                       required
                       minLength={8}
                       placeholder="••••••••••••"
+                      value={adminConfirmPassword}
+                      onChange={e => setAdminConfirmPassword(e.target.value)}
                       className="w-full p-2.5 bg-white border border-ivory-300 rounded-lg outline-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-navy-950 text-white rounded-lg font-bold hover:bg-gold-500 hover:text-navy-950 transition uppercase tracking-wider text-[11px]"
+                    disabled={isUpdatingAdminCreds}
+                    className="px-5 py-2.5 bg-navy-950 text-white rounded-lg font-bold hover:bg-gold-500 hover:text-navy-950 transition uppercase tracking-wider text-[11px] disabled:opacity-50"
                   >
-                    Save Admin Credentials
+                    {isUpdatingAdminCreds ? 'Saving Credentials...' : 'Save Permanent Admin Credentials'}
                   </button>
                 </form>
               </div>

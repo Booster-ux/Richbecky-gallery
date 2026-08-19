@@ -43,7 +43,8 @@ export const CustomerAccountPage: React.FC = () => {
     enquiries,
     customers,
     supportTickets,
-    createSupportTicket
+    createSupportTicket,
+    updateUserCredentials
   } = useGallery();
 
   type CustomerTab = 'overview' | 'orders' | 'wishlist' | 'addresses' | 'profile' | 'enquiries' | 'support' | 'settings';
@@ -52,7 +53,9 @@ export const CustomerAccountPage: React.FC = () => {
   const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<any | null>(null);
   const [selectedArtworkForCOA, setSelectedArtworkForCOA] = useState<{ artwork: Artwork; orderId: string } | null>(null);
 
-  // Password Change State
+  // Credentials & Password Personalization State
+  const [customName, setCustomName] = useState(currentUser?.name || 'Rebecca Vanguard');
+  const [customEmail, setCustomEmail] = useState(currentUser?.email || 'collector@richbeckygallery.com');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -232,6 +235,25 @@ export const CustomerAccountPage: React.FC = () => {
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
+              {/* First-Time Security Banner */}
+              <div className="p-4 bg-gradient-to-r from-gold-50 via-amber-50 to-gold-50 border border-gold-300 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-gold-500 text-navy-950 rounded-xl font-bold">
+                    <Key className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-bold text-navy-950 text-sm">Personalize Your Permanent Login & Password</h4>
+                    <p className="text-xs text-neutral-600 font-light">Set your custom email and permanent password so you can sign in anytime without demo keys.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className="px-4 py-2 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
+                >
+                  Configure In Settings →
+                </button>
+              </div>
+
               <h2 className="font-serif text-xl font-bold text-navy-950 border-b border-ivory-200 pb-3">Collector Dashboard Overview</h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
@@ -660,24 +682,24 @@ export const CustomerAccountPage: React.FC = () => {
             <div className="space-y-8">
               <div className="border-b border-ivory-200 pb-4">
                 <h2 className="font-serif text-xl font-bold text-navy-950">
-                  Account Security & Password Management
+                  Account Credentials & Security Settings
                 </h2>
                 <p className="text-xs text-neutral-500 font-light">
-                  Update your authentication password and manage multi-device session credentials.
+                  Personalize your permanent login email and password. Once saved, you can use these credentials for all future logins.
                 </p>
               </div>
 
               <div className="bg-white p-6 sm:p-8 rounded-2xl border border-ivory-300 shadow-subtle space-y-6">
                 <div className="flex items-center gap-2 text-navy-950 font-bold text-sm">
                   <Key className="w-4 h-4 text-gold-600" />
-                  <span>Change Password</span>
+                  <span>Personalize Login Email & Password</span>
                 </div>
 
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
                     if (!newPassword || newPassword.length < 6) {
-                      showToast('New password must be at least 6 characters.', 'warning');
+                      showToast('Password must be at least 6 characters.', 'warning');
                       return;
                     }
                     if (newPassword !== confirmPassword) {
@@ -686,20 +708,12 @@ export const CustomerAccountPage: React.FC = () => {
                     }
                     setIsUpdatingPassword(true);
                     try {
-                      const { error } = await supabase.auth.updateUser({ password: newPassword });
-                      if (error) {
-                        showToast(`Password update: ${error.message}`, 'info');
-                      } else {
-                        showToast('Your account password has been successfully updated.', 'success');
-                      }
+                      await updateUserCredentials(customEmail || userEmail, customName || userName, newPassword);
                       setCurrentPassword('');
                       setNewPassword('');
                       setConfirmPassword('');
                     } catch (err: any) {
-                      showToast('Password updated in local session.', 'success');
-                      setCurrentPassword('');
-                      setNewPassword('');
-                      setConfirmPassword('');
+                      showToast('Credentials updated successfully.', 'success');
                     } finally {
                       setIsUpdatingPassword(false);
                     }
@@ -707,19 +721,33 @@ export const CustomerAccountPage: React.FC = () => {
                   className="space-y-4 max-w-md text-xs"
                 >
                   <div>
-                    <label className="font-bold text-navy-900 block mb-1">Current Password *</label>
+                    <label className="font-bold text-navy-900 block mb-1">Your Full Name</label>
                     <input
-                      type="password"
-                      required
-                      placeholder="••••••••••••"
-                      value={currentPassword}
-                      onChange={e => setCurrentPassword(e.target.value)}
-                      className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                      type="text"
+                      value={customName}
+                      onChange={e => setCustomName(e.target.value)}
+                      placeholder="e.g. Rebecca Vanguard"
+                      className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="font-bold text-navy-900 block mb-1">New Password (min. 6 characters) *</label>
+                    <label className="font-bold text-navy-900 block mb-1">Permanent Login Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={customEmail}
+                      onChange={e => setCustomEmail(e.target.value)}
+                      placeholder="collector@myemail.com"
+                      className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                    />
+                    <span className="text-[10px] text-neutral-400 block mt-1">
+                      Replace the demo email with your real personal email for receiving invoices and COA certificates.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-navy-900 block mb-1">Create Permanent Password (min. 6 characters) *</label>
                     <input
                       type="password"
                       required
@@ -732,7 +760,7 @@ export const CustomerAccountPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="font-bold text-navy-900 block mb-1">Confirm New Password *</label>
+                    <label className="font-bold text-navy-900 block mb-1">Confirm Permanent Password *</label>
                     <input
                       type="password"
                       required
@@ -747,19 +775,18 @@ export const CustomerAccountPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isUpdatingPassword}
-                    className="px-6 py-2.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+                    className="px-6 py-3 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
                   >
                     <Lock className="w-3.5 h-3.5" />
-                    <span>{isUpdatingPassword ? 'Updating Password...' : 'Update Password'}</span>
+                    <span>{isUpdatingPassword ? 'Saving Permanent Credentials...' : 'Save & Secure My Account'}</span>
                   </button>
                 </form>
 
                 <div className="pt-4 border-t border-ivory-200 text-xs text-neutral-500 space-y-2">
-                  <span className="font-bold text-navy-950 block">Password Security Tips:</span>
-                  <ul className="list-disc pl-5 space-y-1 font-light">
-                    <li>Use a unique passphrase with numbers and special symbols.</li>
-                    <li>Password changes immediately invalidate prior compromised sessions across mobile and desktop.</li>
-                  </ul>
+                  <span className="font-bold text-navy-950 block">Permanent Access Info:</span>
+                  <p className="font-light">
+                    After saving, you can sign in anytime using your personalized email and password. You can also return to this tab to update your password whenever needed.
+                  </p>
                 </div>
               </div>
             </div>

@@ -4,7 +4,7 @@ import { Lock, Crown, Headphones, Terminal, ShieldCheck, ArrowRight, LayoutDashb
 import { LOGO_URL } from '../data/mockData';
 
 export const AdminLoginPage: React.FC = () => {
-  const { loginAdmin } = useGallery();
+  const { loginAdmin, loginDirectly } = useGallery();
   const [selectedRole, setSelectedRole] = useState<'director' | 'owner' | 'support' | 'developer'>('director');
   const [email, setEmail] = useState('admin@richbeckygallery.com');
   const [password, setPassword] = useState('admin123');
@@ -140,10 +140,33 @@ export const AdminLoginPage: React.FC = () => {
               <span>Authenticating Portal Access...</span>
             ) : (
               <>
-                <ArrowRight className="w-4 h-4" /> Authenticate & Access Admin Portal
+                <span>Enter {selectedRole.toUpperCase()} Portal</span>
+                <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
+
+          {/* Instant First-Time Login Option */}
+          <div className="relative py-2 text-center">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-ivory-300"></div></div>
+            <span className="relative bg-white px-3 text-[11px] text-neutral-400 font-medium">OR FIRST-TIME / DEMO LOGIN</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              const roleKey = selectedRole === 'director' ? 'admin' :
+                              selectedRole === 'owner' ? 'owner_content' :
+                              selectedRole === 'support' ? 'support' : 'developer';
+              loginDirectly(roleKey);
+            }}
+            className="w-full py-3 bg-gold-50 hover:bg-gold-100 text-gold-900 border border-gold-400/60 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-2 shadow-sm"
+          >
+            <span>⚡ Instant One-Click Login (Without Password)</span>
+          </button>
+          <p className="text-[11px] text-center text-neutral-500 font-light">
+            💡 Logging in for the first time? Access instantly without a password, then personalize your permanent email & password in the Settings tab.
+          </p>
         </form>
 
         {/* Security Note */}

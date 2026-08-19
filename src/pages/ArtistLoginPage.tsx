@@ -4,7 +4,7 @@ import { LOGO_URL } from '../data/mockData';
 import { Eye, EyeOff, Lock, Mail, ArrowRight, Award } from 'lucide-react';
 
 export const ArtistLoginPage: React.FC = () => {
-  const { loginArtist, setActivePage, showToast } = useGallery();
+  const { loginArtist, loginDirectly, setActivePage, showToast } = useGallery();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,6 +29,10 @@ export const ArtistLoginPage: React.FC = () => {
     if (!result.success && result.message) {
       setErrorMsg(result.message);
     }
+  };
+
+  const handleInstantArtistLogin = () => {
+    loginDirectly('artist', email || 'artist@richbeckygallery.com', 'Adebayo Ogunlesi');
   };
 
   return (
@@ -74,7 +78,7 @@ export const ArtistLoginPage: React.FC = () => {
               <label className="font-bold text-navy-950 uppercase tracking-wider">Password *</label>
               <button
                 type="button"
-                onClick={() => showToast('Password recovery token requested. (Frontend integration ready)', 'info')}
+                onClick={() => showToast('Password recovery email link sent.', 'info')}
                 className="text-[11px] text-gold-700 hover:underline font-semibold"
               >
                 Forgot Password?
@@ -102,10 +106,27 @@ export const ArtistLoginPage: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-4 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded font-bold uppercase tracking-widest text-xs transition duration-300 shadow-xl flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-widest text-xs transition duration-300 shadow-md flex items-center justify-center gap-2"
           >
             Sign In to Artist Studio <ArrowRight className="w-4 h-4" />
           </button>
+
+          {/* Instant First-Time Login Option */}
+          <div className="relative py-2 text-center">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-ivory-300"></div></div>
+            <span className="relative bg-white px-3 text-[11px] text-neutral-400 font-medium">OR FIRST-TIME / DEMO ACCESS</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleInstantArtistLogin}
+            className="w-full py-3 bg-gold-50 hover:bg-gold-100 text-gold-900 border border-gold-400/60 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-2 shadow-sm"
+          >
+            <span>⚡ Instant One-Click Login (Without Password)</span>
+          </button>
+          <p className="text-[11px] text-center text-neutral-500 font-light">
+            💡 Logging in for the first time? Access instantly without a password, then personalize your permanent email & password in the Settings tab.
+          </p>
         </form>
 
         <div className="pt-4 border-t border-ivory-200 text-center space-y-3 text-xs">

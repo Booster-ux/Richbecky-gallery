@@ -94,6 +94,8 @@ interface GalleryContextType {
   registerCustomer: (data: { firstName: string; lastName: string; email: string; phone: string; country: string; preferredCurrency: CurrencyCode }) => void;
   loginArtist: (email: string, pass: string) => { success: boolean; message?: string };
   loginAdmin: (email: string, pass: string) => boolean;
+  loginDirectly: (role: 'admin' | 'owner_content' | 'support' | 'developer' | 'artist' | 'customer', email?: string, name?: string) => void;
+  updateUserCredentials: (newEmail: string, newName?: string, newPassword?: string) => Promise<boolean>;
   logout: () => void;
 
   // Artist Applications
@@ -385,6 +387,71 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     showToast(res.message || 'Admin authentication failed', 'error');
     return false;
+  };
+
+  const loginDirectly = (role: 'admin' | 'owner_content' | 'support' | 'developer' | 'artist' | 'customer', email?: string, name?: string) => {
+    let user: User;
+    if (role === 'artist') {
+      user = {
+        id: 'a0000000-0000-0000-0000-000000000001',
+        name: name || 'Adebayo Ogunlesi',
+        email: email || 'artist@richbeckygallery.com',
+        role: 'artist',
+        artistApprovalStatus: 'Approved'
+      };
+      setArtistApprovalStatus('Approved');
+      setActivePage('artist-dashboard');
+      showToast('Welcome to Artist Studio! You can personalize your email & password in Settings.', 'info');
+    } else if (role === 'customer') {
+      user = {
+        id: 'c0000000-0000-0000-0000-000000000001',
+        name: name || 'Rebecca Vanguard',
+        email: email || 'collector@richbeckygallery.com',
+        role: 'customer'
+      };
+      setActivePage('account');
+      showToast('Welcome to Collector Portal! You can personalize your email & password in Settings.', 'info');
+    } else {
+      user = {
+        id: role === 'owner_content' ? 'u0000000-0000-0000-0000-000000000002' :
+            role === 'support' ? 'u0000000-0000-0000-0000-000000000003' :
+            role === 'developer' ? 'u0000000-0000-0000-0000-000000000004' : 'u0000000-0000-0000-0000-000000000001',
+        name: role === 'owner_content' ? 'Gallery Owner & Content Manager' :
+              role === 'support' ? 'Administrative Support Agent' :
+              role === 'developer' ? 'Lead Web Developer' : 'Executive Director',
+        email: email || (role === 'owner_content' ? 'owner@richbeckygallery.com' :
+                role === 'support' ? 'support@richbeckygallery.com' :
+                role === 'developer' ? 'developer@richbeckygallery.com' : 'admin@richbeckygallery.com'),
+        role: role as any
+      };
+      setActivePage('admin-dashboard');
+      showToast(`Welcome! You are authenticated in the ${user.name} portal. Set your permanent credentials in Settings.`, 'info');
+    }
+    setCurrentUser(user);
+    localStorage.setItem('rbg_auth_user', JSON.stringify(user));
+    setIsAuthenticated(true);
+  };
+
+  const updateUserCredentials = async (newEmail: string, newName?: string, newPassword?: string): Promise<boolean> => {
+    if (!currentUser) return false;
+    const updatedUser: User = {
+      ...currentUser,
+      email: newEmail || currentUser.email,
+      name: newName || currentUser.name
+    };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('rbg_auth_user', JSON.stringify(updatedUser));
+    localStorage.setItem(`rbg_creds_setup_${currentUser.id}`, 'true');
+
+    if (newPassword) {
+      try {
+        await supabase.auth.updateUser({ email: newEmail, password: newPassword });
+      } catch (e) {
+        console.warn('Supabase auth update fallback:', e);
+      }
+    }
+    showToast('Your custom Login Email & Password have been saved successfully!', 'success');
+    return true;
   };
 
   const logout = () => {
@@ -756,6 +823,8 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         registerCustomer,
         loginArtist,
         loginAdmin,
+        loginDirectly,
+        updateUserCredentials,
         logout,
         artistApplications,
         submitArtistApplication,

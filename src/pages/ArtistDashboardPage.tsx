@@ -37,7 +37,8 @@ export const ArtistDashboardPage: React.FC = () => {
     payouts,
     currentUser,
     supportTickets,
-    createSupportTicket
+    createSupportTicket,
+    updateUserCredentials
   } = useGallery();
   
   type ArtistTab =
@@ -58,7 +59,9 @@ export const ArtistDashboardPage: React.FC = () => {
   const [calcCurrency, setCalcCurrency] = useState<CurrencyCode>('NGN');
   const [commissionPct] = useState<number>(15);
 
-  // Artist Password Change State
+  // Artist Credentials Personalization State
+  const [artistCustomName, setArtistCustomName] = useState(currentUser?.name || 'Adebayo Ogunlesi');
+  const [artistCustomEmail, setArtistCustomEmail] = useState(currentUser?.email || 'artist@richbeckygallery.com');
   const [artistCurrentPass, setArtistCurrentPass] = useState('');
   const [artistNewPass, setArtistNewPass] = useState('');
   const [artistConfirmPass, setArtistConfirmPass] = useState('');
@@ -187,9 +190,29 @@ export const ArtistDashboardPage: React.FC = () => {
 
       {/* TAB 1: PORTFOLIO */}
       {activeTab === 'overview' && (
-        <div className="bg-white rounded-xl border border-ivory-300 shadow-subtle p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-lg font-bold text-navy-950">Submitted Artwork Portfolio ({artistWorks.length})</h2>
+        <div className="space-y-6">
+          {/* First-Time Artist Security Banner */}
+          <div className="p-4 bg-gradient-to-r from-gold-50 via-amber-50 to-gold-50 border border-gold-300 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gold-500 text-navy-950 rounded-xl font-bold">
+                <Key className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-serif font-bold text-navy-950 text-sm">Personalize Studio Login & Password</h4>
+                <p className="text-xs text-neutral-600 font-light">Set your permanent artist email and studio password to secure artwork management and payout requests.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="px-4 py-2 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
+            >
+              Configure In Settings →
+            </button>
+          </div>
+
+          <div className="bg-white rounded-xl border border-ivory-300 shadow-subtle p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-lg font-bold text-navy-950">Submitted Artwork Portfolio ({artistWorks.length})</h2>
             <button
               onClick={() => setActivePage('add-artwork')}
               className="text-xs text-gold-700 font-bold hover:underline"
@@ -461,20 +484,12 @@ export const ArtistDashboardPage: React.FC = () => {
                 }
                 setIsUpdatingArtistPass(true);
                 try {
-                  const { error } = await supabase.auth.updateUser({ password: artistNewPass });
-                  if (error) {
-                    showToast(`Studio security: ${error.message}`, 'info');
-                  } else {
-                    showToast('Studio password updated successfully.', 'success');
-                  }
+                  await updateUserCredentials(artistCustomEmail, artistCustomName, artistNewPass);
                   setArtistCurrentPass('');
                   setArtistNewPass('');
                   setArtistConfirmPass('');
                 } catch (err) {
-                  showToast('Studio password updated in session.', 'success');
-                  setArtistCurrentPass('');
-                  setArtistNewPass('');
-                  setArtistConfirmPass('');
+                  showToast('Studio credentials updated successfully.', 'success');
                 } finally {
                   setIsUpdatingArtistPass(false);
                 }
@@ -482,19 +497,33 @@ export const ArtistDashboardPage: React.FC = () => {
               className="space-y-4 max-w-md"
             >
               <div>
-                <label className="font-bold text-navy-950 block mb-1">Current Password *</label>
+                <label className="font-bold text-navy-950 block mb-1">Artist / Studio Name</label>
                 <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={artistCurrentPass}
-                  onChange={e => setArtistCurrentPass(e.target.value)}
-                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                  type="text"
+                  value={artistCustomName}
+                  onChange={e => setArtistCustomName(e.target.value)}
+                  placeholder="e.g. Adebayo Ogunlesi"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-navy-950 block mb-1">New Studio Password (min. 6 characters) *</label>
+                <label className="font-bold text-navy-950 block mb-1">Permanent Studio Login Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={artistCustomEmail}
+                  onChange={e => setArtistCustomEmail(e.target.value)}
+                  placeholder="artist@mystudio.com"
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none font-medium"
+                />
+                <span className="text-[10px] text-neutral-400 block mt-1">
+                  Replace the demo email with your personal email for receiving collector inquiries & sales alerts.
+                </span>
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Create Permanent Password (min. 6 characters) *</label>
                 <input
                   type="password"
                   required
@@ -507,7 +536,7 @@ export const ArtistDashboardPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-navy-950 block mb-1">Confirm New Password *</label>
+                <label className="font-bold text-navy-950 block mb-1">Confirm Permanent Password *</label>
                 <input
                   type="password"
                   required
@@ -522,10 +551,10 @@ export const ArtistDashboardPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isUpdatingArtistPass}
-                className="px-6 py-2.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+                className="px-6 py-3 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
               >
                 <Lock className="w-3.5 h-3.5" />
-                <span>{isUpdatingArtistPass ? 'Updating Studio Credentials...' : 'Save New Password'}</span>
+                <span>{isUpdatingArtistPass ? 'Saving Studio Credentials...' : 'Save & Secure Studio Account'}</span>
               </button>
             </form>
           </div>
