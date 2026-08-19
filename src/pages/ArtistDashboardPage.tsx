@@ -17,6 +17,7 @@ import {
   Layers,
   Sparkles,
   Calculator,
+  Package,
   LifeBuoy,
   Send,
   Lock,

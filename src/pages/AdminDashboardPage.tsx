@@ -29,7 +29,10 @@ import {
   Download,
   Send,
   AlertCircle,
-  LifeBuoy
+  LifeBuoy,
+  Lock,
+  ShieldCheck,
+  Key
 } from 'lucide-react';
 import { Artwork, OrderFulfillmentStatus, EnquiryStatus, Payout, FAQItem, ShippingRegion } from '../types';
 import { getProductionImageUrl, handleImageError } from '../services/imageService';
