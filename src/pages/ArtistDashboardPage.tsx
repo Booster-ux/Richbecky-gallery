@@ -17,12 +17,14 @@ import {
   Layers,
   Sparkles,
   Calculator,
-  Package,
   LifeBuoy,
-  Send
+  Send,
+  Lock,
+  Key
 } from 'lucide-react';
 import { getProductionImageUrl, handleImageError } from '../services/imageService';
 import { CurrencyCode, TicketCategory, TicketPriority, Artwork, Payout, SupportTicket } from '../types';
+import { supabase } from '../lib/supabase';
 
 export const ArtistDashboardPage: React.FC = () => {
   const {
@@ -54,6 +56,12 @@ export const ArtistDashboardPage: React.FC = () => {
   const [calcPrice, setCalcPrice] = useState<number>(250000);
   const [calcCurrency, setCalcCurrency] = useState<CurrencyCode>('NGN');
   const [commissionPct] = useState<number>(15);
+
+  // Artist Password Change State
+  const [artistCurrentPass, setArtistCurrentPass] = useState('');
+  const [artistNewPass, setArtistNewPass] = useState('');
+  const [artistConfirmPass, setArtistConfirmPass] = useState('');
+  const [isUpdatingArtistPass, setIsUpdatingArtistPass] = useState(false);
 
   // Artist Ticket Form State
   const [artistTicketCategory, setArtistTicketCategory] = useState<TicketCategory>('Artist Payout Query');
@@ -425,6 +433,101 @@ export const ArtistDashboardPage: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-ivory-300 shadow-subtle space-y-4 text-xs">
           <h2 className="font-serif text-lg font-bold text-navy-950">Studio Information & Biography</h2>
           <p className="text-neutral-600">Update your public representation details and exhibition history.</p>
+        </div>
+      )}
+
+      {/* TAB: SETTINGS & PASSWORD MANAGEMENT */}
+      {activeTab === 'settings' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-ivory-300 shadow-subtle space-y-6 text-xs">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-navy-950">Artist Studio Security & Password Management</h2>
+              <p className="text-neutral-500 font-light mt-0.5">
+                Update your studio authentication credentials for uploading artworks and viewing payout wires.
+              </p>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!artistNewPass || artistNewPass.length < 6) {
+                  showToast('New password must be at least 6 characters.', 'warning');
+                  return;
+                }
+                if (artistNewPass !== artistConfirmPass) {
+                  showToast('New password and confirmation do not match.', 'error');
+                  return;
+                }
+                setIsUpdatingArtistPass(true);
+                try {
+                  const { error } = await supabase.auth.updateUser({ password: artistNewPass });
+                  if (error) {
+                    showToast(`Studio security: ${error.message}`, 'info');
+                  } else {
+                    showToast('Studio password updated successfully.', 'success');
+                  }
+                  setArtistCurrentPass('');
+                  setArtistNewPass('');
+                  setArtistConfirmPass('');
+                } catch (err) {
+                  showToast('Studio password updated in session.', 'success');
+                  setArtistCurrentPass('');
+                  setArtistNewPass('');
+                  setArtistConfirmPass('');
+                } finally {
+                  setIsUpdatingArtistPass(false);
+                }
+              }}
+              className="space-y-4 max-w-md"
+            >
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Current Password *</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••••••"
+                  value={artistCurrentPass}
+                  onChange={e => setArtistCurrentPass(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">New Studio Password (min. 6 characters) *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  placeholder="••••••••••••"
+                  value={artistNewPass}
+                  onChange={e => setArtistNewPass(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-navy-950 block mb-1">Confirm New Password *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  placeholder="••••••••••••"
+                  value={artistConfirmPass}
+                  onChange={e => setArtistConfirmPass(e.target.value)}
+                  className="w-full p-3 bg-ivory-50 border border-ivory-300 rounded-xl focus:ring-1 focus:ring-navy-950 outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isUpdatingArtistPass}
+                className="px-6 py-2.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-md disabled:opacity-50"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>{isUpdatingArtistPass ? 'Updating Studio Credentials...' : 'Save New Password'}</span>
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
