@@ -235,25 +235,6 @@ export const CustomerAccountPage: React.FC = () => {
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              {/* First-Time Security Banner */}
-              <div className="p-4 bg-gradient-to-r from-gold-50 via-amber-50 to-gold-50 border border-gold-300 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-gold-500 text-navy-950 rounded-xl font-bold">
-                    <Key className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-bold text-navy-950 text-sm">Personalize Your Permanent Login & Password</h4>
-                    <p className="text-xs text-neutral-600 font-light">Set your custom email and permanent password so you can sign in anytime without demo keys.</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setActiveTab('settings')}
-                  className="px-4 py-2 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
-                >
-                  Configure In Settings →
-                </button>
-              </div>
-
               <h2 className="font-serif text-xl font-bold text-navy-950 border-b border-ivory-200 pb-3">Collector Dashboard Overview</h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">

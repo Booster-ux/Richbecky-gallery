@@ -190,29 +190,9 @@ export const ArtistDashboardPage: React.FC = () => {
 
       {/* TAB 1: PORTFOLIO */}
       {activeTab === 'overview' && (
-        <div className="space-y-6">
-          {/* First-Time Artist Security Banner */}
-          <div className="p-4 bg-gradient-to-r from-gold-50 via-amber-50 to-gold-50 border border-gold-300 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gold-500 text-navy-950 rounded-xl font-bold">
-                <Key className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="font-serif font-bold text-navy-950 text-sm">Personalize Studio Login & Password</h4>
-                <p className="text-xs text-neutral-600 font-light">Set your permanent artist email and studio password to secure artwork management and payout requests.</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className="px-4 py-2 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-wider text-xs whitespace-nowrap transition shadow"
-            >
-              Configure In Settings →
-            </button>
-          </div>
-
-          <div className="bg-white rounded-xl border border-ivory-300 shadow-subtle p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="font-serif text-lg font-bold text-navy-950">Submitted Artwork Portfolio ({artistWorks.length})</h2>
+        <div className="bg-white rounded-xl border border-ivory-300 shadow-subtle p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="font-serif text-lg font-bold text-navy-950">Submitted Artwork Portfolio ({artistWorks.length})</h2>
             <button
               onClick={() => setActivePage('add-artwork')}
               className="text-xs text-gold-700 font-bold hover:underline"
