@@ -70,7 +70,8 @@ export const OwnerDashboardPage: React.FC = () => {
     addFAQ({
       question: newFaqQuestion,
       answer: newFaqAnswer,
-      category: newFaqCategory
+      category: newFaqCategory,
+      order: faqs.length + 1
     });
     setNewFaqQuestion('');
     setNewFaqAnswer('');

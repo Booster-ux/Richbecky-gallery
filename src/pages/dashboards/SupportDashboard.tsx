@@ -457,8 +457,8 @@ export const SupportDashboardPage: React.FC = () => {
                     <td className="p-4">{c.email}</td>
                     <td className="p-4">{c.phone || '+44 20 7946 0912'}</td>
                     <td className="p-4">{c.addresses?.[0]?.country || 'United Kingdom'}</td>
-                    <td className="p-4 font-bold text-navy-950">{formatPrice(c.totalSpent || 1250000, selectedCurrency)}</td>
-                    <td className="p-4 text-right font-bold text-gold-700">{c.totalOrders || 1} Artworks</td>
+                    <td className="p-4 font-bold text-navy-950">{formatPrice(c.totalSpend || 1250000, selectedCurrency)}</td>
+                    <td className="p-4 text-right font-bold text-gold-700">{c.orderCount || 1} Artworks</td>
                   </tr>
                 ))}
               </tbody>

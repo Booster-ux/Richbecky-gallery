@@ -278,7 +278,7 @@ export interface FAQItem {
   category: string;
   question: string;
   answer: string;
-  order: number;
+  order?: number;
 }
 
 export interface ShippingRegion {
