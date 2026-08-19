@@ -44,6 +44,7 @@ import {
   detectCustomerCurrency
 } from '../services/currencyService';
 import { ApiService } from '../services/api';
+import { supabase } from '../lib/supabase';
 
 interface ToastState {
   message: string;

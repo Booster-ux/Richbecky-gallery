@@ -71,6 +71,7 @@ export const AdminDashboardPage: React.FC = () => {
     formatOriginalPrice,
     selectedCurrency,
     showToast,
+    currentUser,
     updateUserCredentials
   } = useGallery();
 
