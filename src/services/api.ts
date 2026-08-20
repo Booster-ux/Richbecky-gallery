@@ -253,29 +253,50 @@ export const ApiService = {
       }
     },
 
-    loginAdmin: (email: string, pass: string): { success: boolean; user?: User; message?: string } => {
+    loginAdmin: (email: string, pass: string, roleHint?: string): { success: boolean; user?: User; message?: string } => {
       try {
         const cleanEmail = email.toLowerCase().trim();
+        const customAccountsStr = localStorage.getItem('rbg_custom_admin_accounts');
+        const customAccounts = customAccountsStr ? JSON.parse(customAccountsStr) : {};
+
+        // Check if matching custom account exists by email or roleHint
+        let matchedAccount = customAccounts[cleanEmail];
+        if (!matchedAccount && roleHint) {
+          const roleKey = roleHint === 'developer' ? 'web_developer' :
+                          roleHint === 'support' ? 'admin_support' :
+                          roleHint === 'owner' ? 'owner_content' : 'admin';
+          matchedAccount = customAccounts[roleKey];
+        }
+
         let role: UserRole = 'admin';
         let name = 'Executive Director';
 
-        if (cleanEmail.includes('owner')) {
-          role = 'owner_content';
-          name = 'Owner & Content Manager';
-        } else if (cleanEmail.includes('support')) {
-          role = 'admin_support';
-          name = 'Administrative & Customer Support';
-        } else if (cleanEmail.includes('developer') || cleanEmail.includes('dev')) {
-          role = 'web_developer';
-          name = 'Web Developer & Infrastructure Engineer';
+        if (matchedAccount) {
+          // If custom password was configured, verify password
+          if (matchedAccount.password && pass && matchedAccount.password !== pass) {
+            return { success: false, message: 'Incorrect password for this administrator account.' };
+          }
+          role = matchedAccount.role;
+          name = matchedAccount.name || name;
         } else {
-          role = 'admin';
-          name = 'Executive Director';
+          if (roleHint === 'developer' || cleanEmail.includes('developer') || cleanEmail.includes('dev')) {
+            role = 'web_developer';
+            name = 'Lead Web Developer';
+          } else if (roleHint === 'owner' || cleanEmail.includes('owner')) {
+            role = 'owner_content';
+            name = 'Owner & Content Manager';
+          } else if (roleHint === 'support' || cleanEmail.includes('support')) {
+            role = 'admin_support';
+            name = 'Administrative & Customer Support';
+          } else {
+            role = 'admin';
+            name = 'Executive Director';
+          }
         }
 
         const teamUser: User = {
-          id: `u-${role}-${Date.now()}`,
-          email: cleanEmail,
+          id: matchedAccount?.id || `u-${role}-${Date.now()}`,
+          email: matchedAccount?.email || cleanEmail,
           name: name,
           firstName: name.split(' ')[0],
           lastName: name.split(' ').slice(1).join(' ') || 'Admin',

@@ -94,7 +94,7 @@ interface GalleryContextType {
   loginCustomer: (email: string, pass: string) => boolean;
   registerCustomer: (data: { firstName: string; lastName: string; email: string; phone: string; country: string; preferredCurrency: CurrencyCode }) => void;
   loginArtist: (email: string, pass: string) => { success: boolean; message?: string };
-  loginAdmin: (email: string, pass: string) => boolean;
+  loginAdmin: (email: string, pass: string, roleHint?: string) => boolean;
   loginDirectly: (role: 'admin' | 'owner_content' | 'support' | 'developer' | 'artist' | 'customer', email?: string, name?: string) => void;
   updateUserCredentials: (newEmail: string, newName?: string, newPassword?: string) => Promise<boolean>;
   logout: () => void;
@@ -376,13 +376,13 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return { success: false, message: res.message };
   };
 
-  const loginAdmin = (email: string, pass: string): boolean => {
-    const res = ApiService.auth.loginAdmin(email, pass);
+  const loginAdmin = (email: string, pass: string, roleHint?: string): boolean => {
+    const res = ApiService.auth.loginAdmin(email, pass, roleHint);
     if (res.success && res.user) {
       setCurrentUser(res.user);
       localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setIsAuthenticated(true);
-      showToast('Authenticated into Executive Admin Governance.', 'success');
+      showToast(`Authenticated into ${res.user.name} portal.`, 'success');
       setActivePage('admin-dashboard');
       return true;
     }
@@ -402,7 +402,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       };
       setArtistApprovalStatus('Approved');
       setActivePage('artist-dashboard');
-      showToast('Welcome to Artist Studio! You can personalize your email & password in Settings.', 'info');
+      showToast('Welcome to Artist Studio!', 'info');
     } else if (role === 'customer') {
       user = {
         id: 'c0000000-0000-0000-0000-000000000001',
@@ -411,19 +411,22 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         role: 'customer'
       };
       setActivePage('account');
-      showToast('Welcome to Collector Portal! You can personalize your email & password in Settings.', 'info');
+      showToast('Welcome to Collector Portal!', 'info');
     } else {
+      const normalizedRole: UserRole = role === 'developer' ? 'web_developer' :
+                                       role === 'support' ? 'admin_support' :
+                                       role === 'owner_content' ? 'owner_content' : 'admin';
       user = {
-        id: role === 'owner_content' ? 'u0000000-0000-0000-0000-000000000002' :
-            role === 'support' ? 'u0000000-0000-0000-0000-000000000003' :
-            role === 'developer' ? 'u0000000-0000-0000-0000-000000000004' : 'u0000000-0000-0000-0000-000000000001',
-        name: role === 'owner_content' ? 'Gallery Owner & Content Manager' :
-              role === 'support' ? 'Administrative Support Agent' :
-              role === 'developer' ? 'Lead Web Developer' : 'Executive Director',
-        email: email || (role === 'owner_content' ? 'owner@richbeckygallery.com' :
-                role === 'support' ? 'support@richbeckygallery.com' :
-                role === 'developer' ? 'developer@richbeckygallery.com' : 'admin@richbeckygallery.com'),
-        role: role as any
+        id: normalizedRole === 'owner_content' ? 'u0000000-0000-0000-0000-000000000002' :
+            normalizedRole === 'admin_support' ? 'u0000000-0000-0000-0000-000000000003' :
+            normalizedRole === 'web_developer' ? 'u0000000-0000-0000-0000-000000000004' : 'u0000000-0000-0000-0000-000000000001',
+        name: normalizedRole === 'owner_content' ? 'Gallery Owner & Content Manager' :
+              normalizedRole === 'admin_support' ? 'Administrative Support Agent' :
+              normalizedRole === 'web_developer' ? 'Lead Web Developer' : 'Executive Director',
+        email: email || (normalizedRole === 'owner_content' ? 'owner@richbeckygallery.com' :
+                normalizedRole === 'admin_support' ? 'support@richbeckygallery.com' :
+                normalizedRole === 'web_developer' ? 'developer@richbeckygallery.com' : 'admin@richbeckygallery.com'),
+        role: normalizedRole
       };
       setActivePage('admin-dashboard');
       showToast(`Welcome! You are authenticated in the ${user.name} portal. Set your permanent credentials in Settings.`, 'info');
@@ -435,14 +438,39 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateUserCredentials = async (newEmail: string, newName?: string, newPassword?: string): Promise<boolean> => {
     if (!currentUser) return false;
-    const updatedUser: User = {
-      ...currentUser,
-      email: newEmail || currentUser.email,
-      name: newName || currentUser.name
+
+    // Normalize role
+    let role: UserRole = currentUser.role;
+    if ((role as string) === 'developer') role = 'web_developer';
+    if ((role as string) === 'support') role = 'admin_support';
+
+    const cleanEmail = (newEmail || currentUser.email).trim().toLowerCase();
+    const updatedName = newName || currentUser.name;
+
+    // Store custom credentials by role & email in localStorage
+    const customCreds = {
+      id: currentUser.id,
+      role,
+      name: updatedName,
+      email: cleanEmail,
+      password: newPassword,
+      isConfigured: true,
+      updatedAt: new Date().toISOString()
     };
-    setCurrentUser(updatedUser);
-    localStorage.setItem('rbg_auth_user', JSON.stringify(updatedUser));
-    localStorage.setItem(`rbg_creds_setup_${currentUser.id}`, 'true');
+
+    try {
+      const existingMap = JSON.parse(localStorage.getItem('rbg_custom_admin_accounts') || '{}');
+      existingMap[role] = customCreds;
+      existingMap[cleanEmail] = customCreds;
+      localStorage.setItem('rbg_custom_admin_accounts', JSON.stringify(existingMap));
+
+      // Permanently disable demo login for this role & overall
+      localStorage.setItem(`rbg_demo_disabled_${role}`, 'true');
+      localStorage.setItem(`rbg_creds_setup_${currentUser.id}`, 'true');
+      localStorage.setItem('rbg_has_custom_admin_creds', 'true');
+    } catch (e) {
+      console.error('Failed to store custom admin credentials in localStorage:', e);
+    }
 
     if (newPassword) {
       try {
@@ -451,7 +479,13 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.warn('Supabase auth update fallback:', e);
       }
     }
-    showToast('Your custom Login Email & Password have been saved successfully!', 'success');
+
+    // REQUIREMENT 1: Automatically log out so the user can now sign in with their permanent email & password
+    ApiService.auth.logout();
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    showToast('Credentials successfully saved! Please log in now with your permanent email & password.', 'success');
+    setActivePage('admin-login');
     return true;
   };
 

@@ -102,9 +102,9 @@ const AppContent: React.FC = () => {
         return <AdminLoginPage />;
       case 'admin-dashboard':
         if (!isAuthenticated || !currentUser || currentUser.role === 'customer' || currentUser.role === 'artist') return <AdminLoginPage />;
-        if (currentUser.role === 'web_developer') return <DeveloperDashboardPage />;
-        if (currentUser.role === 'admin_support') return <SupportDashboardPage />;
-        if (currentUser.role === 'owner_content') return <OwnerDashboardPage />;
+        if (currentUser.role === 'web_developer' || (currentUser.role as string) === 'developer') return <DeveloperDashboardPage />;
+        if (currentUser.role === 'admin_support' || (currentUser.role as string) === 'support') return <SupportDashboardPage />;
+        if (currentUser.role === 'owner_content' || (currentUser.role as string) === 'owner') return <OwnerDashboardPage />;
         return <AdminDashboardPage />;
 
       default:

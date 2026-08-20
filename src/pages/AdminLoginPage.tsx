@@ -1,37 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { Lock, Crown, Headphones, Terminal, ShieldCheck, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { Lock, Crown, Headphones, Terminal, ShieldCheck, ArrowRight, LayoutDashboard, CheckCircle2 } from 'lucide-react';
 import { LOGO_URL } from '../data/mockData';
 
 export const AdminLoginPage: React.FC = () => {
   const { loginAdmin, loginDirectly } = useGallery();
   const [selectedRole, setSelectedRole] = useState<'director' | 'owner' | 'support' | 'developer'>('director');
-  const [email, setEmail] = useState('admin@richbeckygallery.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCustomConfigured, setIsCustomConfigured] = useState(false);
+
+  const getRoleKey = (role: 'director' | 'owner' | 'support' | 'developer') => {
+    return role === 'director' ? 'admin' :
+           role === 'owner' ? 'owner_content' :
+           role === 'support' ? 'admin_support' : 'web_developer';
+  };
+
+  const updateRoleState = (role: 'director' | 'owner' | 'support' | 'developer') => {
+    setSelectedRole(role);
+    const roleKey = getRoleKey(role);
+    
+    let customAccounts: any = {};
+    try {
+      customAccounts = JSON.parse(localStorage.getItem('rbg_custom_admin_accounts') || '{}');
+    } catch (e) {
+      customAccounts = {};
+    }
+
+    const savedAccount = customAccounts[roleKey];
+    const isDemoDisabled = localStorage.getItem(`rbg_demo_disabled_${roleKey}`) === 'true' || !!savedAccount;
+
+    setIsCustomConfigured(isDemoDisabled);
+
+    if (savedAccount && savedAccount.email) {
+      setEmail(savedAccount.email);
+      setPassword('');
+    } else if (!isDemoDisabled) {
+      if (role === 'director') {
+        setEmail('admin@richbeckygallery.com');
+        setPassword('admin123');
+      } else if (role === 'owner') {
+        setEmail('owner@richbeckygallery.com');
+        setPassword('OwnerPassword123!');
+      } else if (role === 'support') {
+        setEmail('support@richbeckygallery.com');
+        setPassword('SupportPassword123!');
+      } else {
+        setEmail('developer@richbeckygallery.com');
+        setPassword('DeveloperPassword123!');
+      }
+    } else {
+      setEmail('');
+      setPassword('');
+    }
+  };
+
+  useEffect(() => {
+    updateRoleState('director');
+  }, []);
 
   const handleRoleSelect = (role: 'director' | 'owner' | 'support' | 'developer') => {
-    setSelectedRole(role);
-    if (role === 'director') {
-      setEmail('admin@richbeckygallery.com');
-      setPassword('admin123');
-    } else if (role === 'owner') {
-      setEmail('owner@richbeckygallery.com');
-      setPassword('OwnerPassword123!');
-    } else if (role === 'support') {
-      setEmail('support@richbeckygallery.com');
-      setPassword('SupportPassword123!');
-    } else {
-      setEmail('developer@richbeckygallery.com');
-      setPassword('DeveloperPassword123!');
-    }
+    updateRoleState(role);
   };
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setTimeout(() => {
-      loginAdmin(email, password);
+      loginAdmin(email, password, selectedRole);
       setIsSubmitting(false);
     }, 400);
   };
@@ -101,18 +138,26 @@ export const AdminLoginPage: React.FC = () => {
           </button>
         </div>
 
+        {/* Status Indicator */}
+        {isCustomConfigured && (
+          <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl flex items-center gap-2 text-xs text-emerald-900">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>Permanent custom credentials configured. Please sign in with your personalized email & password.</span>
+          </div>
+        )}
+
         {/* Login Form */}
         <form onSubmit={handleAdminLogin} className="space-y-5 text-xs">
           <div className="space-y-1.5">
             <label className="font-semibold text-navy-900 uppercase tracking-wider block">
-              Director / Staff Email
+              {selectedRole.toUpperCase()} Login Email
             </label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="director@richbeckygallery.com"
+              placeholder={`${selectedRole}@richbeckygallery.com`}
               className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 text-navy-900 focus:outline-none focus:border-gold-500 transition"
             />
           </div>
@@ -146,27 +191,31 @@ export const AdminLoginPage: React.FC = () => {
             )}
           </button>
 
-          {/* Instant First-Time Login Option */}
-          <div className="relative py-2 text-center">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-ivory-300"></div></div>
-            <span className="relative bg-white px-3 text-[11px] text-neutral-400 font-medium">OR FIRST-TIME / DEMO LOGIN</span>
-          </div>
+          {/* First-Time Demo Login Option (Only visible if credentials have NOT been customized yet) */}
+          {!isCustomConfigured && (
+            <>
+              <div className="relative py-2 text-center">
+                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-ivory-300"></div></div>
+                <span className="relative bg-white px-3 text-[11px] text-neutral-400 font-medium">INITIAL SETUP ACCESS</span>
+              </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              const roleKey = selectedRole === 'director' ? 'admin' :
-                              selectedRole === 'owner' ? 'owner_content' :
-                              selectedRole === 'support' ? 'support' : 'developer';
-              loginDirectly(roleKey);
-            }}
-            className="w-full py-3 bg-gold-50 hover:bg-gold-100 text-gold-900 border border-gold-400/60 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-2 shadow-sm"
-          >
-            <span>⚡ Instant One-Click Login (Without Password)</span>
-          </button>
-          <p className="text-[11px] text-center text-neutral-500 font-light">
-            💡 Logging in for the first time? Access instantly without a password, then personalize your permanent email & password in the Settings tab.
-          </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const roleKey = selectedRole === 'director' ? 'admin' :
+                                  selectedRole === 'owner' ? 'owner_content' :
+                                  selectedRole === 'support' ? 'support' : 'developer';
+                  loginDirectly(roleKey);
+                }}
+                className="w-full py-3 bg-gold-50 hover:bg-gold-100 text-gold-900 border border-gold-400/60 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-2 shadow-sm"
+              >
+                <span>⚡ Instant One-Click Login (Without Password)</span>
+              </button>
+              <p className="text-[11px] text-center text-neutral-500 font-light">
+                💡 First time logging in? Use one-click access, then personalize your permanent email & password in the Settings tab.
+              </p>
+            </>
+          )}
         </form>
 
         {/* Security Note */}
