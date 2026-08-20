@@ -32,28 +32,9 @@ export const AdminLoginPage: React.FC = () => {
     const isDemoDisabled = localStorage.getItem(`rbg_demo_disabled_${roleKey}`) === 'true' || !!savedAccount;
 
     setIsCustomConfigured(isDemoDisabled);
-
-    if (savedAccount && savedAccount.email) {
-      setEmail(savedAccount.email);
-      setPassword('');
-    } else if (!isDemoDisabled) {
-      if (role === 'director') {
-        setEmail('admin@richbeckygallery.com');
-        setPassword('admin123');
-      } else if (role === 'owner') {
-        setEmail('owner@richbeckygallery.com');
-        setPassword('OwnerPassword123!');
-      } else if (role === 'support') {
-        setEmail('support@richbeckygallery.com');
-        setPassword('SupportPassword123!');
-      } else {
-        setEmail('developer@richbeckygallery.com');
-        setPassword('DeveloperPassword123!');
-      }
-    } else {
-      setEmail('');
-      setPassword('');
-    }
+    // Never pre-fill email or password preview on logout or tab switch
+    setEmail('');
+    setPassword('');
   };
 
   useEffect(() => {
@@ -150,15 +131,15 @@ export const AdminLoginPage: React.FC = () => {
         <form onSubmit={handleAdminLogin} className="space-y-5 text-xs">
           <div className="space-y-1.5">
             <label className="font-semibold text-navy-900 uppercase tracking-wider block">
-              {selectedRole.toUpperCase()} Login Email
+              {selectedRole.toUpperCase()} Staff Email
             </label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={`${selectedRole}@richbeckygallery.com`}
-              className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 text-navy-900 focus:outline-none focus:border-gold-500 transition"
+              placeholder="Enter your permanent login email..."
+              className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 text-navy-900 focus:outline-none focus:border-gold-500 transition font-medium"
             />
           </div>
 
