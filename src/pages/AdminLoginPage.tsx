@@ -11,6 +11,24 @@ export const AdminLoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const getRoleKey = (role: 'director' | 'owner' | 'support' | 'developer') => {
+    return role === 'director' ? 'admin' :
+           role === 'owner' ? 'owner_content' :
+           role === 'support' ? 'admin_support' : 'web_developer';
+  };
+
+  const isRolePasswordConfigured = (role: 'director' | 'owner' | 'support' | 'developer') => {
+    const roleKey = getRoleKey(role);
+    try {
+      const customAccounts = JSON.parse(localStorage.getItem('rbg_custom_admin_accounts') || '{}');
+      return Boolean(customAccounts[roleKey]?.password || localStorage.getItem(`rbg_password_set_${roleKey}`));
+    } catch {
+      return false;
+    }
+  };
+
+  const hasConfiguredPassword = isRolePasswordConfigured(selectedRole);
+
   const handleRoleSelect = (role: 'director' | 'owner' | 'support' | 'developer') => {
     setSelectedRole(role);
     setEmail('');
@@ -91,7 +109,7 @@ export const AdminLoginPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Standard Secure Login Form (No state hints or info badges leaked to visitors) */}
+        {/* Clean Login Form */}
         <form onSubmit={handleAdminLogin} className="space-y-5 text-xs">
           <div className="space-y-1.5">
             <label className="font-semibold text-navy-900 uppercase tracking-wider block">
@@ -107,27 +125,31 @@ export const AdminLoginPage: React.FC = () => {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="font-semibold text-navy-900 uppercase tracking-wider block">
-              Password Security Key
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••••••"
-                className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 pr-10 text-navy-900 focus:outline-none focus:border-gold-500 transition"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-navy-950 transition"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+          {/* Password field only shown once password has been configured for this role */}
+          {hasConfiguredPassword && (
+            <div className="space-y-1.5">
+              <label className="font-semibold text-navy-900 uppercase tracking-wider block">
+                Password Security Key *
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••••••"
+                  className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 pr-10 text-navy-900 focus:outline-none focus:border-gold-500 transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-navy-950 transition"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <button
             type="submit"
