@@ -39,6 +39,7 @@ import { SupportDashboardPage } from './pages/dashboards/SupportDashboard';
 import { DeveloperDashboardPage } from './pages/dashboards/DeveloperDashboard';
 
 import { GlobalGalleryAtmosphere } from './components/GlobalGalleryAtmosphere';
+import { SetAdminPasswordModal } from './components/SetAdminPasswordModal';
 
 const AppContent: React.FC = () => {
   const { activePage, isAuthenticated, currentUser, artistApprovalStatus } = useGallery();
@@ -121,6 +122,7 @@ const AppContent: React.FC = () => {
       </main>
       <Footer />
       <ToastNotification />
+      <SetAdminPasswordModal />
     </div>
   );
 };

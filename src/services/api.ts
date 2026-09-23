@@ -253,49 +253,62 @@ export const ApiService = {
       }
     },
 
-    loginAdmin: (email: string, pass: string, roleHint?: string): { success: boolean; user?: User; message?: string } => {
+    loginAdmin: (email: string, pass: string, roleHint?: string): { success: boolean; user?: User; needsSetup?: boolean; message?: string } => {
       try {
         const cleanEmail = email.toLowerCase().trim();
-        const customAccountsStr = localStorage.getItem('rbg_custom_admin_accounts');
-        const customAccounts = customAccountsStr ? JSON.parse(customAccountsStr) : {};
-
-        // Check if matching custom account exists by email or roleHint
-        let matchedAccount = customAccounts[cleanEmail];
-        if (!matchedAccount && roleHint) {
-          const roleKey = roleHint === 'developer' ? 'web_developer' :
-                          roleHint === 'support' ? 'admin_support' :
-                          roleHint === 'owner' ? 'owner_content' : 'admin';
-          matchedAccount = customAccounts[roleKey];
+        if (!cleanEmail) {
+          return { success: false, message: 'Please enter your staff email address.' };
         }
+
+        const roleKey = roleHint === 'developer' ? 'web_developer' :
+                        roleHint === 'support' ? 'admin_support' :
+                        roleHint === 'owner' ? 'owner_content' : 'admin';
+
+        let customAccounts: any = {};
+        try {
+          const customAccountsStr = localStorage.getItem('rbg_custom_admin_accounts');
+          customAccounts = customAccountsStr ? JSON.parse(customAccountsStr) : {};
+        } catch (e) {
+          customAccounts = {};
+        }
+
+        // Check if matching custom account exists by email or roleKey
+        const matchedAccount = customAccounts[cleanEmail] || customAccounts[roleKey];
+        const isPasswordConfigured = Boolean(matchedAccount?.password || localStorage.getItem(`rbg_password_set_${roleKey}`));
 
         let role: UserRole = 'admin';
         let name = 'Executive Director';
 
-        if (matchedAccount) {
-          // If custom password was configured, verify password
-          if (matchedAccount.password && pass && matchedAccount.password !== pass) {
-            return { success: false, message: 'Incorrect password for this administrator account.' };
-          }
-          role = matchedAccount.role;
-          name = matchedAccount.name || name;
+        if (roleKey === 'web_developer' || cleanEmail.includes('developer') || cleanEmail.includes('dev')) {
+          role = 'web_developer';
+          name = 'Lead Web Developer';
+        } else if (roleKey === 'owner_content' || cleanEmail.includes('owner')) {
+          role = 'owner_content';
+          name = 'Gallery Owner & Content Curator';
+        } else if (roleKey === 'admin_support' || cleanEmail.includes('support')) {
+          role = 'admin_support';
+          name = 'Operations & Support Specialist';
         } else {
-          if (roleHint === 'developer' || cleanEmail.includes('developer') || cleanEmail.includes('dev')) {
-            role = 'web_developer';
-            name = 'Lead Web Developer';
-          } else if (roleHint === 'owner' || cleanEmail.includes('owner')) {
-            role = 'owner_content';
-            name = 'Owner & Content Manager';
-          } else if (roleHint === 'support' || cleanEmail.includes('support')) {
-            role = 'admin_support';
-            name = 'Administrative & Customer Support';
-          } else {
-            role = 'admin';
-            name = 'Executive Director';
+          role = 'admin';
+          name = 'Executive Director';
+        }
+
+        if (matchedAccount?.name) {
+          name = matchedAccount.name;
+        }
+
+        // Case 1: Account has a password configured -> Strict password verification required
+        if (isPasswordConfigured) {
+          if (!pass) {
+            return { success: false, message: 'Please enter your password security key.' };
+          }
+          if (matchedAccount?.password && matchedAccount.password !== pass) {
+            return { success: false, message: 'Incorrect password for this administrator account.' };
           }
         }
 
         const teamUser: User = {
-          id: matchedAccount?.id || `u-${role}-${Date.now()}`,
+          id: matchedAccount?.id || `u-${role}-001`,
           email: matchedAccount?.email || cleanEmail,
           name: name,
           firstName: name.split(' ')[0],
@@ -304,7 +317,11 @@ export const ApiService = {
         };
 
         localStorage.setItem('rbg_auth_user', JSON.stringify(teamUser));
-        return { success: true, user: teamUser };
+        return {
+          success: true,
+          user: teamUser,
+          needsSetup: !isPasswordConfigured
+        };
       } catch (err: any) {
         return { success: false, message: err.message || 'Team authentication failed' };
       }

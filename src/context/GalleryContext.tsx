@@ -90,11 +90,13 @@ interface GalleryContextType {
   // Authentication & Roles
   isAuthenticated: boolean;
   currentUser: User | null;
+  needsPasswordSetup: boolean;
   artistApprovalStatus: ArtistApprovalStatus | null;
   loginCustomer: (email: string, pass: string) => boolean;
   registerCustomer: (data: { firstName: string; lastName: string; email: string; phone: string; country: string; preferredCurrency: CurrencyCode }) => void;
   loginArtist: (email: string, pass: string) => { success: boolean; message?: string };
   loginAdmin: (email: string, pass: string, roleHint?: string) => boolean;
+  saveAdminInitialPassword: (password: string) => Promise<boolean>;
   loginDirectly: (role: 'admin' | 'owner_content' | 'support' | 'developer' | 'artist' | 'customer', email?: string, name?: string) => void;
   updateUserCredentials: (newEmail: string, newName?: string, newPassword?: string) => Promise<boolean>;
   logout: () => void;
@@ -255,6 +257,7 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Authentication State connected to ApiService
   const [currentUser, setCurrentUser] = useState<User | null>(() => ApiService.auth.getCurrentUser());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!currentUser);
+  const [needsPasswordSetup, setNeedsPasswordSetup] = useState<boolean>(false);
   const [artistApprovalStatus, setArtistApprovalStatus] = useState<ArtistApprovalStatus | null>(() => {
     if (currentUser && currentUser.artistApprovalStatus) return currentUser.artistApprovalStatus;
     return null;
@@ -382,12 +385,57 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setCurrentUser(res.user);
       localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setIsAuthenticated(true);
-      showToast(`Authenticated into ${res.user.name} portal.`, 'success');
+      if (res.needsSetup) {
+        setNeedsPasswordSetup(true);
+        showToast('Initial activation: Please create your permanent password.', 'info');
+      } else {
+        setNeedsPasswordSetup(false);
+        showToast(`Authenticated into ${res.user.name} portal.`, 'success');
+      }
       setActivePage('admin-dashboard');
       return true;
     }
     showToast(res.message || 'Admin authentication failed', 'error');
     return false;
+  };
+
+  const saveAdminInitialPassword = async (password: string): Promise<boolean> => {
+    if (!currentUser) return false;
+    let role: UserRole = currentUser.role;
+    if ((role as string) === 'developer') role = 'web_developer';
+    if ((role as string) === 'support') role = 'admin_support';
+
+    const cleanEmail = currentUser.email.trim().toLowerCase();
+    const customCreds = {
+      id: currentUser.id,
+      role,
+      name: currentUser.name,
+      email: cleanEmail,
+      password: password,
+      isConfigured: true,
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      const existingMap = JSON.parse(localStorage.getItem('rbg_custom_admin_accounts') || '{}');
+      existingMap[role] = customCreds;
+      existingMap[cleanEmail] = customCreds;
+      localStorage.setItem('rbg_custom_admin_accounts', JSON.stringify(existingMap));
+      localStorage.setItem(`rbg_password_set_${role}`, 'true');
+      localStorage.setItem(`rbg_password_set_${cleanEmail}`, 'true');
+      localStorage.setItem(`rbg_demo_disabled_${role}`, 'true');
+    } catch (e) {
+      console.error('Failed to save password:', e);
+    }
+
+    // Clear setup flag & immediately log out to force clean sign in
+    setNeedsPasswordSetup(false);
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('rbg_auth_user');
+    setActivePage('admin-login');
+    showToast('Permanent password saved! Please sign in with your new password.', 'success');
+    return true;
   };
 
   const loginDirectly = (role: 'admin' | 'owner_content' | 'support' | 'developer' | 'artist' | 'customer', email?: string, name?: string) => {
@@ -853,11 +901,13 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isInWishlist,
         isAuthenticated,
         currentUser,
+        needsPasswordSetup,
         artistApprovalStatus,
         loginCustomer,
         registerCustomer,
         loginArtist,
         loginAdmin,
+        saveAdminInitialPassword,
         loginDirectly,
         updateUserCredentials,
         logout,
