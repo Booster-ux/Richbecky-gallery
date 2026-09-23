@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useGallery } from '../context/GalleryContext';
-import { Lock, Crown, Headphones, Terminal, ShieldCheck, ArrowRight, LayoutDashboard, KeyRound, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Lock, Crown, Headphones, Terminal, ShieldCheck, ArrowRight, LayoutDashboard, Eye, EyeOff } from 'lucide-react';
 import { LOGO_URL } from '../data/mockData';
 
 export const AdminLoginPage: React.FC = () => {
@@ -10,51 +10,11 @@ export const AdminLoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isPasswordConfigured, setIsPasswordConfigured] = useState(false);
-
-  const getRoleKey = (role: 'director' | 'owner' | 'support' | 'developer') => {
-    return role === 'director' ? 'admin' :
-           role === 'owner' ? 'owner_content' :
-           role === 'support' ? 'admin_support' : 'web_developer';
-  };
-
-  const getRoleTitle = (role: 'director' | 'owner' | 'support' | 'developer') => {
-    return role === 'director' ? 'Executive Director' :
-           role === 'owner' ? 'Gallery Owner & Curator' :
-           role === 'support' ? 'Operations & Support' : 'Lead Developer';
-  };
-
-  const getExpectedEmail = (role: 'director' | 'owner' | 'support' | 'developer') => {
-    return role === 'director' ? 'admin@richbeckygallery.com' :
-           role === 'owner' ? 'owner@richbeckygallery.com' :
-           role === 'support' ? 'support@richbeckygallery.com' : 'developer@richbeckygallery.com';
-  };
-
-  const updateRoleState = (role: 'director' | 'owner' | 'support' | 'developer') => {
-    setSelectedRole(role);
-    const roleKey = getRoleKey(role);
-    
-    let customAccounts: any = {};
-    try {
-      customAccounts = JSON.parse(localStorage.getItem('rbg_custom_admin_accounts') || '{}');
-    } catch (e) {
-      customAccounts = {};
-    }
-
-    const savedAccount = customAccounts[roleKey];
-    const isSet = Boolean(savedAccount?.password || localStorage.getItem(`rbg_password_set_${roleKey}`));
-
-    setIsPasswordConfigured(isSet);
-    setEmail('');
-    setPassword('');
-  };
-
-  useEffect(() => {
-    updateRoleState('director');
-  }, []);
 
   const handleRoleSelect = (role: 'director' | 'owner' | 'support' | 'developer') => {
-    updateRoleState(role);
+    setSelectedRole(role);
+    setEmail('');
+    setPassword('');
   };
 
   const handleAdminLogin = (e: React.FormEvent) => {
@@ -80,7 +40,7 @@ export const AdminLoginPage: React.FC = () => {
             Executive Governance Authentication
           </h1>
           <p className="text-xs text-neutral-500 font-light">
-            Select your administrative role and sign in with your authorized email.
+            Select your administrative portal and sign in with your authorized staff credentials.
           </p>
         </div>
 
@@ -131,65 +91,43 @@ export const AdminLoginPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Activation State Info Badge */}
-        {!isPasswordConfigured ? (
-          <div className="p-3.5 bg-amber-50/90 border border-amber-200/80 rounded-2xl flex items-start gap-2.5 text-xs text-amber-950">
-            <Sparkles className="w-4 h-4 text-gold-600 flex-shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="font-bold text-amber-900">First-Time Portal Activation</span>
-              <p className="text-[11px] text-amber-800 leading-relaxed font-light">
-                Enter your staff email below to access the dashboard. A prompt will immediately open to create your permanent password.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-2xl flex items-center gap-2 text-xs text-emerald-900">
-            <KeyRound className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-            <span>Permanent password configured for {getRoleTitle(selectedRole)}. Enter email and password to sign in.</span>
-          </div>
-        )}
-
-        {/* Login Form */}
+        {/* Standard Secure Login Form (No state hints or info badges leaked to visitors) */}
         <form onSubmit={handleAdminLogin} className="space-y-5 text-xs">
           <div className="space-y-1.5">
             <label className="font-semibold text-navy-900 uppercase tracking-wider block">
-              {getRoleTitle(selectedRole)} Staff Email *
+              Staff Email Address *
             </label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={getExpectedEmail(selectedRole)}
+              placeholder="Enter your authorized staff email..."
               className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 text-navy-900 focus:outline-none focus:border-gold-500 transition font-medium"
             />
           </div>
 
-          {/* Show password field only when password is configured */}
-          {isPasswordConfigured && (
-            <div className="space-y-1.5">
-              <label className="font-semibold text-navy-900 uppercase tracking-wider block">
-                Password Security Key *
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your security password..."
-                  className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 pr-10 text-navy-900 focus:outline-none focus:border-gold-500 transition"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-navy-950 transition"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-navy-900 uppercase tracking-wider block">
+              Password Security Key
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••••••"
+                className="w-full bg-ivory-100 border border-ivory-300 rounded-xl p-3 pr-10 text-navy-900 focus:outline-none focus:border-gold-500 transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-navy-950 transition"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
-          )}
+          </div>
 
           <button
             type="submit"
@@ -197,12 +135,10 @@ export const AdminLoginPage: React.FC = () => {
             className="w-full py-3.5 bg-navy-950 hover:bg-gold-500 hover:text-navy-950 text-white rounded-xl font-bold uppercase tracking-widest text-xs transition duration-300 shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSubmitting ? (
-              <span>Verifying Staff Credentials...</span>
+              <span>Authenticating Portal Access...</span>
             ) : (
               <>
-                <span>
-                  {!isPasswordConfigured ? `Access ${getRoleTitle(selectedRole)} & Set Password` : `Sign In to ${getRoleTitle(selectedRole)}`}
-                </span>
+                <span>Sign In to Governance Portal</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -212,7 +148,7 @@ export const AdminLoginPage: React.FC = () => {
         {/* Security Note */}
         <div className="pt-4 border-t border-ivory-200 text-center flex items-center justify-center gap-2 text-[11px] text-neutral-400">
           <ShieldCheck className="w-3.5 h-3.5 text-gold-600" />
-          <span>Richbecky Gallery Role-Based Access Control (RBAC) Active</span>
+          <span>Role-Based Access Control (RBAC) Active & Enforced</span>
         </div>
 
       </div>
