@@ -44,6 +44,7 @@ import {
   detectCustomerCurrency
 } from '../services/currencyService';
 import { ApiService } from '../services/api';
+import { EmailService } from '../services/emailService';
 import { supabase } from '../lib/supabase';
 
 interface ToastState {
@@ -332,6 +333,14 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       localStorage.setItem('rbg_auth_user', JSON.stringify(res.user));
       setIsAuthenticated(true);
       setSelectedCurrency(data.preferredCurrency);
+
+      // Dispatch Welcome Email via Resend
+      EmailService.sendCustomerWelcome({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email
+      });
+
       showToast(`Collector account created successfully! Welcome to Richbecky Gallery.`, 'success');
       setActivePage('account');
     } else {
@@ -550,6 +559,10 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const createdApp = ApiService.artists.submitApplication(appData);
     setArtistApplications(ApiService.artists.getApplications());
 
+    // Send confirmation to artist applicant & alert to admin
+    EmailService.sendArtistApplicationReceived(createdApp);
+    EmailService.sendAdminArtistApplicationAlert(createdApp);
+
     const user: User = {
       id: createdApp.id,
       name: createdApp.artistName,
@@ -571,8 +584,14 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const approveArtistApplication = (appId: string) => {
     const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
     ApiService.artists.reviewApplication(adminUser.id, adminUser.email, appId, 'Approved');
-    setArtistApplications(ApiService.artists.getApplications());
+    const apps = ApiService.artists.getApplications();
+    setArtistApplications(apps);
     setArtists(ApiService.artists.getAllActive());
+
+    const app = apps.find(a => a.id === appId);
+    if (app) {
+      EmailService.sendArtistApplicationDecision(app.email, app.fullName, 'Approved');
+    }
 
     if (currentUser && currentUser.artistApplicationId === appId) {
       setCurrentUser(prev => prev ? { ...prev, artistApprovalStatus: 'Approved' } : null);
@@ -585,7 +604,13 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const rejectArtistApplication = (appId: string, reason?: string) => {
     const adminUser = currentUser?.role === 'admin' ? currentUser : { id: 'u0000000-0000-0000-0000-000000000001', email: 'admin@richbeckygallery.com' };
     ApiService.artists.reviewApplication(adminUser.id, adminUser.email, appId, 'Rejected', undefined, reason);
-    setArtistApplications(ApiService.artists.getApplications());
+    const apps = ApiService.artists.getApplications();
+    setArtistApplications(apps);
+
+    const app = apps.find(a => a.id === appId);
+    if (app) {
+      EmailService.sendArtistApplicationDecision(app.email, app.fullName, 'Rejected', reason);
+    }
 
     if (currentUser && currentUser.artistApplicationId === appId) {
       setCurrentUser(prev => prev ? { ...prev, artistApprovalStatus: 'Rejected' } : null);
@@ -762,12 +787,18 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       items: cart.map(i => ({ artworkId: i.artwork.id, quantity: i.quantity }))
     });
 
+    // Dispatch Transactional Acquisition Receipt & Admin Sales Alert via Resend
+    if (shippingInfo.email) {
+      EmailService.sendOrderConfirmation(createdOrder, shippingInfo.email);
+    }
+    EmailService.sendAdminOrderAlert(createdOrder);
+
     setOrders(ApiService.orders.getAllOrders());
     setLastPlacedOrder(createdOrder);
     clearCart();
     setActivePage('order-confirmation');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('Order confirmed! Development order record created.', 'success');
+    showToast('Order confirmed! Acquisition receipt sent via email.', 'success');
   };
 
   const updateOrderStatus = (orderId: string, status: OrderFulfillmentStatus) => {
@@ -785,6 +816,16 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       status: 'New'
     };
     setEnquiries(prev => [newEnq, ...prev]);
+
+    // Send Alert to Gallery Directors
+    EmailService.sendCollectorEnquiryAlert({
+      name: enquiryData.collectorName,
+      email: enquiryData.collectorEmail,
+      phone: enquiryData.collectorPhone,
+      message: enquiryData.message,
+      artworkTitle: enquiryData.artworkTitle
+    });
+
     showToast('Your advisory enquiry has been transmitted to Gallery Directors.', 'success');
   };
 
